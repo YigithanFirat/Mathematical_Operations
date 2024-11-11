@@ -11,10 +11,10 @@
         <li><a href=""> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
         <li><a href=""> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
         <abbr title="Kaydol">
-          <button id="Register" onclick="Kaydol()">Kaydol</button>
+          <button id="Register" @click="Register()">Kaydol</button>
         </abbr>
         <abbr title="Giriş Yap">
-          <button id="Login" onclick="GirisYap()">Giriş Yap</button>
+          <button id="Login" @click="Login()">Giriş Yap</button>
         </abbr>
       </ul>
     </div>
@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import HelloWorld from './components/main.vue'
 
+import HelloWorld from './components/main.vue'
 export default 
 {
   name: 'App',

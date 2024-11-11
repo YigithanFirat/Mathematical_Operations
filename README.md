@@ -9,3 +9,5 @@ Bitirme Projesi
 ### Header
 
 Headera ait bölümler ve butonlar oluşturuldu, stillendirildi.
+
+![alt text](Screenshot_1.jpg)
