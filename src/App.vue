@@ -1,22 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <HelloWorld msg="Welcome to Your Destiny!"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/main.vue'
 
 export default 
 {
   name: 'App',
   components: 
   {
-      HelloWorld
+    HelloWorld
   }
 }
 </script>
 
 <style>
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-image: url("/src/assets/logo.png");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
 #app 
 {
     font-family: Avenir, Helvetica, Arial, sans-serif;
