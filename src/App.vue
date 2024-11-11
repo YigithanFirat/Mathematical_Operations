@@ -11,10 +11,10 @@
         <li><a href=""> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
         <li><a href=""> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
         <abbr title="Kaydol">
-          <button id="Register" onclick="Register()">Kaydol</button>
+          <button id="Register" onclick="Kaydol()">Kaydol</button>
         </abbr>
         <abbr title="Giriş Yap">
-          <button id="Login" onclick="Login()">Giriş Yap</button>
+          <button id="Login" onclick="GirisYap()">Giriş Yap</button>
         </abbr>
       </ul>
     </div>
@@ -32,6 +32,7 @@ export default
     HelloWorld
   }
 }
+
 </script>
 
 <style>
