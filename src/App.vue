@@ -10,16 +10,12 @@
         <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
         <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
         <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
-        <router-link to="register">
           <abbr title="Kaydol">
-            <button id="register" @click="register">Kaydol</button>
+            <button id="register" @click="this.$router.push('/kayit')">Kaydol</button>
           </abbr>
-        </router-link>
-        <router-link to="/login">
           <abbr title="Giriş Yap">
-            <button id="login" @click="login">Giriş Yap</button>
+            <button id="login" @click="this.$router.push('/giris')">Giriş Yap</button>
           </abbr>
-        </router-link>
       </ul>
     </div>
   </div>
@@ -111,4 +107,5 @@ export default
     outline: 0;
     letter-spacing: 1px;
 }
+
 </style>
