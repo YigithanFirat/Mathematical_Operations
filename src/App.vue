@@ -18,6 +18,20 @@
           </abbr>
       </ul>
     </div>
+      <div class="zorluk">
+        <div class="checkbox-container">
+          <input type="checkbox" id="derece1" name="zorluk" value="Kolay">
+          <label for="derece1">Kolay</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="derece2" name="zorluk" value="Orta">
+          <label for="derece2">Orta</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="derece3" name="zorluk" value="Zor">
+          <label for="derece3">Zor</label>
+        </div>
+      </div>
   </div>
 </template>
 
@@ -31,6 +45,25 @@ export default
     main
   },
 }
+
+const checkboxes = document.querySelectorAll('.zorluk input[type="checkbox"]');
+checkboxes.forEach((checkbox) => 
+{
+  checkbox.addEventListener('change', (event) => 
+  {
+    if(event.target.checked) 
+    {
+      checkboxes.forEach((cb) => 
+      {
+        if(cb !== event.target) 
+        {
+          cb.checked = false;
+        }
+      });
+    }
+  });
+});
+
 </script>
 
 <style>
@@ -49,11 +82,13 @@ export default
 .full-body
 {
     background-image: url("/src/assets/logo.png");
-    height: 100%;
+    height: 100vh;
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    justify-content: center;
+    align-items: center;
 }
 
 .full-body .header ul
@@ -106,6 +141,28 @@ export default
     background-color: blue;
     outline: 0;
     letter-spacing: 1px;
+}
+
+.zorluk 
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.checkbox-container 
+{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.zorluk label 
+{
+  font-size: 16px;
+  color: #fafafa;
+  font-weight: 600;
 }
 
 </style>
