@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Yolları doğru bir şekilde import ediyoruz
-import Home from '../views/Home.vue';
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue'; // Register bileşeni doğru şekilde import ediliyor
+import Home from '../components/Home.vue';
+import Login from '../components/Login.vue';
+import Register from '../components/Register.vue'; // Register bileşeni doğru şekilde import ediliyor
 
 const routes = 
 [
@@ -14,7 +14,7 @@ const routes =
 
 const router = createRouter
 ({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes
 });
 

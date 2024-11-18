@@ -1,5 +1,5 @@
 <template>
-  <main msg="Welcome to Your Destiny!"/>
+  <main msg="Welcome to Your Destiny!"></main>
   <link rel="icon" href="/public/favicon.ico">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <div class="full-body">
@@ -10,12 +10,12 @@
         <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
         <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
         <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
-          <abbr title="Kaydol">
-            <button id="register" @click="this.$router.push('/kayit')">Kaydol</button>
-          </abbr>
-          <abbr title="Giriş Yap">
-            <button id="login" @click="this.$router.push('/giris')">Giriş Yap</button>
-          </abbr>
+        <abbr title="Kaydol" v-if="!isRegisterRoute">
+          <button id="register" @click="navigateToRegister">Kaydol</button>
+        </abbr>
+        <abbr title="Giriş Yap" v-if="!isLoginRoute">
+          <button id="login" @click="navigateToLogin">Giriş Yap</button>
+        </abbr>
       </ul>
     </div>
       <div class="zorluk">
@@ -36,33 +36,33 @@
 </template>
 
 <script>
-import main from './components/main.vue'
+
 export default 
 {
-  name: 'App',
-  components: 
+  computed: 
   {
-    main
-  },
-}
-
-const checkboxes = document.querySelectorAll('.zorluk input[type="checkbox"]');
-checkboxes.forEach((checkbox) => 
-{
-  checkbox.addEventListener('change', (event) => 
-  {
-    if(event.target.checked) 
+    // Şu anki route kontrolü
+    isRegisterRoute() 
     {
-      checkboxes.forEach((cb) => 
-      {
-        if(cb !== event.target) 
-        {
-          cb.checked = false;
-        }
-      });
-    }
-  });
-});
+      return this.$route.path === "/kayit";
+    },
+    isLoginRoute() 
+    {
+      return this.$route.path === "/giris";
+    },
+  },
+  methods: 
+  {
+    navigateToRegister() 
+    {
+      this.$router.push("/kayit");
+    },
+    navigateToLogin() 
+    {
+      this.$router.push("/giris");
+    },
+  },
+};
 
 </script>
 
