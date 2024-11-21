@@ -9,7 +9,7 @@
     {
       "@/*": 
       [
-        "src/components/main.vue"
+        "src/components/Home.vue"
       ]
     },
     "lib": 
