@@ -4,13 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Vue from 'vue';
 import Home from '../components/Home.vue';
 import Login from '../components/Login.vue';
-import Register from '../components/Register.vue'; // Register bileşeni doğru şekilde import ediliyor
+import Register from '../components/Register.vue';
 
 const routes = 
 [
-  { path: '/', name: 'Home', component: Home },
-  { path: '/giris', name: 'Login', component: Login },
-  { path: '/kayit', name: 'Register', component: Register }
+  { path: '/home', name: 'Home', component: Home },
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/register', name: 'Register', component: Register }
 ];
 
 const router = createRouter

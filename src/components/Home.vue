@@ -5,7 +5,7 @@
     <div class="full-body">
         <div class="header">
             <ul>
-                <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
+                <li><a href="/home"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
                 <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
                 <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
                 <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
@@ -18,6 +18,20 @@
                 </abbr>
             </ul>
         </div>
+        <div class="zorluk">
+            <div class="checkbox-container">
+                <input type="checkbox" id="derece1" name="derece1" value="Kolay">
+                <label for="derece1">Kolay</label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="derece2" name="derece2" value="Orta">
+                <label for="derece2">Orta</label>
+            </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="derece3" name="derece3" value="Zor">
+                <label for="derece3">Zor</label>
+            </div>
+        </div>
     </div>
   </div>
 </template>
@@ -25,19 +39,24 @@
 <script>
 export default 
 {
-  name: 'Home',
-  methods:
+  name: "Home",
+  methods: 
   {
-    navigateToLogin()
+    navigateToLogin() 
     {
-      return this.$router.push('/giris');
+      return this.$router.push("/login");
     },
 
-    navigateToRegister()
+    navigateToRegister() 
     {
-      return this.$router.push('/kayit');
-    }
-  }
+      return this.$router.push("/register");
+    },
+
+    handleChange(selected) 
+    {
+        this.selectedOption = this.selectedOption === option ? null : option;
+    },
+  },
 };
 </script>
 
@@ -127,6 +146,31 @@ body, html
 {
     width: 100%;
     height: 100%;
+}
+
+.full-body .zorluk 
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 300px;
+}
+
+.full-body .zorluk .checkbox-container 
+{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.full-body .zorluk label 
+{
+  display: block;
+  font-size: 16px;
+  color: #fafafa;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 </style>

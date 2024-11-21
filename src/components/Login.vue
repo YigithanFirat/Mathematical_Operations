@@ -3,7 +3,7 @@
     <div class="full-body">
         <div class="header">
             <ul>
-                <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
+                <li><a href="/home"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
                 <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
                 <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
                 <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
@@ -36,7 +36,7 @@ export default
   {
     navigateToRegister()
     {
-      return this.$router.push('/kayit');
+      return this.$router.push('/register');
     }
   }
 };
