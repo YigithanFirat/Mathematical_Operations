@@ -1,29 +1,32 @@
 <template>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <div class="full-body">
-        <div class="header">
-            <ul>
-                <li><a href="/home"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
-                <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
-                <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
-                <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
-                <abbr title="Kaydol">
-                    <button draggable="false" @click="navigateToRegister()">Kaydol</button>
-                </abbr>
-            </ul>
-        </div>
-        <div class="login-screen">
-            <form id="loginform" class="input-wrap" onsubmit="event.preventDefault(); loginUser();">
-                <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
-                <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
-                <label class="f-password" for="password">Şifreniz</label>
-                <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
-                <button draggable="false" type="submit">Giriş Yap</button>
-            </form>
-        </div>        
-        <div class="ses" style="display: none">
-            <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
+    <div id="app">
+        <router-view/>
+        <div class="full-body">
+            <div class="header">
+                <ul>
+                    <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
+                    <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
+                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
+                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
+                    <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
+                    <abbr title="Kaydol">
+                        <button draggable="false" @click="navigateToRegister()">Kaydol</button>
+                    </abbr>
+                </ul>
+            </div>
+            <div class="login-screen">
+                <form id="loginform" class="input-wrap" onsubmit="event.preventDefault(); loginUser();">
+                    <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
+                    <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
+                    <label class="f-password" for="password">Şifreniz</label>
+                    <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
+                    <button draggable="false" type="submit">Giriş Yap</button>
+                </form>
+            </div>        
+            <div class="ses" style="display: none">
+                <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
+            </div>
         </div>
     </div>
 </template>

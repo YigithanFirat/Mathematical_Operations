@@ -1,9 +1,12 @@
 {
     "root": true,
-    "extends": [
+    "extends": 
+    [
       "plugin:vue-libs/recommended"
     ],
-    "globals": {
+    
+    "globals": 
+    {
       "__DEV__": true,
       "__VUE_PROD_DEVTOOLS__": true
     }
