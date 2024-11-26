@@ -16,7 +16,7 @@
                 </ul>
             </div>
             <div class="login-screen">
-                <form id="loginform" class="input-wrap" onsubmit="event.preventDefault(); loginUser();">
+                <form id="loginform" class="input-wrap" @submit.prevent="loginUser()">
                     <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
                     <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
                     <label class="f-password" for="password">Şifreniz</label>
@@ -40,6 +40,40 @@ export default
     navigateToRegister()
     {
       return this.$router.push('/register');
+    },
+
+    async loginUser()
+    {
+        const nickname = document.getElementById('nickname').value;
+        const password = document.getElementById('password').value;
+        try 
+        {
+            const response = await fetch('http://localhost:8080/login', 
+            {
+                method: 'POST',
+                headers: 
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nickname, password })
+            });
+
+            if(response.ok) 
+            {
+                const message = await response.text();
+                alert(message);
+            } 
+            else 
+            {
+                const errorText = await response.text();
+                alert(`Giriş başarısız: ${errorText}`);
+            }
+        } 
+        catch(error) 
+        {
+            console.error('Fetch isteği sırasında hata:', error);
+            alert('Giriş sırasında bir hata oluştu.');
+        }
     }
   }
 };
@@ -65,8 +99,10 @@ body, html
 
 .full-body
 {
-    background-image: url("https://i.hizliresim.com/p78nbsu.png");
-    height: 100%;
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: url("/src/assets/logo.png");
     background-position: center;
     background-size: cover;
     background-attachment: fixed;

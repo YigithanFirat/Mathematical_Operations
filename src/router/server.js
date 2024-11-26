@@ -5,13 +5,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-const saltRounds = 10; // bcrypt için şifreleme seviyesini belirler
+const saltRounds = 10;
 
-// Middleware
-app.use(bodyParser.json()); // JSON verisi işlemek için
+app.use(bodyParser.json());
 app.use(cors());
 
-// MySQL Bağlantısı
 const sql = mysql.createConnection
 ({
     host: 'localhost',
@@ -28,7 +26,7 @@ sql.connect(function(err)
 
 app.post('/register', async (req, res) => 
 {
-    console.log('Gelen veri:', req.body); // Gelen veriyi kontrol edin
+    console.log('Gelen veri:', req.body);
     const { email, password, nickname } = req.body;
     if(!email || !password || !nickname) 
     {
@@ -38,7 +36,7 @@ app.post('/register', async (req, res) =>
     try 
     {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `password`, `nickname`, `iletiSayi`) VALUES (?, ?, ?, 0)';
+        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `password`, `nickname`, `Puan`) VALUES (?, ?, ?, 0)';
 
         sql.query(sqlSorgu, [email, hashedPassword, nickname], (err, result) => 
         {
@@ -56,6 +54,36 @@ app.post('/register', async (req, res) =>
         console.error('Şifreleme hatası:', error);
         res.status(500).send('Şifreleme hatası');
     }
+});
+
+// /login endpoint'i
+app.post('/login', (req, res) => 
+{
+    const { nickname, password } = req.body;
+    if(!nickname || !password) 
+    {
+        return res.status(400).send('E-posta ve şifre gereklidir');
+    }
+    const sqlSorgu = 'SELECT * FROM `kullanicilar` WHERE `nickname` = ?';
+    sql.query(sqlSorgu, [nickname], async (err, results) => 
+    {
+        if(err) 
+        {
+            console.error('Veritabanı hatası: ', err);
+               return res.status(500).send('Veritabanı hatası.');
+        }
+           if(results.length === 0) 
+           {
+            return res.status(401).send('Kullanıcı bulunamadı.');
+        }
+        const user = results[0];
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch) 
+        {
+            return res.status(401).send('Şifre hatalı.');
+           }
+           res.status(200).send('Giriş başarılı.');
+    });
 });
 
 app.listen(8080, () => 

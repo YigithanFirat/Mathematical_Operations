@@ -16,7 +16,7 @@
                 </ul>
             </div>
             <div class="register-screen">
-                <form id="registerform" class="input-wrap" @submit.prevent="registerUser">
+                <form id="registerform" class="input-wrap" @submit.prevent="registerUser()">
                     <label class="f-title" for="email">E-Posta Adresiniz</label>
                     <input type="email" id="email" name="email" class="input" placeholder="E-Posta Adresiniz" required>
                     <label class="f-password" for="password">Şifreniz</label>
@@ -27,6 +27,9 @@
                         <button draggable="false" type="submit">Kaydol</button>
                     </abbr>
                 </form>
+            </div>
+            <div class="ses" style="display: none">
+                <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
             </div>
         </div>
     </div>
@@ -43,20 +46,20 @@ export default
       return this.$router.push('/login');
     },
 
-    async registerUser() 
+    async registerUser()
     {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const nickname = document.getElementById('nickname').value;
         try 
         {
-            const response = await fetch('http://localhost:5500/register', 
-            { // URL'yi doğrulayın
+           const response = await fetch('http://localhost:8080/register', 
+            {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password, nickname })
             });
-            console.log('Yanıt durumu:', response.status); // Yanıt durum kodunu kontrol edin
+            console.log('Yanıt durumu:', response.status);
             if(response.ok) 
             {
                 console.log('Kayıt başarılı');
@@ -65,13 +68,13 @@ export default
             else 
             {
                 const errorText = await response.text();
-                console.error('Sunucu hatası:', errorText); // Detaylı hata mesajı
+                console.error('Sunucu hatası:', errorText);
                 alert(`Kayıt sırasında bir hata oluştu: ${errorText}`);
-            }
+        }
         } 
         catch(error) 
         {
-            console.error('Fetch isteği sırasında hata:', error); // İstemci tarafında hata
+            console.error('Fetch isteği sırasında hata:', error);
             alert('İstemci tarafında bir hata oluştu.');
         }
     }
@@ -99,8 +102,10 @@ body, html
 
 .full-body
 {
+    position: relative;
+    width: 100%;
+    height: 100vh;
     background-image: url("/src/assets/logo.png");
-    height: 100%;
     background-position: center;
     background-size: cover;
     background-attachment: fixed;

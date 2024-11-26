@@ -32,7 +32,10 @@
                 <label for="derece3">Zor</label>
             </div>
         </div>
-    </div>
+        <div class="ses" style="display: none">
+            <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
+        </div>
+     </div>
   </div>
 </template>
 
@@ -53,6 +56,7 @@ export default
     }
   }
 };
+
 </script>
 
 <style>
@@ -77,8 +81,8 @@ body, html
 {
     position: relative;
     width: 100%;
-    height: 100vh; /* 100% yerine 100vh kullan */
-    background-image: url("https://i.hizliresim.com/p78nbsu.png");
+    height: 100vh;
+    background-image: url("/src/assets/logo.png");
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
