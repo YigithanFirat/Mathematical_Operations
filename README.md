@@ -22,8 +22,4 @@ Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlen
 
 ![alt text](Screenshot_3.jpg)
 
-![alt text](Screenshot_4.jpg)
-
 ![alt text](Screenshot_5.jpg)
-
-![alt text](Screenshot_6.jpg)
