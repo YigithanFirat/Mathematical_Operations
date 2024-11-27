@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1
--- Üretim Zamanı: 21 Kas 2024, 15:49:23
+-- Üretim Zamanı: 27 Kas 2024, 07:23:36
 -- Sunucu sürümü: 10.4.32-MariaDB
 -- PHP Sürümü: 8.2.12
 
@@ -36,6 +36,13 @@ CREATE TABLE `kullanicilar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Tablo döküm verisi `kullanicilar`
+--
+
+INSERT INTO `kullanicilar` (`id`, `email`, `password`, `Puan`, `nickname`) VALUES
+(1, 'yigithanfirat@gmail.com', '$2b$10$iLMH3nu.UMMu9lO1j2UdVOval9VT3.l8hUYpkXAngxcDut64tqJ/2', 0, 'Abusivesnake');
+
+--
 -- Dökümü yapılmış tablolar için indeksler
 --
 
@@ -54,7 +61,7 @@ ALTER TABLE `kullanicilar`
 -- Tablo için AUTO_INCREMENT değeri `kullanicilar`
 --
 ALTER TABLE `kullanicilar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
