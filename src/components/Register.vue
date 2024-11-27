@@ -36,6 +36,7 @@
 </template>
 
 <script>
+
 export default 
 {
   name: 'Register',
@@ -60,7 +61,7 @@ export default
                 body: JSON.stringify({ email, password, nickname })
             });
             console.log('Yanıt durumu:', response.status);
-            if(response.ok) 
+            if(response.ok)
             {
                 console.log('Kayıt başarılı');
                 alert('Kayıt başarılı!');
@@ -70,7 +71,7 @@ export default
                 const errorText = await response.text();
                 console.error('Sunucu hatası:', errorText);
                 alert(`Kayıt sırasında bir hata oluştu: ${errorText}`);
-        }
+            }
         } 
         catch(error) 
         {
@@ -80,9 +81,10 @@ export default
     }
   }
 };
+
 </script>
 
-<style scoped>
+<style>
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 

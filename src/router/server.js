@@ -36,7 +36,7 @@ app.post('/register', async (req, res) =>
     try 
     {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `password`, `nickname`, `Puan`) VALUES (?, ?, ?, 0)';
+        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `Administrator`, `password`, `nickname`, `Puan`) VALUES (?, 0, ?, ?, 0)';
 
         sql.query(sqlSorgu, [email, hashedPassword, nickname], (err, result) => 
         {
