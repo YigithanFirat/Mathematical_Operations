@@ -32,9 +32,6 @@
                 <label for="derece3">Zor</label>
             </div>
         </div>
-        <div class="ses" style="display: none">
-            <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
-        </div>
      </div>
   </div>
 </template>

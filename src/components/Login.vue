@@ -21,11 +21,10 @@
                     <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
                     <label class="f-password" for="password">Şifreniz</label>
                     <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
-                    <button draggable="false" type="submit">Giriş Yap</button>
+                    <abbr title="Giriş Yap">
+                        <button draggable="false" type="submit">Giriş Yap</button>
+                    </abbr>
                 </form>
-            </div>        
-            <div class="ses" style="display: none">
-                <audio src="Miasma [ ezmp3.cc ].mp3" controls autoplay muted loop></audio>
             </div>
         </div>
     </div>

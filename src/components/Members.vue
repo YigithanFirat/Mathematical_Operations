@@ -23,18 +23,110 @@
 </template>
 
 <script>
-export default {
-  methods: {
-    navigateToLogin() {
+
+export default 
+{
+  methods: 
+  {
+    navigateToLogin() 
+    {
       this.$router.push('/login');
     },
-    navigateToRegister() {
+
+    navigateToRegister() 
+    {
       this.$router.push('/register');
     }
   }
 };
+
 </script>
 
 <style>
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+*
+{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body, html
+{
+    width: 100%;
+    height: 100%;
+}
+
+.full-body
+{
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: url("/src/assets/logo.png");
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+.full-body .header ul
+{
+    list-style-type: none;
+    overflow: hidden;
+}
+
+.full-body .header ul li
+{
+    float: left;
+}
+
+.full-body .header
+{
+    background-color: #112479;
+}
+
+.full-body .header ul li a
+{
+    display: block;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-size: 18px;
+    font-family: sans-serif;
+    color: #fafafa;
+    letter-spacing: 1px;
+}
+
+.full-body .header abbr
+{
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.full-body .header abbr button
+{
+    border: 2px solid black;
+    cursor: pointer;
+    padding: 3px;
+    box-shadow: 3px 3px 5px black;
+    font-size: 14px;
+    font-weight: 600;
+    float: right;
+    margin-top: 10px;
+    margin-right: 5px;
+    width: 100px;
+    color: #fafafa;
+    border-radius: 30px 30px;
+    background-color: blue;
+    outline: 0;
+    letter-spacing: 1px;
+}
+
+#app 
+{
+    width: 100%;
+    height: 100%;
+}
 </style>
