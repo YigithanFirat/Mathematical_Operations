@@ -85,6 +85,12 @@ app.post('/login', (req, res) =>
     });
 });
 
+app.get('/api/authorization', (req, res) => 
+{
+    const user = { isAdmin: 1};
+    res.json(user);
+});
+
 app.listen(8080, () => 
 {
     console.log('[Express]: Sunucu 8080 portunda çalışıyor');
