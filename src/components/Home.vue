@@ -5,11 +5,12 @@
     <div class="full-body">
         <div class="header">
             <ul>
-                <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
-                <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
-                <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
-                <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
+                <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
+                <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel </a></li>
+                <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
+                <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
+                <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+                <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                 <abbr title="Giriş Yap">
                     <button @click="navigateToLogin()">Giriş Yap</button>
                 </abbr>
@@ -31,6 +32,9 @@
                 <input type="checkbox" id="derece3" name="derece3" value="Zor">
                 <label for="derece3">Zor</label>
             </div>
+        </div>
+        <div class="islemler">
+
         </div>
      </div>
   </div>

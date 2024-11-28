@@ -28,12 +28,6 @@ import axios from "axios";
 
 export default 
 {
-    data() 
-    {
-        return {
-            isAdmin: null,
-        };
-  },
   methods: 
   {
     navigateToLogin() 
@@ -45,29 +39,6 @@ export default
     {
       this.$router.push('/register');
     },
-
-    async checkAuthorization()
-    {
-        try
-        {
-            const response = await axios.get('/api/authorization');
-            this.isAdmin = response.data.isAdmin;
-            if(!this.isAdmin)
-            {
-                this.$router.push('/');
-            }
-        }
-        catch(error)
-        {
-            console.error('Yetkilendirme kontrolü sırasında bir hata oluştu: ', error);
-            this.$router.push('/');
-        }
-    },
-  },
-
-  mounted()
-  {
-    this.checkAuthorization();
   }
 };
 
