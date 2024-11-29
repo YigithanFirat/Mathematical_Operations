@@ -33,8 +33,12 @@
                 <label for="derece3">Zor</label>
             </div>
         </div>
-        <div class="islemler">
-
+        <div class="footer">
+            <ul>
+                <li><a href=""> PROJECT DESTINY <i class="fa-regular fa-copyright"></i> All Rights Reserved</a></li>
+                <li><a href="https://github.com/YigithanFirat"><i class="fa-solid fa-code"></i> Yiğithan FIRAT</a></li>
+                <li><a href="">Sitenin tüm hakları saklıdır.</a></li>
+            </ul> 
         </div>
      </div>
   </div>
@@ -171,6 +175,29 @@ body, html
   color: #fafafa;
   font-weight: 600;
   margin-bottom: 8px;
+}
+
+.footer
+{
+    background: transparent;
+}
+
+.footer ul li a
+{
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.footer ul li
+{
+    text-align: center;
+}
+
+.footer ul
+{
+    margin-top: 300px;
 }
 
 </style>
