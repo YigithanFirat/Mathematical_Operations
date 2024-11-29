@@ -193,6 +193,7 @@ body, html
 .footer ul li
 {
     text-align: center;
+    justify-content: center;
 }
 
 .footer ul
