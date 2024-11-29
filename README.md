@@ -27,3 +27,7 @@ Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlen
 ### Settings Kısmına Ait Fotoğraflar
 
 ![alt text](Screenshot_4.jpg)
+
+### Footer Tasarımı
+
+Footer tasarımı transparan olacak şekilde yapılarak Github yönlendirmesi eklenerek tamamlandı.

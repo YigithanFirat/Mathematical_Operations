@@ -33,6 +33,14 @@
                 <label for="derece3">Zor</label>
             </div>
         </div>
+        <div class="islemler">
+            <div id="randomsayi1">
+                <label for="ilk-sayi">İlk Sayı</label>
+            </div>
+            <div id="randomsayi2">
+                <label for="ikinci-sayi">İkinci Sayı</label>
+            </div>
+        </div>
         <div class="footer">
             <ul>
                 <li><a href=""> PROJECT DESTINY <i class="fa-regular fa-copyright"></i> All Rights Reserved</a></li>
@@ -198,7 +206,19 @@ body, html
 
 .footer ul
 {
-    margin-top: 300px;
+    margin-top: 250px;
+}
+
+.islemler label
+{
+    color: #fafafa;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.islemler label::after
+{
+    content: ":";
 }
 
 </style>
