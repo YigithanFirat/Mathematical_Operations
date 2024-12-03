@@ -67,7 +67,14 @@
 
 .settings
 {
+    text-align: center;
+    justify-content: center;
     margin-top: 300px;
+}
+
+.settings table
+{
+    margin-left: 355px;
 }
 
 .settings p
