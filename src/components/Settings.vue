@@ -1,6 +1,7 @@
 <template>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <div id="id">
+    <div id="app">
+        <router-view/>
         <div class="full-body">
             <div class="header">
                 <ul>
