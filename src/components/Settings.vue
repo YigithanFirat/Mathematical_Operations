@@ -54,13 +54,26 @@
                         </tr>
                     </tbody>
                 </table>
+                <abbr title="Kaydet">
+                    <button @click="Settings()">Kaydet</button>
+                </abbr>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-
+export default
+{
+    name: 'Settings',
+    methods:
+    {
+        Settings()
+        {
+            const sorusayisi = document.getElementById('sorusayisi');
+        }
+    }
+}
 </script>
 
 <style>
@@ -153,6 +166,32 @@ tbody tr td
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.settings abbr
+{
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.settings abbr button
+{
+    border: 2px solid black;
+    cursor: pointer;
+    padding: 3px;
+    box-shadow: 3px 3px 5px black;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-right: 5px;
+    width: 100px;
+    color: #fafafa;
+    border-radius: 30px 30px;
+    background-color: blue;
+    outline: 0;
+    letter-spacing: 1px;
 }
 
 </style>
