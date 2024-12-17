@@ -68,6 +68,16 @@ export default
     name: 'Settings',
     methods:
     {
+        navigateToLogin()
+        {
+            return this.$router.push('/login');
+        },
+
+        navigateToRegister()
+        {
+            return this.$router.push('/register');
+        },
+        
         Settings()
         {
             const sorusayisi = document.getElementById('sorusayisi');
