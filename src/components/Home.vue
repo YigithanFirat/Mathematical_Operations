@@ -36,9 +36,20 @@
         <div class="islemler">
             <div id="randomsayi1">
                 <label for="ilk-sayi">İlk Sayı</label>
+                <input type="number" id="first-number">
             </div>
             <div id="randomsayi2">
                 <label for="ikinci-sayi">İkinci Sayı</label>
+                <input type="number" id="second-number">
+            </div>
+            <div id="sonuc">
+                <label for="sonuc">Sonuç</label>
+                <input type="number" id="result">
+                <div id="kontrol">
+                    <abbr title="Sonucu Kontrol Et">
+                        <button @click="checkResult()">Sonucu Kontrol Et</button>
+                    </abbr>
+                </div>
             </div>
         </div>
         <div class="footer">
@@ -53,6 +64,34 @@
 </template>
 
 <script>
+import axios from "axios";
+
+function generateRandomNumber()
+{
+    const firstnumber = Math.floor(Math.random() * 100);
+    const secondnumber = Math.floor(Math.random() * 100);
+
+    document.getElementById("first-number").value = firstnumber;
+    document.getElementById("second-number").value = secondnumber;
+    document.getElementById("result").value = result;
+}
+
+function checkResult()
+{
+    const firstnumber = parrseInt(document.getElementById("first-number").value);
+    const secondnumber = parrseInt(document.getElementById("second-number").value);
+    const userResult = parrseInt(document.getElementById("result").value);
+
+    if(firstnumber + secondnumber == userResult)
+    {
+        alert("Doğru! Yeni sayılar üretliyor...");
+        generateRandomNumber();
+    }
+    else alert("Hatalı sonuç! Lütfen tekrar deneyiniz!");
+}
+
+window.onload = generateRandomNumber;
+
 export default 
 {
   name: "Home",
@@ -66,7 +105,7 @@ export default
     navigateToRegister() 
     {
       return this.$router.push("/register");
-    }
+    },
   }
 };
 
@@ -209,6 +248,11 @@ body, html
     margin-top: 250px;
 }
 
+.islemler
+{
+    text-align: center;
+}
+
 .islemler label
 {
     color: #fafafa;
@@ -219,6 +263,24 @@ body, html
 .islemler label::after
 {
     content: ":";
+}
+
+.islemler #sonuc abbr button
+{
+    border: 2px solid black;
+    cursor: pointer;
+    padding: 3px;
+    box-shadow: 3px 3px 5px black;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-right: 5px;
+    width: 100px;
+    color: #fafafa;
+    border-radius: 30px 30px;
+    background-color: blue;
+    outline: 0;
+    letter-spacing: 1px;   
 }
 
 </style>
