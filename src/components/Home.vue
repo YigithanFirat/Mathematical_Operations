@@ -65,33 +65,6 @@
 
 <script>
 import axios from "axios";
-
-function generateRandomNumber()
-{
-    const firstnumber = Math.floor(Math.random() * 100);
-    const secondnumber = Math.floor(Math.random() * 100);
-
-    document.getElementById("first-number").value = firstnumber;
-    document.getElementById("second-number").value = secondnumber;
-    document.getElementById("result").value = result;
-}
-
-function checkResult()
-{
-    const firstnumber = parrseInt(document.getElementById("first-number").value);
-    const secondnumber = parrseInt(document.getElementById("second-number").value);
-    const userResult = parrseInt(document.getElementById("result").value);
-
-    if(firstnumber + secondnumber == userResult)
-    {
-        alert("Doğru! Yeni sayılar üretliyor...");
-        generateRandomNumber();
-    }
-    else alert("Hatalı sonuç! Lütfen tekrar deneyiniz!");
-}
-
-window.onload = generateRandomNumber;
-
 export default 
 {
   name: "Home",
@@ -106,8 +79,39 @@ export default
     {
       return this.$router.push("/register");
     },
-  }
+
+    generateRandomNumber() 
+    {
+      const firstnumber = Math.floor(Math.random() * 100);
+      const secondnumber = Math.floor(Math.random() * 100);
+      document.getElementById("first-number").value = firstnumber;
+      document.getElementById("second-number").value = secondnumber;
+      document.getElementById("result").value = ""; // Kullanıcı sonucu boşaltıyoruz
+    },
+
+    checkResult() 
+    {
+      const firstnumber = parseInt(document.getElementById("first-number").value);
+      const secondnumber = parseInt(document.getElementById("second-number").value);
+      const userResult = parseInt(document.getElementById("result").value);
+      if(firstnumber + secondnumber === userResult) 
+      {
+        alert("Doğru! Yeni sayılar üretiliyor...");
+        this.generateRandomNumber();
+      } 
+      else 
+      {
+        alert("Hatalı sonuç! Lütfen tekrar deneyiniz!");
+      }
+    },
+  },
+
+  mounted() 
+  {
+    this.generateRandomNumber();
+  },
 };
+
 
 </script>
 
