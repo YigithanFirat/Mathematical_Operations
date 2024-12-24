@@ -54,12 +54,12 @@
         </div>
         <div class="footer">
             <ul>
-                <li><a href=""> PROJECT DESTINY <i class="fa-regular fa-copyright"></i> All Rights Reserved</a></li>
+                <li><a href="/"> PROJECT DESTINY <i class="fa-regular fa-copyright"></i> All Rights Reserved</a></li>
                 <li><a href="https://github.com/YigithanFirat"><i class="fa-solid fa-code"></i> Yiğithan FIRAT</a></li>
                 <li><a href="">Sitenin tüm hakları saklıdır.</a></li>
             </ul> 
         </div>
-     </div>
+    </div>
   </div>
 </template>
 
@@ -245,7 +245,7 @@ body, html
 
 .footer ul
 {
-    margin-top: 250px;
+    margin-top: 170px;
 }
 
 .islemler
