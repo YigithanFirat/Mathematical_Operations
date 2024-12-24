@@ -86,7 +86,7 @@ export default
       const secondnumber = Math.floor(Math.random() * 100);
       document.getElementById("first-number").value = firstnumber;
       document.getElementById("second-number").value = secondnumber;
-      document.getElementById("result").value = ""; // Kullanıcı sonucu boşaltıyoruz
+      document.getElementById("result").value = "";
     },
 
     checkResult() 
