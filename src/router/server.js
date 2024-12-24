@@ -36,7 +36,7 @@ app.post('/register', async (req, res) =>
     try 
     {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `Administrator`, `password`, `nickname`, `Puan`) VALUES (?, 0, ?, ?, 0)';
+        const sqlSorgu = 'INSERT INTO `kullanicilar` (`email`, `Administrator`, `password`, `nickname`, `Puan`, `Zorluk`, `SoruSayisi`, `Login`) VALUES (?, 0, ?, ?, 0, 0, 20, 0)';
 
         sql.query(sqlSorgu, [email, hashedPassword, nickname], (err, result) => 
         {
@@ -69,7 +69,7 @@ app.post('/login', (req, res) =>
         if(err) 
         {
             console.error('Veritabanı hatası: ', err);
-               return res.status(500).send('Veritabanı hatası.');
+            return res.status(500).send('Veritabanı hatası.');
         }
            if(results.length === 0) 
            {
@@ -80,15 +80,9 @@ app.post('/login', (req, res) =>
         if(!isMatch) 
         {
             return res.status(401).send('Şifre hatalı.');
-           }
-           res.status(200).send('Giriş başarılı.');
+        }
+        res.status(200).send('Giriş başarılı.');
     });
-});
-
-app.get('/api/authorization', (req, res) => 
-{
-    const user = { isAdmin: 1};
-    res.json(user);
 });
 
 app.listen(8080, () => 
