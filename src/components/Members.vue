@@ -24,9 +24,9 @@
 </template>
 
 <script>
-
 export default 
 {
+  name: 'Members',
   methods: 
   {
     navigateToLogin() 
