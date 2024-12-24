@@ -33,3 +33,9 @@ Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlen
 Footer tasarımı transparan olacak şekilde yapılarak Github yönlendirmesi eklenerek tamamlandı. Tasarım tamamlandıktan sonra oluşan hatalar giderildi.
 
 ![alt text](Screenshot_6.jpg)
+
+### Rastgele Sayı Üretimi
+
+Sayıların sayfa açılışıında rastgele üretilmesi sağlandı ve kod bütünlüğü sağlandı.
+
+![alt text](Screenshot_7.jpg)
