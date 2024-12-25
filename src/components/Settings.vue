@@ -55,7 +55,7 @@
                     </tbody>
                 </table>
                 <abbr title="Kaydet">
-                    <button @click="Settings()">Kaydet</button>
+                    <button @click="Save()">Kaydet</button>
                 </abbr>
             </div>
         </div>
@@ -63,12 +63,29 @@
 </template>
 
 <script>
-
+import axios from "axios";
 export default
 {
     name: 'Settings',
     methods:
     {
+        async save()
+        {
+            try
+            {
+                const response = await axios.post('http://localhost:3000/save',
+                {
+                    soruSayisi: this.soruSayisi,
+                });
+                alert(response.data.message);
+            }
+            catch(error)
+            {
+                console.error(error);
+                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+            }
+        },
+
         navigateToLogin()
         {
             return this.$router.push('/login');
@@ -77,11 +94,6 @@ export default
         navigateToRegister()
         {
             return this.$router.push('/register');
-        },
-        
-        Settings()
-        {
-            const sorusayisi = document.getElementById('sorusayisi');
         }
     }
 }
