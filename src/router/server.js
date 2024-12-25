@@ -6,7 +6,7 @@ const cors = require('cors');
 
 const app = express();
 const saltRounds = 10;
-const port = 8080;
+const port = 3000;
 
 app.use(bodyParser.json());
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
@@ -27,6 +27,36 @@ sql.connect(function(err)
     process.exit(1);
   }
   console.log('[MySQL]: Veritabanı bağlantısı başarıyla kuruldu!');
+});
+
+app.get('/', (req, res) => 
+{
+  res.send('[HOME]: Backend API çalışıyor!');
+});
+
+app.get('/history', (req, res) => 
+{
+  res.send('[HISTORY]: Backend API çalışıyor!');
+});
+
+app.get('/login', (req, res) => 
+{
+  res.send('[LOGIN]: Backend API çalışıyor!');
+});
+
+app.get('/members', (req, res) => 
+{
+  res.send('[MEMBERS]: Backend API çalışıyor!');
+});
+
+app.get('/register', (req, res) => 
+{
+  res.send('[REGISTER]: Backend API çalışıyor!');
+});
+
+app.get('/settings', (req, res) =>
+{
+  res.send('[SETTINGS]: Backend API çalışıyor!');
 });
 
 app.post('/register', async (req, res) => 

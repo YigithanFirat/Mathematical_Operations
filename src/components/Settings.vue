@@ -69,23 +69,6 @@ export default
     name: 'Settings',
     methods:
     {
-        async save()
-        {
-            try
-            {
-                const response = await axios.post('http://localhost:3000/save',
-                {
-                    soruSayisi: this.soruSayisi,
-                });
-                alert(response.data.message);
-            }
-            catch(error)
-            {
-                console.error(error);
-                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
-            }
-        },
-
         navigateToLogin()
         {
             return this.$router.push('/login');
