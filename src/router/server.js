@@ -9,7 +9,12 @@ const saltRounds = 10;
 const port = 3000;
 
 app.use(bodyParser.json());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({
+  origin: 'http://localhost:8080',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 const sql = mysql.createConnection
 ({
@@ -86,6 +91,25 @@ app.post('/register', async (req, res) =>
     console.error('Şifreleme hatası:', error);
     res.status(500).send('Şifreleme hatası');
   }
+});
+
+app.post('/save', (req, res) => 
+{
+  const { soruSayisi } = req.body;
+  if(!soruSayisi || isNaN(soruSayisi) || soruSayisi <= 0) 
+  {
+    return res.status(400).json({ error: 'Geçerli bir soru sayısı girilmelidir.' });
+  }
+  const query = 'UPDATE kullanicilar SET SoruSayisi = ? WHERE id = ?';
+  sql.query(query, [soruSayisi], (err, results) => 
+  {
+    if(err) 
+    {
+      console.error('Veritabanı güncelleme hatası:', err.message);
+      return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+    }
+    res.status(200).json({ message: 'Soru sayısı başarıyla güncellendi!' });
+  });
 });
 
 app.post('/login', (req, res) => 

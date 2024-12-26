@@ -32,7 +32,8 @@
                         <tr>
                             <td>Soru Sayısı</td>
                             <td>
-                                <input id="soruSayisi" type="number" min="1" max="100" step="1" value="10">
+                                <input id="soruSayisi" v-model="soruSayisi" type="number" min="1" max="100" step="1" value="10">
+
                             </td>
                         </tr>
                         <tr>
@@ -63,10 +64,17 @@
 </template>
 
 <script>
+
 import axios from "axios";
 export default
 {
     name: 'Settings',
+    data() 
+    {
+        return {
+            soruSayisi: 10,
+        };
+    },
     methods:
     {
         navigateToLogin()
@@ -77,6 +85,24 @@ export default
         navigateToRegister()
         {
             return this.$router.push('/register');
+        },
+
+        async Save()
+        {
+            try
+            {
+                const response = await axios.post('http://localhost:3000/save',
+                {
+                    soruSayisi: this.soruSayisi,
+                });
+                alert(response.data.message);
+            }
+            catch(error)
+            {
+                console.error('Hata Detayı:', error.response || error.message || error);
+                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+            }
+
         }
     }
 }
