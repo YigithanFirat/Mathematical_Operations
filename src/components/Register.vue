@@ -45,24 +45,33 @@ export default
       return this.$router.push('/login');
     },
 
-    async registerUser()
+    async registerUser() 
     {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const nickname = document.getElementById('nickname').value;
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        if(!email || !password || !nickname) 
+        {
+            alert('Lütfen tüm alanları doldurun.');
+            return;
+        }
         try 
         {
-           const response = await fetch('http://localhost:8080/register', 
+            const response = await fetch('http://localhost:3000/register', 
             {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: 
+                { 
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({ email, password, nickname })
             });
             console.log('Yanıt durumu:', response.status);
-            if(response.ok)
+            if(response.ok) 
             {
                 console.log('Kayıt başarılı');
                 alert('Kayıt başarılı!');
+                return this.$router.push('/login');
             } 
             else 
             {
@@ -74,7 +83,7 @@ export default
         catch(error) 
         {
             console.error('Fetch isteği sırasında hata:', error);
-            alert('İstemci tarafında bir hata oluştu.');
+            alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
         }
     }
   }

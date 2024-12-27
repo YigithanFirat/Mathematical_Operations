@@ -11,7 +11,7 @@
                 <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                 <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                 <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                <li @click="exit()"><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                 <abbr title="Giriş Yap">
                     <button @click="navigateToLogin()">Giriş Yap</button>
                 </abbr>
@@ -53,19 +53,12 @@
                 </div>
             </div>
         </div>
-        <div class="footer">
-            <ul>
-                <li><a href="/"> PROJECT DESTINY <i class="fa-regular fa-copyright"></i> All Rights Reserved</a></li>
-                <li><a href="https://github.com/YigithanFirat"><i class="fa-solid fa-code"></i> Yiğithan FIRAT</a></li>
-                <li><a href="">Sitenin tüm hakları saklıdır.</a></li>
-            </ul> 
-        </div>
     </div>
   </div>
 </template>
 
 <script>
-
+import axios from "axios";
 export default 
 {
   name: "Home",
@@ -104,6 +97,40 @@ export default
       {
         alert("Hatalı sonuç! Lütfen tekrar deneyiniz!");
       }
+    },
+
+    async exit() 
+    {
+      try 
+      {
+        const userId = 1;
+        if(!userId) 
+        {
+          alert('Geçerli bir kullanıcı ID\'si bulunamadı.');
+          return;
+        }
+        const response = await axios.post('http://localhost:3000/exit', 
+        {
+          id: userId,
+        });
+
+        if(response.status === 200) 
+        {
+          alert('Başarıyla çıkış yaptınız!');
+          this.$router.push('/');
+        }
+      }
+      catch (error) 
+      {
+        console.error('Çıkış sırasında hata oluştu:', error.response?.data || error.message || error);
+        console.log('Çıkış sırasında hata oluştu:', error.response?.data || error.message || error);
+        alert('Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
+      }
+    },
+
+    getCurrentUserId() 
+    {
+      return localStorage.getItem('userId');
     },
   },
 
@@ -227,30 +254,6 @@ body, html
   color: #fafafa;
   font-weight: 600;
   margin-bottom: 8px;
-}
-
-.footer
-{
-    background: transparent;
-}
-
-.footer ul li a
-{
-    text-decoration: none;
-    color: black;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.footer ul li
-{
-    text-align: center;
-    justify-content: center;
-}
-
-.footer ul
-{
-    margin-top: 170px;
 }
 
 .islemler

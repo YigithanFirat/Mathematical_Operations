@@ -10,7 +10,7 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li @click="exit()"><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
@@ -64,7 +64,6 @@
 </template>
 
 <script>
-
 import axios from "axios";
 export default
 {
@@ -87,23 +86,51 @@ export default
             return this.$router.push('/register');
         },
 
-        async Save()
+        async Save() 
+        {
+            try 
+            {
+                const userId = 1;
+                const response = await axios.post('http://localhost:3000/save', 
+                {
+                    soruSayisi: this.soruSayisi,
+                    id: userId,
+                });
+                alert(response.data.message);
+            } 
+            catch(error) 
+            {
+                console.error('Hata Detayı:', error.response?.data || error.message || error);
+                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+            }
+        },
+
+        async exit()
         {
             try
             {
-                const response = await axios.post('http://localhost:3000/save',
+                const userId = 1;
+                if(!userId)
                 {
-                    soruSayisi: this.soruSayisi,
+                    alert('Geçerli bir kullanıcı ID\'si bulunamadı');
+                    return;
+                }
+                const response = await axios.post('http://localhost:3000/exit',
+                {
+                    id: userId,
                 });
-                alert(response.data.message);
+                if(response.status == 200)
+                {
+                    alert('Başarıyla çıkış yaptınız!');
+                    return this.$router.push('/');
+                }
             }
             catch(error)
             {
-                console.error('Hata Detayı:', error.response || error.message || error);
-                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+                console.error('Çıkış sırasında hata oluştu: ', error.response?.data || error.message || error);
+                alert('Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
             }
-
-        }
+        },
     }
 }
 </script>

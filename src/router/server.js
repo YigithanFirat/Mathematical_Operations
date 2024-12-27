@@ -9,12 +9,24 @@ const saltRounds = 10;
 const port = 3000;
 
 app.use(bodyParser.json());
-app.use(cors({
+const http = require('http');
+const server = http.createServer(app);
+server.maxHeadersCount = 1000;
+server.headersTimeout = 60000;
+
+app.use(cors
+({
   origin: 'http://localhost:8080',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
+app.use((req, res, next) =>
+{
+  console.log('Gelen Başlıklar:', req.headers);
+  next();
+});
 
 const sql = mysql.createConnection
 ({
@@ -67,25 +79,24 @@ app.get('/settings', (req, res) =>
 app.post('/register', async (req, res) => 
 {
   const { email, password, nickname } = req.body;
-
   if(!email || !password || !nickname) 
   {
     return res.status(400).send('Eksik veri');
   }
-
   try 
   {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const sqlSorgu = 'INSERT INTO kullanicilar (email, Administrator, password, nickname, Puan, Zorluk, SoruSayisi, Login) VALUES (?, 0, ?, ?, 0, 0, 20, 0)';
-    sql.query(sqlSorgu, [email, hashedPassword, nickname], (err, result) => {
-    if(err) 
+    const sqlSorgu = 'INSERT INTO kullanicilar (email, Administrator, password, nickname, Puan, Zorluk, SoruSayisi, Login) VALUES (?, 0, ?, ?, 0, 1, 20, 0)';
+    sql.query(sqlSorgu, [email, hashedPassword, nickname], (err, result) => 
     {
-        console.error('Veritabanı hatası:', err);
-        return res.status(500).send('Veritabanı hatası');
-    }
-    res.status(201).send('Kayıt başarıyla oluşturuldu');
+      if(err) 
+      {
+          console.error('Veritabanı hatası:', err);
+          return res.status(500).send('Veritabanı hatası');
+      }
+      res.status(201).send('Kayıt başarıyla oluşturuldu');
     });
-  } 
+  }
   catch(error) 
   {
     console.error('Şifreleme hatası:', error);
@@ -95,27 +106,34 @@ app.post('/register', async (req, res) =>
 
 app.post('/save', (req, res) => 
 {
-  const { soruSayisi } = req.body;
+  const { soruSayisi, id } = req.body;
+  console.log('Gelen Veri: ', req.body);
   if(!soruSayisi || isNaN(soruSayisi) || soruSayisi <= 0) 
   {
+    console.log('Hatalı soru sayısı: ', soruSayisi);
     return res.status(400).json({ error: 'Geçerli bir soru sayısı girilmelidir.' });
   }
+  if(!id) 
+  {
+    console.log('Eksik ID: ', id);
+    return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
+  }
   const query = 'UPDATE kullanicilar SET SoruSayisi = ? WHERE id = ?';
-  sql.query(query, [soruSayisi], (err, results) => 
+  sql.query(query, [soruSayisi, id], (err, results) => 
   {
     if(err) 
     {
       console.error('Veritabanı güncelleme hatası:', err.message);
       return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
     }
+    console.log('Güncelleme Sonucu: ', results);
     res.status(200).json({ message: 'Soru sayısı başarıyla güncellendi!' });
   });
-});
+});  
 
 app.post('/login', (req, res) => 
 {
   const { nickname, password } = req.body;
-
   if(!nickname || !password) 
   {
     return res.status(400).send('Nickname ve şifre gereklidir');
@@ -128,10 +146,9 @@ app.post('/login', (req, res) =>
       console.error('Veritabanı hatası: ', err);
       return res.status(500).send('Veritabanı hatası');
     }
-
     if(results.length === 0) 
     {
-      return res.status(401).send('Kullanıcı bulunamadı');
+        return res.status(401).send('Kullanıcı bulunamadı');
     }
     const user = results[0];
     const isMatch = await bcrypt.compare(password, user.password);
@@ -139,10 +156,40 @@ app.post('/login', (req, res) =>
     {
       return res.status(401).send('Şifre hatalı');
     }
-
-    res.status(200).send('Giriş başarılı');
+    const updateLoginSorgu = 'UPDATE kullanicilar SET Login = 1 WHERE id = ?';
+    sql.query(updateLoginSorgu, [user.id], (updateErr, updateResults) => 
+    {
+      if(updateErr) 
+      {
+        console.error('Login durumunu güncelleme hatası: ', updateErr);
+        return res.status(500).send('Login durumunu güncellerken bir hata oluştu.');
+      }
+      console.log('Login durumu başarıyla güncellendi: ', updateResults);
+      res.status(200).send('Giriş başarılı ve Login durumu güncellendi.');
+    });
   });
 });
+
+app.post('/exit', (req, res) => 
+{
+  const { id } = req.body;
+  if(!id) 
+  {
+    return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
+  }
+  const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
+  sql.query(query, [id], (err, results) => 
+  {
+    if(err) 
+    {
+      console.error('Veritabanı güncelleme hatası:', err.message);
+      return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+    }
+    console.log('İşlem Sonucu: ', results);
+    res.status(200).json({ message: 'Başarıyla hesaptan çıkış yapıldı.' });
+  });
+});
+
 
 app.listen(port, () => 
 {

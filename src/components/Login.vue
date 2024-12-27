@@ -32,7 +32,7 @@
 </template>
 
 <script>
-
+import axios from "axios";
 export default 
 {
   name: 'Login',
@@ -43,36 +43,30 @@ export default
       return this.$router.push('/register');
     },
 
-    async loginUser()
+    async loginUser() 
     {
         const nickname = document.getElementById('nickname').value;
         const password = document.getElementById('password').value;
         try 
         {
-            const response = await fetch('http://localhost:8080/login', 
+            const response = await axios.post('http://localhost:3000/login', 
             {
-                method: 'POST',
+                nickname,
+                password
+            }, 
+            {
                 headers: 
                 {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ nickname, password })
+                    'Content-Type': 'application/json',
+                }
             });
-
-            if(response.ok) 
-            {
-                const message = await response.text();
-                alert(message);
-            } 
-            else 
-            {
-                const errorText = await response.text();
-                alert(`Giriş başarısız: ${errorText}`);
-            }
+            console.log('Giriş Başarılı:', response.data);
+            alert('Giriş başarılı!');
+            return this.$router.push('/');
         } 
         catch(error) 
         {
-            console.error('Fetch isteği sırasında hata:', error);
+            console.error('Hata Detayı:', error.response?.data || error.message || error);
             alert('Giriş sırasında bir hata oluştu.');
         }
     }
