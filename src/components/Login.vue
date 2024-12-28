@@ -10,7 +10,7 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
+                    <li><a> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
                     <abbr title="Kaydol">
                         <button draggable="false" @click="navigateToRegister()">Kaydol</button>
                     </abbr>
