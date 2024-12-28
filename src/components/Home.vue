@@ -39,6 +39,15 @@
                 <label for="ilk-sayi">İlk Sayı</label>
                 <input type="number" id="first-number">
             </div>
+            <div class="islem">
+              <label for="operation-select">Bir işlem seçin</label>
+              <select id="operation-select" name="operation">
+                <option value="add">Toplama</option>
+                <option value="subtract">Çıkarma</option>
+                <option value="multiply">Çarpma</option>
+                <option value="divide">Bölme</option>
+              </select>
+            </div>
             <div id="randomsayi2">
                 <label for="ikinci-sayi">İkinci Sayı</label>
                 <input type="number" id="second-number">
@@ -64,6 +73,59 @@ export default
   name: "Home",
   methods: 
   {
+    calculateResult()
+    {
+      document.getElementById('operation-select').addEventListener('change', calculateResult);
+      document.getElementById('kontrol').querySelector('button').addEventListener('click', checkResult);
+      const firstNumber = parseFloat(document.getElementById('first-number').value);
+      const secondNumber = parseFloat(document.getElementById('second-number').value);
+      const operation = document.getElementById('operation-select').value;
+      if(isNaN(firstNumber) || isNaN(secondNumber)) 
+      {
+        alert('Lütfen her iki sayıyı da giriniz!');
+        return;
+      }
+      let result;
+      switch (operation) 
+      {
+        case 'add':
+          result = firstNumber + secondNumber;
+          break;
+        case 'subtract':
+          result = firstNumber - secondNumber;
+          break;
+        case 'multiply':
+          result = firstNumber * secondNumber;
+          break;
+        case 'divide':
+          if(secondNumber === 0) 
+          {
+            alert('Bir sayıyı sıfıra bölemezsiniz!');
+            return;
+          }
+          result = firstNumber / secondNumber;
+          break;
+        default:
+          alert('Geçerli bir işlem seçin!');
+          return;
+      }
+      document.getElementById('result').value = result;
+    },
+
+    checkResult() 
+    {
+      const result = parseFloat(document.getElementById('result').value);
+      if(isNaN(result)) 
+      {
+        alert('Sonuç boş! İşlemi gerçekleştirdiğinizden emin olun.');
+      } 
+      else 
+      {
+        alert(`Sonuç başarıyla hesaplandı: ${result}`);
+        this.generateRandomNumber();
+      }
+    },
+
     navigateToLogin() 
     {
       return this.$router.push("/login");
@@ -81,22 +143,6 @@ export default
       document.getElementById("first-number").value = firstnumber;
       document.getElementById("second-number").value = secondnumber;
       document.getElementById("result").value = "";
-    },
-
-    checkResult() 
-    {
-      const firstnumber = parseInt(document.getElementById("first-number").value);
-      const secondnumber = parseInt(document.getElementById("second-number").value);
-      const userResult = parseInt(document.getElementById("result").value);
-      if(firstnumber + secondnumber === userResult) 
-      {
-        alert("Doğru! Yeni sayılar üretiliyor...");
-        this.generateRandomNumber();
-      } 
-      else 
-      {
-        alert("Hatalı sonuç! Lütfen tekrar deneyiniz!");
-      }
     },
 
     async exit() 
@@ -289,6 +335,32 @@ body, html
     background-color: blue;
     outline: 0;
     letter-spacing: 1px;   
+}
+
+.islem
+{
+  margin: 20px;
+}
+
+label
+{
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+select
+{
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 14px solid #2641FF;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+select:focus
+{
+  outline: none;
+  border-color: #007bff;
 }
 
 </style>
