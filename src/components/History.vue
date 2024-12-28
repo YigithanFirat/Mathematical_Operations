@@ -1,7 +1,7 @@
 <template>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <div id="app">
-        <router-view/>
+        <router-view />
         <div class="full-body">
             <div class="header">
                 <ul>
@@ -19,36 +19,111 @@
                     </abbr>
                 </ul>
             </div>
+            <span class="history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Zorluk</th>
+                            <th>Tarih</th>
+                            <th>Soru Sayısı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="entry in historyData" :key="entry.id">
+                            <td>{{ entry.difficulty }}</td>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.questionCount }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </span>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
 
-export default
+export default 
 {
     name: 'History',
-    methods:
+    data() 
     {
-        navigateToLogin()
+        return {
+            historyData: [], // Tabloyu dolduracak veriler
+        };
+    },
+    methods: 
+    {
+        navigateToLogin() 
         {
             return this.$router.push('/login');
         },
 
-        navigateToRegister()
+        navigateToRegister() 
         {
             return this.$router.push('/register');
         },
 
-        exit()
-        {
-            
-        }
-    }
-}
+        exit() {
+            // Çıkış işlemleri burada yapılabilir
+        },
 
+        async fetchHistory() 
+        {
+            try 
+            {
+                const response = await axios.get('/api/user/history');
+                this.historyData = response.data;
+            } 
+            catch (error) 
+            {
+                console.error('Veriler alınamadı:', error);
+            }
+        },
+    },
+    mounted() {
+        this.fetchHistory(); // Bileşen yüklendiğinde verileri al
+    },
+};
 </script>
 
 <style>
 
+.history-table table 
+{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table table th, .history-table table td 
+{
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.history-table table th 
+{
+    background-color: #2641FE;
+    color: white;
+}
+
+.history-table table tr:nth-child(even) 
+{
+    background-color: #f2f2f2;
+}
+
+.history-table table tr:hover 
+{
+    background-color: #ddd;
+}
+
+.history-table table tr td 
+{
+    background-color: #5762FF;
+    text-align: center;
+    color: #fafafa;
+    font-weight: bold;
+}
 </style>

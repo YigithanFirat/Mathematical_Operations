@@ -10,7 +10,7 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li @click="exit()"><a href="/exit"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li @click="exit()"><a href="/"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
@@ -72,6 +72,7 @@ export default
     {
         return {
             soruSayisi: 10,
+            zorluk: 1,
         };
     },
     methods:
@@ -94,6 +95,7 @@ export default
                 const response = await axios.post('http://localhost:3000/save', 
                 {
                     soruSayisi: this.soruSayisi,
+                    zorluk: this.zorluk,
                     id: userId,
                 });
                 alert(response.data.message);
@@ -122,7 +124,7 @@ export default
                 if(response.status == 200)
                 {
                     alert('Başarıyla çıkış yaptınız!');
-                    return this.$router.push('/');
+                    return this.$router.push('');
                 }
             }
             catch(error)
