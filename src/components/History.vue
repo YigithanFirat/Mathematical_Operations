@@ -10,11 +10,11 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li @click="exit()"><a> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap">
+                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap" v-if="isLoggedIn">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
-                    <abbr title="Kaydol">
+                    <abbr title="Kaydol" v-if="isLoggedIn">
                         <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
@@ -65,8 +65,12 @@ export default
             return this.$router.push('/register');
         },
 
-        exit() {
-            // Çıkış işlemleri burada yapılabilir
+        logout() 
+        {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userId");
+            this.$router.push("/");
+            alert("Çıkış yaptınız.");
         },
 
         async fetchHistory() 
@@ -82,7 +86,8 @@ export default
             }
         },
     },
-    mounted() {
+    mounted() 
+    {
         this.fetchHistory(); // Bileşen yüklendiğinde verileri al
     },
 };

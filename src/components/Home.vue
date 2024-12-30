@@ -11,11 +11,11 @@
                 <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                 <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                 <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                <li @click="exit()"><a> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                <abbr title="Giriş Yap">
+                <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                <abbr title="Giriş Yap" v-if="isLoggedIn">
                     <button @click="navigateToLogin()">Giriş Yap</button>
                 </abbr>
-                <abbr title="Kaydol">
+                <abbr title="Kaydol" v-if="isLoggedIn">
                     <button @click="navigateToRegister()">Kaydol</button>
                 </abbr>
             </ul>
@@ -145,34 +145,32 @@ export default
       document.getElementById("result").value = "";
     },
 
-    async exit() 
+    async logout() 
     {
-      try 
+      try
       {
-        const userId = 1;
-        if(!userId) 
-        {
-          alert('Geçerli bir kullanıcı ID\'si bulunamadı.');
-          return;
-        }
-        const response = await axios.post('http://localhost:3000/exit', 
-        {
-          id: userId,
-        });
+      const userId = localStorage.getItem("userId");
+      if (!userId) 
+      {
+        alert("Geçerli bir kullanıcı ID'si bulunamadı.");
+        return;
+      }
+      const response = await axios.post("http://localhost:3000/logout", { id: userId });
+      if(response.status === 200) 
+      {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userId");
+        this.$router.push("/");
+        alert("Başarıyla çıkış yaptınız.");
+      }
+    }
+    catch(error)
+    {
+      console.error("Çıkış sırasında hata oluştu:", error.response?.data || error.message || error);
+      alert("Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.");
+    }
+  },
 
-        if(response.status === 200) 
-        {
-          alert('Başarıyla çıkış yaptınız!');
-          this.$router.push('/');
-        }
-      }
-      catch (error) 
-      {
-        console.error('Çıkış sırasında hata oluştu:', error.response?.data || error.message || error);
-        console.log('Çıkış sırasında hata oluştu:', error.response?.data || error.message || error);
-        alert('Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
-      }
-    },
 
     getCurrentUserId() 
     {

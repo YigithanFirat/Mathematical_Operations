@@ -10,11 +10,11 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li @click="exit()"><a> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap">
+                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap" v-if="isLoggedIn">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
-                    <abbr title="Kaydol">
+                    <abbr title="Kaydol" v-if="isLoggedIn">
                         <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
@@ -38,17 +38,17 @@
                         </tr>
                         <tr>
                             <td>Zorluk Derecesi</td>
-                            <td>
+                                <td>
                                 <div class="checkbox-container">
-                                    <input type="checkbox" id="derece1" name="derece1" value="Kolay">
+                                    <input type="radio" id="derece1" v-model="Zorluk" name="zorluk" value="1">
                                     <label for="derece1">Kolay</label>
                                 </div>
                                 <div class="checkbox-container">
-                                    <input type="checkbox" id="derece2" name="derece2" value="Orta">
+                                    <input type="radio" id="derece2" v-model="Zorluk" name="zorluk" value="2">
                                     <label for="derece2">Orta</label>
                                 </div>
                                 <div class="checkbox-container">
-                                    <input type="checkbox" id="derece3" name="derece3" value="Zor">
+                                    <input type="radio" id="derece3" v-model="Zorluk" name="zorluk" value="3">
                                     <label for="derece3">Zor</label>
                                 </div>
                             </td>
@@ -77,6 +77,7 @@ export default
     },
     methods:
     {
+
         navigateToLogin()
         {
             return this.$router.push('/login');
@@ -91,11 +92,11 @@ export default
         {
             try 
             {
-                const userId = 1;
+                const userId = this.$store.state.userId;
                 const response = await axios.post('http://localhost:3000/save', 
                 {
                     soruSayisi: this.soruSayisi,
-                    zorluk: this.zorluk,
+                    Zorluk: this.Zorluk,
                     id: userId,
                 });
                 alert(response.data.message);
@@ -107,31 +108,12 @@ export default
             }
         },
 
-        async exit()
+        logout() 
         {
-            try
-            {
-                const userId = 1;
-                if(!userId)
-                {
-                    alert('Geçerli bir kullanıcı ID\'si bulunamadı');
-                    return;
-                }
-                const response = await axios.post('http://localhost:3000/exit',
-                {
-                    id: userId,
-                });
-                if(response.status == 200)
-                {
-                    alert('Başarıyla çıkış yaptınız!');
-                    return this.$router.push('/');
-                }
-            }
-            catch(error)
-            {
-                console.error('Çıkış sırasında hata oluştu: ', error.response?.data || error.message || error);
-                alert('Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
-            }
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userId");
+            this.$router.push("/");
+            alert("Çıkış yaptınız.");
         },
     }
 }

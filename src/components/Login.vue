@@ -5,14 +5,17 @@
         <div class="full-body">
             <div class="header">
                 <ul>
-                    <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                    <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
-                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
-                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
+                    <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
+                    <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel </a></li>
+                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
+                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a> <i class="fa-solid fa-door-open"></i> Çıkış</a></li>
-                    <abbr title="Kaydol">
-                        <button draggable="false" @click="navigateToRegister()">Kaydol</button>
+                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap" v-if="isLoggedIn">
+                        <button @click="navigateToLogin()">Giriş Yap</button>
+                    </abbr>
+                    <abbr title="Kaydol" v-if="isLoggedIn">
+                        <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
             </div>
@@ -35,6 +38,19 @@
 import axios from "axios";
 export default 
 {
+  data() 
+  {
+    return {
+
+    };
+  },
+  computed: 
+  {
+    isLoggedIn() 
+    {
+      return localStorage.getItem("isLoggedIn") === "true";
+    },
+  },
   name: 'Login',
   methods:
   {
@@ -43,33 +59,85 @@ export default
       return this.$router.push('/register');
     },
 
-    async loginUser() 
-    {
-        const nickname = document.getElementById('nickname').value;
-        const password = document.getElementById('password').value;
-        try 
-        {
-            const response = await axios.post('http://localhost:3000/login', 
+    async loginUser() {
+    // Giriş bilgilerini al
+    const nickname = document.getElementById('nickname').value;
+    const password = document.getElementById('password').value;
+
+    // Giriş bilgileri kontrolü
+    if (!nickname || !password) {
+        alert('Lütfen nickname ve şifre alanlarını doldurun.');
+        return;
+    }
+
+    try {
+        // Backend'e login isteği gönder
+        const response = await axios.post(
+            'http://localhost:3000/login', 
+            { nickname, password }, 
             {
-                nickname,
-                password
-            }, 
-            {
-                headers: 
-                {
-                    'Content-Type': 'application/json',
-                }
-            });
-            console.log('Giriş Başarılı:', response.data);
+                headers: { 'Content-Type': 'application/json' }
+            }
+        );
+
+        // Backend'den dönen yanıtı işle
+        if (response.status === 200) {
+            const { userId, message } = response.data; // Backend'den dönen veriler
+            console.log('Giriş Başarılı:', message);
+
+            // Kullanıcı bilgilerini localStorage'a kaydet
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('isLoggedIn', true);
+
             alert('Giriş başarılı!');
-            return this.$router.push('/');
-        } 
-        catch(error) 
-        {
-            console.error('Hata Detayı:', error.response?.data || error.message || error);
-            alert('Giriş sırasında bir hata oluştu.');
+            return this.$router.push('/'); // Ana sayfaya yönlendir
+        }
+    } catch (error) {
+        // Hata durumlarını işle
+        console.error('Hata Detayı:', error.response?.data || error.message || error);
+
+        if (error.response?.status === 400) {
+            alert('Nickname ve şifre gereklidir.');
+        } else if (error.response?.status === 401) {
+            alert('Kullanıcı bulunamadı veya şifre hatalı.');
+        } else {
+            alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
         }
     }
+},
+
+
+async logout() {
+  try {
+    // İlk olarak localStorage'dan `userId`'yi al
+    let userId = localStorage.getItem("userId");
+
+    // Eğer localStorage'da userId yoksa backend'den kullanıcı bilgisi doğrulanır
+    if (!userId) {
+      const response = await axios.get("http://localhost:3000/getCurrentUser");
+      userId = response.data.userId;
+
+      if (!userId) {
+        alert("Geçerli bir kullanıcı bulunamadı.");
+        return;
+      }
+    }
+
+    // Backend'de logout isteği gönder
+    const response = await axios.post("http://localhost:3000/logout", { id: userId });
+
+    if (response.status === 200) {
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("userId");
+      this.$router.push("/");
+      alert("Başarıyla çıkış yaptınız.");
+    }
+  } catch (error) {
+    console.error("Çıkış sırasında hata oluştu:", error.response?.data || error.message || error);
+    alert("Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.");
+  }
+}
+
   }
 };
 

@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
+app.use(express.json());
 const saltRounds = 10;
 const port = 3000;
 
@@ -106,33 +107,35 @@ app.post('/register', async (req, res) =>
 
 app.post('/save', (req, res) => 
 {
-  const { soruSayisi, id } = req.body;
+  const { soruSayisi, id, Zorluk } = req.body;
   console.log('Gelen Veri: ', req.body);
   if(!soruSayisi || isNaN(soruSayisi) || soruSayisi <= 0) 
   {
-    console.log('Hatalı soru sayısı: ', soruSayisi);
     return res.status(400).json({ error: 'Geçerli bir soru sayısı girilmelidir.' });
+  }
+  if(!Zorluk || ![1, 2, 3].includes(Number(Zorluk))) 
+  {
+    return res.status(400).json({ error: 'Geçerli bir zorluk değeri seçilmelidir.' });
   }
   if(!id) 
   {
-    console.log('Eksik ID: ', id);
     return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
   }
-  const query = 'UPDATE kullanicilar SET SoruSayisi = ? WHERE id = ?';
-  sql.query(query, [soruSayisi, id], (err, results) => 
+  const query = 'UPDATE kullanicilar SET SoruSayisi = ?, Zorluk = ? WHERE id = ?';
+  sql.query(query, [soruSayisi, Zorluk, id], (err, results) => {
+  if(err) 
   {
-    if(err) 
-    {
-      console.error('Veritabanı güncelleme hatası:', err.message);
-      return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
-    }
-    console.log('Güncelleme Sonucu: ', results);
-    res.status(200).json({ message: 'Soru sayısı başarıyla güncellendi!' });
+    console.error('Veritabanı güncelleme hatası:', err.message);
+    return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+  }
+  console.log('Güncelleme Sonucu: ', results);
+  res.status(200).json({ message: 'Soru sayısı ve zorluk başarıyla güncellendi!' });
   });
-});  
+});
 
 app.post('/login', (req, res) => 
 {
+  console.log(req.body);
   const { nickname, password } = req.body;
   if(!nickname || !password) 
   {
@@ -165,28 +168,58 @@ app.post('/login', (req, res) =>
         return res.status(500).send('Login durumunu güncellerken bir hata oluştu.');
       }
       console.log('Login durumu başarıyla güncellendi: ', updateResults);
-      res.status(200).send('Giriş başarılı ve Login durumu güncellendi.');
+      res.status(200).json
+      ({
+        message: 'Giriş başarılı ve Login durumu güncellendi.',
+        userId: user.id,
+        login: true,
+      });
     });
   });
 });
 
-app.post('/exit', (req, res) => 
-{
+app.post('/logout', (req, res) => {
   const { id } = req.body;
-  if(!id) 
-  {
-    return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
+
+  if (!id) {
+    return res.status(400).send("Kullanıcı ID'si gereklidir.");
   }
-  const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-  sql.query(query, [id], (err, results) => 
-  {
-    if(err) 
-    {
-      console.error('Veritabanı güncelleme hatası:', err.message);
-      return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+
+  const sqlSorgu = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
+  sql.query(sqlSorgu, [id], (err, results) => {
+    if (err) {
+      console.error("Veritabanı hatası:", err);
+      return res.status(500).send("Veritabanı hatası.");
     }
-    console.log('İşlem Sonucu: ', results);
-    res.status(200).json({ message: 'Başarıyla hesaptan çıkış yapıldı.' });
+    if (results.affectedRows === 0) {
+      return res.status(404).send("Kullanıcı bulunamadı.");
+    }
+    console.log("Kullanıcı başarıyla çıkış yaptı:", results);
+    res.status(200).send("Kullanıcı başarıyla çıkış yaptı.");
+  });
+});
+
+
+app.get('/getCurrentUser', (req, res) => {
+  const token = req.headers.authorization; // JWT veya başka bir oturum belirteci
+  if (!token) {
+    return res.status(401).send("Kullanıcı oturumu geçersiz.");
+  }
+
+  // Örnek token çözümleme işlemi (JWT varsa `jwt-decode` kullanılabilir)
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.userId; // Token'dan kullanıcı ID'si alınır
+
+  const sqlSorgu = 'SELECT id FROM kullanicilar WHERE id = ? AND Login = 1';
+  sql.query(sqlSorgu, [userId], (err, results) => {
+    if (err) {
+      console.error("Veritabanı hatası:", err);
+      return res.status(500).send("Veritabanı hatası.");
+    }
+    if (results.length === 0) {
+      return res.status(404).send("Kullanıcı bulunamadı.");
+    }
+    res.status(200).json({ userId: results[0].id });
   });
 });
 
