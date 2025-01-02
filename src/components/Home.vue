@@ -11,26 +11,26 @@
                 <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                 <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                 <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                <abbr title="Giriş Yap" v-if="isLoggedIn">
+                <li><a v-if="!Logged" href="/" @click="exit()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                <abbr title="Giriş Yap">
                     <button @click="navigateToLogin()">Giriş Yap</button>
                 </abbr>
-                <abbr title="Kaydol" v-if="isLoggedIn">
+                <abbr title="Kaydol">
                     <button @click="navigateToRegister()">Kaydol</button>
                 </abbr>
             </ul>
         </div>
         <div class="zorluk">
             <div class="checkbox-container">
-                <input type="checkbox" id="derece1" name="derece1" value="Kolay">
+                <input type="radio" id="derece1" name="derece1" value="Kolay">
                 <label for="derece1">Kolay</label>
             </div>
             <div class="checkbox-container">
-                <input type="checkbox" id="derece2" name="derece2" value="Orta">
+                <input type="radio" id="derece2" name="derece2" value="Orta">
                 <label for="derece2">Orta</label>
             </div>
             <div class="checkbox-container">
-                <input type="checkbox" id="derece3" name="derece3" value="Zor">
+                <input type="radio" id="derece3" name="derece3" value="Zor">
                 <label for="derece3">Zor</label>
             </div>
         </div>
@@ -143,38 +143,6 @@ export default
       document.getElementById("first-number").value = firstnumber;
       document.getElementById("second-number").value = secondnumber;
       document.getElementById("result").value = "";
-    },
-
-    async logout() 
-    {
-      try
-      {
-      const userId = localStorage.getItem("userId");
-      if (!userId) 
-      {
-        alert("Geçerli bir kullanıcı ID'si bulunamadı.");
-        return;
-      }
-      const response = await axios.post("http://localhost:3000/logout", { id: userId });
-      if(response.status === 200) 
-      {
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("userId");
-        this.$router.push("/");
-        alert("Başarıyla çıkış yaptınız.");
-      }
-    }
-    catch(error)
-    {
-      console.error("Çıkış sırasında hata oluştu:", error.response?.data || error.message || error);
-      alert("Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.");
-    }
-  },
-
-
-    getCurrentUserId() 
-    {
-      return localStorage.getItem('userId');
     },
   },
 

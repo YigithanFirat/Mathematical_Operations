@@ -44,13 +44,6 @@ export default
 
     };
   },
-  computed: 
-  {
-    isLoggedIn() 
-    {
-      return localStorage.getItem("isLoggedIn") === "true";
-    },
-  },
   name: 'Login',
   methods:
   {
@@ -59,85 +52,52 @@ export default
       return this.$router.push('/register');
     },
 
-    async loginUser() {
-    // Giriş bilgilerini al
-    const nickname = document.getElementById('nickname').value;
-    const password = document.getElementById('password').value;
-
-    // Giriş bilgileri kontrolü
-    if (!nickname || !password) {
-        alert('Lütfen nickname ve şifre alanlarını doldurun.');
-        return;
-    }
-
-    try {
-        // Backend'e login isteği gönder
-        const response = await axios.post(
-            'http://localhost:3000/login', 
-            { nickname, password }, 
+    async loginUser() 
+    {
+        const nickname = document.getElementById('nickname').value;
+        const password = document.getElementById('password').value;
+        if(!nickname || !password) 
+        {
+            alert('Lütfen nickname ve şifre alanlarını doldurun.');
+            return;
+        }
+        try 
+        {
+            const response = await axios.post
+            (
+                'http://localhost:3000/login', 
+                { nickname, password }, 
+                {
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+            if(response.status === 200) 
             {
-                headers: { 'Content-Type': 'application/json' }
+                const { userId, message } = response.data;
+                console.log('Giriş Başarılı:', message);
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('isLoggedIn', true);
+                alert('Giriş başarılı!');
+                return this.$router.push('/');
             }
-        );
-
-        // Backend'den dönen yanıtı işle
-        if (response.status === 200) {
-            const { userId, message } = response.data; // Backend'den dönen veriler
-            console.log('Giriş Başarılı:', message);
-
-            // Kullanıcı bilgilerini localStorage'a kaydet
-            localStorage.setItem('userId', userId);
-            localStorage.setItem('isLoggedIn', true);
-
-            alert('Giriş başarılı!');
-            return this.$router.push('/'); // Ana sayfaya yönlendir
+        } 
+        catch(error) 
+        {
+            console.error('Hata Detayı:', error.response?.data || error.message || error);
+            if(error.response?.status === 400) 
+            {
+                alert('Nickname ve şifre gereklidir.');
+            } 
+            else if(error.response?.status === 401) 
+            {
+                alert('Kullanıcı bulunamadı veya şifre hatalı.');
+            } 
+            else
+            {
+                alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
+            }
         }
-    } catch (error) {
-        // Hata durumlarını işle
-        console.error('Hata Detayı:', error.response?.data || error.message || error);
-
-        if (error.response?.status === 400) {
-            alert('Nickname ve şifre gereklidir.');
-        } else if (error.response?.status === 401) {
-            alert('Kullanıcı bulunamadı veya şifre hatalı.');
-        } else {
-            alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
-        }
-    }
-},
-
-
-async logout() {
-  try {
-    // İlk olarak localStorage'dan `userId`'yi al
-    let userId = localStorage.getItem("userId");
-
-    // Eğer localStorage'da userId yoksa backend'den kullanıcı bilgisi doğrulanır
-    if (!userId) {
-      const response = await axios.get("http://localhost:3000/getCurrentUser");
-      userId = response.data.userId;
-
-      if (!userId) {
-        alert("Geçerli bir kullanıcı bulunamadı.");
-        return;
-      }
-    }
-
-    // Backend'de logout isteği gönder
-    const response = await axios.post("http://localhost:3000/logout", { id: userId });
-
-    if (response.status === 200) {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("userId");
-      this.$router.push("/");
-      alert("Başarıyla çıkış yaptınız.");
-    }
-  } catch (error) {
-    console.error("Çıkış sırasında hata oluştu:", error.response?.data || error.message || error);
-    alert("Çıkış sırasında bir hata oluştu. Lütfen tekrar deneyiniz.");
-  }
-}
-
+    },
   }
 };
 

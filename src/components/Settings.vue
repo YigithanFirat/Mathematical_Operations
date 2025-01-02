@@ -10,11 +10,11 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap" v-if="isLoggedIn">
+                    <li><a href="/"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
-                    <abbr title="Kaydol" v-if="isLoggedIn">
+                    <abbr title="Kaydol">
                         <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
@@ -92,7 +92,7 @@ export default
         {
             try 
             {
-                const userId = this.$store.state.userId;
+                const userId = 1;
                 const response = await axios.post('http://localhost:3000/save', 
                 {
                     soruSayisi: this.soruSayisi,
@@ -106,14 +106,6 @@ export default
                 console.error('Hata Detayı:', error.response?.data || error.message || error);
                 alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
             }
-        },
-
-        logout() 
-        {
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userId");
-            this.$router.push("/");
-            alert("Çıkış yaptınız.");
         },
     }
 }

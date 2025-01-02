@@ -178,20 +178,23 @@ app.post('/login', (req, res) =>
   });
 });
 
-app.post('/logout', (req, res) => {
+app.post('/logout', (req, res) => 
+{
   const { id } = req.body;
-
-  if (!id) {
+  if(!id) 
+  {
     return res.status(400).send("Kullanıcı ID'si gereklidir.");
   }
-
   const sqlSorgu = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-  sql.query(sqlSorgu, [id], (err, results) => {
-    if (err) {
+  sql.query(sqlSorgu, [id], (err, results) => 
+  {
+    if(err) 
+    {
       console.error("Veritabanı hatası:", err);
       return res.status(500).send("Veritabanı hatası.");
     }
-    if (results.affectedRows === 0) {
+    if(results.affectedRows === 0) 
+    {
       return res.status(404).send("Kullanıcı bulunamadı.");
     }
     console.log("Kullanıcı başarıyla çıkış yaptı:", results);
@@ -200,29 +203,30 @@ app.post('/logout', (req, res) => {
 });
 
 
-app.get('/getCurrentUser', (req, res) => {
-  const token = req.headers.authorization; // JWT veya başka bir oturum belirteci
-  if (!token) {
+app.get('/getCurrentUser', (req, res) => 
+{
+  const token = req.headers.authorization;
+  if(!token) 
+  {
     return res.status(401).send("Kullanıcı oturumu geçersiz.");
   }
-
-  // Örnek token çözümleme işlemi (JWT varsa `jwt-decode` kullanılabilir)
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const userId = decoded.userId; // Token'dan kullanıcı ID'si alınır
-
+  const userId = decoded.userId;
   const sqlSorgu = 'SELECT id FROM kullanicilar WHERE id = ? AND Login = 1';
-  sql.query(sqlSorgu, [userId], (err, results) => {
-    if (err) {
+  sql.query(sqlSorgu, [userId], (err, results) => 
+  {
+    if(err) 
+    {
       console.error("Veritabanı hatası:", err);
       return res.status(500).send("Veritabanı hatası.");
     }
-    if (results.length === 0) {
+    if(results.length === 0) 
+    {
       return res.status(404).send("Kullanıcı bulunamadı.");
     }
     res.status(200).json({ userId: results[0].id });
   });
 });
-
 
 app.listen(port, () => 
 {
