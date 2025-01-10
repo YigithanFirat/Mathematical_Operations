@@ -147,29 +147,27 @@ app.post('/login', (req, res) =>
   });
 });
 
-app.post('/logout', (req, res) => {
-  console.log('Gelen Veri: ', req.body); // Gelen isteği loglayın
-
+app.post('/logout', (req, res) =>
+{
+  console.log('Gelen Veri: ', req.body);
   const { userId } = req.body;
-
-  if (!userId) {
-      // Kullanıcı ID'si gönderilmemişse hata döndür
+  if (!userId) 
+  {
       return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
   }
-
   const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-  sql.query(query, [userId], (err, results) => {
-      if (err) {
+  sql.query(query, [userId], (err, results) => 
+  {
+      if (err) 
+      {
           console.error('Logout işleminde veritabanı hatası:', err.message);
           return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
       }
-
-      if (results.affectedRows === 0) {
-          // Güncelleme yapılmamışsa kullanıcı bulunamamıştır
+      if (results.affectedRows === 0) 
+      {
           return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
       }
-
-      console.log('Logout işlemi başarılı:', results);
+      console.log('Logout işlemi başarılı: ', results);
       res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
   });
 });
