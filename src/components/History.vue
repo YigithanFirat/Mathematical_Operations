@@ -50,7 +50,7 @@ export default
     data() 
     {
         return {
-            historyData: [], // Tabloyu dolduracak veriler
+            historyData: [],
         };
     },
     methods: 

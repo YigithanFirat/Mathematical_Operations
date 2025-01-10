@@ -51,7 +51,7 @@ export default
             if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
             {
                 alert('Başarıyla çıkış yaptınız.');
-                this.$router.push('/'); // Ana sayfaya yönlendirme
+                this.$router.push('/');
             }
             else
             {
