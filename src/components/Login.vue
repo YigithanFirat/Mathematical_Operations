@@ -10,11 +10,11 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap" v-if="isLoggedIn">
+                    <li><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
-                    <abbr title="Kaydol" v-if="isLoggedIn">
+                    <abbr title="Kaydol">
                         <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
@@ -52,52 +52,64 @@ export default
       return this.$router.push('/register');
     },
 
-    async loginUser() 
+    async logout() 
+    {
+        try 
+        {
+            const response = await axios.post('http://localhost:3000/logout', 
+            {
+                userId: 1,
+            });
+            if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
+            {
+                alert('Başarıyla çıkış yaptınız.');
+                this.$router.push('/'); // Ana sayfaya yönlendirme
+            }
+            else
+            {
+                alert(response.data.error || 'Çıkış işlemi başarısız. Tekrar deneyin.');
+            }
+        }
+        catch(error) 
+        {
+            console.error('Hata Detayı:', error.response?.data || error.message || error);
+            alert('Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.');
+        }
+    },
+
+    async loginUser()
     {
         const nickname = document.getElementById('nickname').value;
         const password = document.getElementById('password').value;
         if(!nickname || !password) 
         {
-            alert('Lütfen nickname ve şifre alanlarını doldurun.');
+            alert('Lütfen tüm alanları doldurun!');
             return;
         }
-        try 
+        try
         {
-            const response = await axios.post
-            (
-                'http://localhost:3000/login', 
-                { nickname, password }, 
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
-            if(response.status === 200) 
+            const response = await axios.post('http://localhost:3000/login', 
             {
-                const { userId, message } = response.data;
-                console.log('Giriş Başarılı:', message);
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('isLoggedIn', true);
-                alert('Giriş başarılı!');
-                return this.$router.push('/');
+                nickname,
+                password
+            });
+            if(response.data && response.data.message === 'Giriş başarılı ve Login durumu güncellendi.')
+            {
+                alert('Giriş başarılı');
+                this.$router.push('/');
             }
-        } 
-        catch(error) 
-        {
-            console.error('Hata Detayı:', error.response?.data || error.message || error);
-            if(error.response?.status === 400) 
-            {
-                alert('Nickname ve şifre gereklidir.');
-            } 
-            else if(error.response?.status === 401) 
-            {
-                alert('Kullanıcı bulunamadı veya şifre hatalı.');
-            } 
             else
             {
-                alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyiniz.');
+                alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.');
             }
         }
-    },
+        catch(error)
+        {
+            console.error('Hata Detayı: ', error.response?.data || error.message || error);
+            alert('Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+            this.$router.push('/');
+        }
+    }
   }
 };
 

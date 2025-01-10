@@ -1,16 +1,15 @@
 const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const http = require('http');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 const saltRounds = 10;
 const port = 3000;
 
-app.use(bodyParser.json());
-const http = require('http');
 const server = http.createServer(app);
 server.maxHeadersCount = 1000;
 server.headersTimeout = 60000;
@@ -23,7 +22,8 @@ app.use(cors
   credentials: true
 }));
 
-app.use((req, res, next) =>
+
+app.use((req, res, next) => 
 {
   console.log('Gelen Başlıklar:', req.headers);
   next();
@@ -45,36 +45,6 @@ sql.connect(function(err)
     process.exit(1);
   }
   console.log('[MySQL]: Veritabanı bağlantısı başarıyla kuruldu!');
-});
-
-app.get('/', (req, res) => 
-{
-  res.send('[HOME]: Backend API çalışıyor!');
-});
-
-app.get('/history', (req, res) => 
-{
-  res.send('[HISTORY]: Backend API çalışıyor!');
-});
-
-app.get('/login', (req, res) => 
-{
-  res.send('[LOGIN]: Backend API çalışıyor!');
-});
-
-app.get('/members', (req, res) => 
-{
-  res.send('[MEMBERS]: Backend API çalışıyor!');
-});
-
-app.get('/register', (req, res) => 
-{
-  res.send('[REGISTER]: Backend API çalışıyor!');
-});
-
-app.get('/settings', (req, res) =>
-{
-  res.send('[SETTINGS]: Backend API çalışıyor!');
 });
 
 app.post('/register', async (req, res) => 
@@ -122,14 +92,15 @@ app.post('/save', (req, res) =>
     return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
   }
   const query = 'UPDATE kullanicilar SET SoruSayisi = ?, Zorluk = ? WHERE id = ?';
-  sql.query(query, [soruSayisi, Zorluk, id], (err, results) => {
-  if(err) 
+  sql.query(query, [soruSayisi, Zorluk, id], (err, results) => 
   {
-    console.error('Veritabanı güncelleme hatası:', err.message);
-    return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
-  }
-  console.log('Güncelleme Sonucu: ', results);
-  res.status(200).json({ message: 'Soru sayısı ve zorluk başarıyla güncellendi!' });
+    if(err) 
+    {
+      console.error('Veritabanı güncelleme hatası:', err.message);
+      return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+    }
+    console.log('Güncelleme Sonucu: ', results);
+    res.status(200).json({ message: 'Soru sayısı ve zorluk başarıyla güncellendi!' });
   });
 });
 
@@ -171,62 +142,38 @@ app.post('/login', (req, res) =>
       res.status(200).json
       ({
         message: 'Giriş başarılı ve Login durumu güncellendi.',
-        userId: user.id,
-        login: true,
       });
     });
   });
 });
 
-app.post('/logout', (req, res) => 
-{
-  const { id } = req.body;
-  if(!id) 
-  {
-    return res.status(400).send("Kullanıcı ID'si gereklidir.");
+app.post('/logout', (req, res) => {
+  console.log('Gelen Veri: ', req.body); // Gelen isteği loglayın
+
+  const { userId } = req.body;
+
+  if (!userId) {
+      // Kullanıcı ID'si gönderilmemişse hata döndür
+      return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
   }
-  const sqlSorgu = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-  sql.query(sqlSorgu, [id], (err, results) => 
-  {
-    if(err) 
-    {
-      console.error("Veritabanı hatası:", err);
-      return res.status(500).send("Veritabanı hatası.");
-    }
-    if(results.affectedRows === 0) 
-    {
-      return res.status(404).send("Kullanıcı bulunamadı.");
-    }
-    console.log("Kullanıcı başarıyla çıkış yaptı:", results);
-    res.status(200).send("Kullanıcı başarıyla çıkış yaptı.");
+
+  const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
+  sql.query(query, [userId], (err, results) => {
+      if (err) {
+          console.error('Logout işleminde veritabanı hatası:', err.message);
+          return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
+      }
+
+      if (results.affectedRows === 0) {
+          // Güncelleme yapılmamışsa kullanıcı bulunamamıştır
+          return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
+      }
+
+      console.log('Logout işlemi başarılı:', results);
+      res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
   });
 });
 
-
-app.get('/getCurrentUser', (req, res) => 
-{
-  const token = req.headers.authorization;
-  if(!token) 
-  {
-    return res.status(401).send("Kullanıcı oturumu geçersiz.");
-  }
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const userId = decoded.userId;
-  const sqlSorgu = 'SELECT id FROM kullanicilar WHERE id = ? AND Login = 1';
-  sql.query(sqlSorgu, [userId], (err, results) => 
-  {
-    if(err) 
-    {
-      console.error("Veritabanı hatası:", err);
-      return res.status(500).send("Veritabanı hatası.");
-    }
-    if(results.length === 0) 
-    {
-      return res.status(404).send("Kullanıcı bulunamadı.");
-    }
-    res.status(200).json({ userId: results[0].id });
-  });
-});
 
 app.listen(port, () => 
 {

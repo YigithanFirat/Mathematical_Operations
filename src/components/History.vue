@@ -10,11 +10,11 @@
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li v-if="!isLoggedIn"><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap" v-if="isLoggedIn">
+                    <li><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <abbr title="Giriş Yap">
                         <button @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
-                    <abbr title="Kaydol" v-if="isLoggedIn">
+                    <abbr title="Kaydol">
                         <button @click="navigateToRegister()">Kaydol</button>
                     </abbr>
                 </ul>
@@ -55,6 +55,30 @@ export default
     },
     methods: 
     {
+        async logout() 
+        {
+            try 
+            {
+                const response = await axios.post('http://localhost:3000/logout', 
+                {
+                    userId: 1,
+                });
+                if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
+                {
+                    alert('Başarıyla çıkış yaptınız.');
+                    this.$router.push('/');
+                }
+                else
+                {
+                    alert(response.data.error || 'Çıkış işlemi başarısız. Tekrar deneyin.');
+                }
+            }
+            catch(error) 
+            {
+                console.error('Hata Detayı:', error.response?.data || error.message || error);
+                alert('Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.');
+            }
+        },
         navigateToLogin() 
         {
             return this.$router.push('/login');
