@@ -6,11 +6,10 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                    <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button draggable="false" @click="navigateToLogin()">Giriş Yap</button>
                     </abbr>
@@ -25,7 +24,7 @@
                     <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
                     <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
                     <abbr title="Kaydol">
-                        <button draggable="false" type="submit">Kaydol</button>
+                        <button v-if="!Logged" draggable="false" type="submit">Kaydol</button>
                     </abbr>
                 </form>
             </div>
@@ -38,6 +37,13 @@
 export default 
 {
   name: 'Register',
+  computed: 
+  {
+    Logged() 
+    {
+      return this.$store.state.Logged;
+    },
+  },
   methods:
   {
     async logout() 

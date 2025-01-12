@@ -6,16 +6,25 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel </a></li>
                     <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
-                        <button @click="navigateToLogin()">Giriş Yap</button>
+                        <button 
+                        v-if="Logged == 0" 
+                        @click="navigateToLogin()"
+                        >
+                        Giriş Yap
+                        </button>
                     </abbr>
                     <abbr title="Kaydol">
-                        <button @click="navigateToRegister()">Kaydol</button>
+                        <button 
+                        v-if="Logged == 0" 
+                        @click="navigateToRegister()"
+                        >
+                        Kaydol
+                        </button>
                     </abbr>
                 </ul>
             </div>
@@ -68,6 +77,13 @@ import axios from "axios";
 export default
 {
     name: 'Settings',
+    computed: 
+    {
+        Logged() 
+        {
+        return this.$store.state.Logged;
+        },
+    },
     data() 
     {
         return {
@@ -163,120 +179,120 @@ export default
 
 <style>
 
-.settings
-{
-    text-align: center;
+.settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    margin-top: 300px;
+    margin-top: 50px;
 }
 
-.settings table
-{
-    margin-left: 355px;
-}
-
-.settings p
-{
+.settings p {
     color: #fafafa;
     font-size: 24px;
     letter-spacing: 1px;
     text-align: center;
-    justify-content: center;
+    font-weight: bold;
     margin-bottom: 25px;
-    font-weight: bold;
 }
 
-.settings .soru-sayisi input#soruSayisi
-{
-    width: 50px;
-    height: 18px;
-}
-
-.settings .soru-sayisi label
-{
-    color: #fafafa;
-    letter-spacing: 1px;
-    font-weight: bold;
-    font-size: 15px;
-    text-align: center;
-    justify-content: center;
-    margin-left: 702px;
-}
-
-.settings .soru-sayisi label::after
-{
-    content: ":";
-    color: #fafafa;
-    font-size: 15px;
-}
-
-table
-{
-    width: 50%;
+.settings table {
+    width: 100%;
+    max-width: 800px;
     border-collapse: collapse;
-    margin-top: 10px;
     text-align: center;
-    justify-content: center;
 }
 
-th, td
-{
+th, td {
     border: 1px solid #ddd;
     padding: 8px;
-}
-
-th
-{
-    background-color: #5762FF;
-    color: #fafafa;
-    font-weight: bold;
-}
-
-input[type="number"]
-{
-    width: 60px;
-    padding: 4px;
-    font-size: 14px;
-}
-
-tbody tr td
-{
     color: #fafafa;
     font-size: 16px;
     letter-spacing: 1px;
 }
 
-.checkbox-container
-{
+th {
+    background-color: #5762FF;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 4px;
+    font-size: 14px;
+}
+
+.checkbox-container {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.settings abbr
-{
+.settings abbr {
     text-decoration: none;
     cursor: pointer;
 }
 
-.settings abbr button
-{
+.settings abbr button {
     border: 2px solid black;
     cursor: pointer;
-    padding: 3px;
+    padding: 8px;
     box-shadow: 3px 3px 5px black;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
-    justify-content: center;
     margin-top: 10px;
     margin-right: 5px;
-    width: 100px;
+    width: 150px;
     color: #fafafa;
-    border-radius: 30px 30px;
+    border-radius: 30px;
     background-color: blue;
     outline: 0;
     letter-spacing: 1px;
+}
+
+.settings .soru-sayisi {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.settings .soru-sayisi label {
+    color: #fafafa;
+    letter-spacing: 1px;
+    font-weight: bold;
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.settings .soru-sayisi input#soruSayisi {
+    width: 60px;
+    height: 30px;
+    padding: 5px;
+    font-size: 16px;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .settings {
+        margin-top: 20px;
+    }
+
+    .settings table {
+        width: 90%;
+    }
+
+    .settings .soru-sayisi input#soruSayisi {
+        width: 50px;
+    }
+
+    .settings abbr button {
+        width: 120px;
+    }
+
+    .settings p {
+        font-size: 20px;
+    }
 }
 
 </style>

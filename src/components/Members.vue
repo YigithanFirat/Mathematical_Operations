@@ -3,22 +3,21 @@
     <div id="app">
       <router-view/>
       <div class="full-body">
-          <div class="header">
-              <ul>
-                  <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                  <li><a href="/panel"> <i class="fa-solid fa-layer-group"></i> Panel</a></li>
-                  <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
-                  <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
-                  <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                  <li><a href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap">
-                        <button @click="navigateToLogin()">Giriş Yap</button>
-                    </abbr>
-                    <abbr title="Kaydol">
-                        <button @click="navigateToRegister()">Kaydol</button>
-                    </abbr>
-              </ul>
-          </div>
+            <div class="header">
+                <ul>
+                    <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
+                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
+                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
+                    <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                        <abbr title="Giriş Yap">
+                            <button v-if="Logged == 0" @click="navigateToLogin()">Giriş Yap</button>
+                        </abbr>
+                        <abbr title="Kaydol">
+                            <button v-if="Logged == 0" @click="navigateToRegister()">Kaydol</button>
+                        </abbr>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -27,6 +26,13 @@
 export default 
 {
   name: 'Members',
+  computed: 
+  {
+    Logged() 
+    {
+      return this.$store.state.Logged;
+    },
+  },
   methods: 
   {
     async logout() 
@@ -69,9 +75,9 @@ export default
 
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-*
+* 
 {
     margin: 0;
     padding: 0;
@@ -85,7 +91,13 @@ body, html
     height: 100%;
 }
 
-.full-body
+#app 
+{
+    width: 100%;
+    height: 100%;
+}
+
+.full-body 
 {
     position: relative;
     width: 100%;
@@ -95,58 +107,72 @@ body, html
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
-.full-body .header ul
-{
-    list-style-type: none;
-    overflow: hidden;
-}
-
-.full-body .header ul li
-{
-    float: left;
-}
-
-.full-body .header
+.header 
 {
     background-color: #112479;
+    width: 100%;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.full-body .header ul li a
+.header ul 
 {
-    display: block;
-    padding: 12px 24px;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.header ul li a 
+{
+    display: inline-block;
+    padding: 10px 20px;
     text-decoration: none;
     font-size: 18px;
-    font-family: sans-serif;
     color: #fafafa;
+    font-weight: 500;
     letter-spacing: 1px;
+    transition: color 0.3s, background-color 0.3s;
+    border-radius: 4px;
 }
 
-.full-body .header abbr
+.header ul li a:hover 
+{
+    background-color: black;
+}
+
+.header abbr 
 {
     text-decoration: none;
     cursor: pointer;
 }
 
-.full-body .header abbr button
+.header abbr button 
 {
-    border: 2px solid black;
-    cursor: pointer;
-    padding: 3px;
-    box-shadow: 3px 3px 5px black;
+    border: none;
+    padding: 8px 16px;
     font-size: 14px;
     font-weight: 600;
-    float: right;
-    margin-top: 10px;
-    margin-right: 5px;
-    width: 100px;
     color: #fafafa;
-    border-radius: 30px 30px;
-    background-color: blue;
-    outline: 0;
-    letter-spacing: 1px;
+    background-color: #1a73e8;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.header abbr button:hover 
+{
+    background-color: #0c5bd5;
+    transform: scale(1.05);
 }
 
 #app 

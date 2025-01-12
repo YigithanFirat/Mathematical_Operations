@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { createStore } from 'vuex';
 
 import Home from '../components/Home.vue';
 import Login from '../components/Login.vue';
@@ -16,6 +17,7 @@ const routes =
   { path: '/settings', name: 'Settings', component: Settings },
   { path: '/history', name: 'History', component: History}
 ];
+
 
 const router = createRouter
 ({
