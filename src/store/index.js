@@ -4,13 +4,14 @@ export default createStore
 ({
   state: 
   {
-    Logged: 0,
+    Logged: JSON.parse(localStorage.getItem('Logged')) || 0,
   },
-  mutations:
+  mutations: 
   {
     setLogged(state, status) 
     {
       state.Logged = status;
+      localStorage.setItem('Logged', JSON.stringify(status));
     },
   },
   actions: 
@@ -19,9 +20,11 @@ export default createStore
     {
       commit('setLogged', 1);
     },
+    
     logout({ commit }) 
     {
       commit('setLogged', 0);
+      localStorage.removeItem('Logged');
     },
   },
   getters: 

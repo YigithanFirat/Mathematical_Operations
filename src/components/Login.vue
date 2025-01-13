@@ -6,24 +6,32 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Kaydol">
-                        <button v-if="Logged === 0" @click="navigateToRegister()">Kaydol</button>
-                    </abbr>
+                      <button 
+                        v-if="isLogged == 0" 
+                        @click="navigateToRegister()"
+                        >
+                        Kaydol
+                      </button>
+                  </abbr>
                 </ul>
             </div>
-            <div class="login-screen" v-if="Logged === 0">
+            <div class="login-screen">
                 <form id="loginform" class="input-wrap" @submit.prevent="loginUser()">
                     <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
                     <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
                     <label class="f-password" for="password">Şifreniz</label>
                     <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
                     <abbr title="Giriş Yap">
-                        <button draggable="false" type="submit">Giriş Yap</button>
-                    </abbr>
+                      <button 
+                        v-if="isLogged == 0" 
+                        >
+                        Giriş Yap
+                      </button>
+                  </abbr>
                 </form>
             </div>
         </div>
@@ -34,12 +42,11 @@
 import axios from "axios";
 export default 
 {
-  data() 
-  {
-    return {
-      Logged: 0,
-    };
+  computed: {
+  isLogged() {
+    return this.$store.getters.isLogged; // Vuex getter'ı kullan
   },
+},
   name: "Login",
   methods: 
   {
@@ -48,8 +55,10 @@ export default
       return this.$router.push("/register");
     },
 
-    async logout() {
-      try {
+    async logout() 
+    {
+      try 
+      {
         const response = await axios.post("http://localhost:3000/logout", 
         {
           userId: 1,
@@ -79,7 +88,7 @@ export default
         alert("Lütfen tüm alanları doldurun!");
         return;
       }
-      try
+      try 
       {
         const response = await axios.post("http://localhost:3000/login", 
         {
@@ -89,19 +98,18 @@ export default
         if(response.data && response.data.message === "Giriş başarılı ve Login durumu güncellendi.") 
         {
           alert("Giriş başarılı");
-          this.$store.dispatch('login');
+          this.$store.dispatch("login");
           this.$router.push("/");
-        }
-        else
+        } 
+        else 
         {
           alert("Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
         }
-      }
-      catch(error)
+      } 
+      catch(error) 
       {
         console.error("Hata Detayı: ", error.response?.data || error.message || error);
         alert("Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
-        this.$router.push("/");
       }
     },
   },
@@ -112,11 +120,22 @@ export default
 
 .login-screen 
 {
-  margin-left: 500px;
-  text-align: center;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 600px;
   max-width: 100%;
+  padding: 20px;
+  background-color: #800000;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  opacity: 0.7;
 }
 
 .login-screen label.f-nickname 
@@ -160,18 +179,25 @@ export default
 
 .login-screen button 
 {
-  border: 2px solid black;
-  cursor: pointer;
-  padding: 3px;
-  box-shadow: 3px 3px 5px black;
+  border: none;
+  padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
-  width: 100px;
   color: #fafafa;
-  border-radius: 30px 30px;
-  background-color: blue;
+  background-color: #1a73e8;
+  border-radius: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
   outline: 0;
   letter-spacing: 1px;
   margin-top: 30px;
+}
+
+.login-screen button:hover
+{
+  background-color: #0c5bd5;
+  transform: scale(1.05);
+
 }
 </style>

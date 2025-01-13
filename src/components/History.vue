@@ -6,15 +6,24 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
-                        <button v-if="Logged == 0" @click="navigateToLogin()">Giriş Yap</button>
+                        <button 
+                        v-if="isLogged == 0" 
+                        @click="navigateToLogin()"
+                        >
+                        Giriş Yap
+                        </button>
                     </abbr>
                     <abbr title="Kaydol">
-                        <button v-if="Logged == 0" @click="navigateToRegister()">Kaydol</button>
+                        <button 
+                        v-if="isLogged == 0" 
+                        @click="navigateToRegister()"
+                        >
+                        Kaydol
+                        </button>
                     </abbr>
                 </ul>
             </div>
@@ -46,13 +55,11 @@ import axios from 'axios';
 export default 
 {
     name: 'History',
-    computed: 
-    {
-        Logged() 
-        {
-        return this.$store.state.Logged;
-        },
-    },
+    computed: {
+  isLogged() {
+    return this.$store.getters.isLogged; // Vuex getter'ı kullan
+  },
+},
     data() 
     {
         return {
@@ -72,6 +79,7 @@ export default
                 if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
                 {
                     alert('Başarıyla çıkış yaptınız.');
+                    this.$store.commit("logout");
                     this.$router.push('/');
                 }
                 else
@@ -95,12 +103,29 @@ export default
             return this.$router.push('/register');
         },
 
-        logout() 
+        async logout() 
         {
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userId");
-            this.$router.push("/");
-            alert("Çıkış yaptınız.");
+            try 
+            {
+                const response = await axios.post("http://localhost:3000/logout", 
+                {
+                    userId: 1,
+                });
+                if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
+                {
+                    alert("Başarıyla çıkış yaptınız.");
+                    this.$store.commit("logout");
+                } 
+                else 
+                {
+                    alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
+                }
+            } 
+            catch(error) 
+            {
+                console.error("Hata Detayı:", error.response?.data || error.message || error);
+                alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
+            }
         },
 
         async fetchHistory() 

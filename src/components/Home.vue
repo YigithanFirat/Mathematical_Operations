@@ -19,11 +19,6 @@
             </a>
           </li>
           <li>
-            <a href="/members">
-              <i class="fa-solid fa-person"></i> Üyeler
-            </a>
-          </li>
-          <li>
             <a href="/history">
               <i class="fa-solid fa-ghost"></i> Geçmiş
             </a>
@@ -33,26 +28,22 @@
               <i class="fa-solid fa-user-gear"></i> Ayarlar
             </a>
           </li>
-          <li v-if="Logged == 1">
-            <a href="/" @click="logout()">
-              <i class="fa-solid fa-door-open"></i> Çıkış
-            </a>
-          </li>
+          <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
           <abbr title="Giriş Yap">
-            <button 
-              v-if="Logged == 0" 
-              @click="navigateToLogin()"
-            >
-              Giriş Yap
-            </button>
+              <button 
+                v-if="isLogged == 0" 
+                @click="navigateToLogin()"
+                >
+                Giriş Yap
+              </button>
           </abbr>
           <abbr title="Kaydol">
-            <button 
-              v-if="Logged == 0" 
-              @click="navigateToRegister()"
-            >
-              Kaydol
-            </button>
+              <button 
+                v-if="isLogged == 0" 
+                @click="navigateToRegister()"
+                >
+                Kaydol
+              </button>
           </abbr>
         </ul>
       </div>
@@ -109,13 +100,11 @@ import axios from "axios";
 export default 
 {
   name: "Home",
-  computed: 
-  {
-    Logged() 
-    {
-      return this.$store.state.Logged;
-    },
+  computed: {
+  isLogged() {
+    return this.$store.getters.isLogged;
   },
+},
   data() 
   {
     return {
@@ -145,14 +134,15 @@ export default
         if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
         {
           alert("Başarıyla çıkış yaptınız.");
-          this.$store.commit("logout");
-        } 
+          this.$router.dispatch("logout");
+          this.$router.push("/");
+        }
         else 
         {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
       } 
-      catch(error) 
+      catch (error) 
       {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
@@ -215,10 +205,10 @@ export default
 
     checkResult() 
     {
-      const calculatedResult = parseFloat(document.getElementById('result').value); // Kullanıcının yazdığı sonuç
-      const firstnumber = parseFloat(document.getElementById('first-number').value); // İlk sayı
-      const secondnumber = parseFloat(document.getElementById('second-number').value); // İkinci sayı
-      const operation = document.getElementById('operation-select').value; // Seçilen işlem
+      const calculatedResult = parseFloat(document.getElementById('result').value);
+      const firstnumber = parseFloat(document.getElementById('first-number').value);
+      const secondnumber = parseFloat(document.getElementById('second-number').value);
+      const operation = document.getElementById('operation-select').value;
       let expectedResult;
       switch(operation) 
       {
@@ -254,12 +244,12 @@ export default
       }
       else if(calculatedResult !== expectedResult) 
       {
-        alert('Hatalı sonuç yazdınız! Doğru sonuç: ' + expectedResult);
+        alert('Hatalı sonuç yazdınız!');
       }
       else 
       {
         alert(`Sonuç doğru! Tebrikler: ${calculatedResult}`);
-        this.generateRandomNumbers(); // Yeni sayılar üret
+        this.generateRandomNumbers();
       }
     },
 
@@ -270,9 +260,9 @@ export default
       this.result = "";
     },
 
-    navigateToLogin() 
+    navigateToLogin()
     {
-      this.$router.push("/login");
+        this.$router.push("/login");
     },
 
     navigateToRegister() 
@@ -298,17 +288,20 @@ export default
     font-family: 'Roboto', sans-serif;
 }
 
-body, html {
+body, html 
+{
     width: 100%;
     height: 100%;
 }
 
-#app {
+#app 
+{
     width: 100%;
     height: 100%;
 }
 
-.full-body {
+.full-body 
+{
     position: relative;
     width: 100%;
     height: 100vh;
@@ -323,14 +316,16 @@ body, html {
     justify-content: flex-start;
 }
 
-.header {
+.header 
+{
     background-color: #112479;
     width: 100%;
     padding: 10px 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.header ul {
+.header ul 
+{
     list-style-type: none;
     display: flex;
     justify-content: space-around;
@@ -339,7 +334,8 @@ body, html {
     padding: 0;
 }
 
-.header ul li a {
+.header ul li a 
+{
     display: inline-block;
     padding: 10px 20px;
     text-decoration: none;
@@ -351,16 +347,19 @@ body, html {
     border-radius: 4px;
 }
 
-.header ul li a:hover {
+.header ul li a:hover 
+{
     background-color: black;
 }
 
-.header abbr {
+.header abbr 
+{
     text-decoration: none;
     cursor: pointer;
 }
 
-.header abbr button {
+.header abbr button 
+{
     border: none;
     padding: 8px 16px;
     font-size: 14px;
@@ -373,12 +372,14 @@ body, html {
     transition: background-color 0.3s, transform 0.3s;
 }
 
-.header abbr button:hover {
+.header abbr button:hover 
+{
     background-color: #0c5bd5;
     transform: scale(1.05);
 }
 
-.zorluk-container {
+.zorluk-container 
+{
     margin-top: 50px;
     padding: 20px;
     background-color: rgba(17, 36, 121, 0.8);
@@ -391,33 +392,38 @@ body, html {
     align-items: center;
 }
 
-.zorluk-container h3 {
+.zorluk-container h3 
+{
     color: #fafafa;
     font-size: 20px;
     margin-bottom: 20px;
     font-weight: 600;
 }
 
-.zorluk {
+.zorluk 
+{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
 }
 
-.zorluk .checkbox-container {
+.zorluk .checkbox-container 
+{
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.zorluk label {
+.zorluk label 
+{
     font-size: 16px;
     color: #fafafa;
     font-weight: 600;
 }
 
-.islemler {
+.islemler 
+{
     margin-top: 30px;
     text-align: center;
     padding: 20px;
@@ -428,7 +434,8 @@ body, html {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.islemler label {
+.islemler label 
+{
     color: #fafafa;
     font-weight: bold;
     display: block;
@@ -436,7 +443,8 @@ body, html {
     letter-spacing: 0.5px;
 }
 
-.islemler input, .islemler select {
+.islemler input, .islemler select 
+{
     width: 100%;
     padding: 10px;
     font-size: 14px;
@@ -448,11 +456,13 @@ body, html {
     transition: border-color 0.3s;
 }
 
-.islemler input:focus, .islemler select:focus {
+.islemler input:focus, .islemler select:focus 
+{
     border-color: #0c5bd5;
 }
 
-.islemler button {
+.islemler button 
+{
     border: none;
     padding: 10px 20px;
     font-size: 14px;

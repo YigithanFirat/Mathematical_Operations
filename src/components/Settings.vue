@@ -6,13 +6,12 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler </a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+                    <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button 
-                        v-if="Logged == 0" 
+                        v-if="isLogged == 0" 
                         @click="navigateToLogin()"
                         >
                         Giriş Yap
@@ -20,7 +19,7 @@
                     </abbr>
                     <abbr title="Kaydol">
                         <button 
-                        v-if="Logged == 0" 
+                        v-if="isLogged == 0" 
                         @click="navigateToRegister()"
                         >
                         Kaydol
@@ -76,14 +75,11 @@
 import axios from "axios";
 export default
 {
-    name: 'Settings',
-    computed: 
-    {
-        Logged() 
-        {
-        return this.$store.state.Logged;
-        },
-    },
+    computed: {
+  isLogged() {
+    return this.$store.getters.isLogged; // Vuex getter'ı kullan
+  },
+},
     data() 
     {
         return {
@@ -179,7 +175,8 @@ export default
 
 <style>
 
-.settings {
+.settings 
+{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -187,53 +184,66 @@ export default
     margin-top: 50px;
 }
 
-.settings p {
+.settings p 
+{
     color: #fafafa;
     font-size: 24px;
     letter-spacing: 1px;
     text-align: center;
     font-weight: bold;
     margin-bottom: 25px;
+    margin-top: 130px;
 }
 
-.settings table {
+.settings table 
+{
     width: 100%;
     max-width: 800px;
     border-collapse: collapse;
     text-align: center;
 }
 
-th, td {
+th, td 
+{
     border: 1px solid #ddd;
     padding: 8px;
     color: #fafafa;
     font-size: 16px;
     letter-spacing: 1px;
+    width: 500px;
+    height: 70px;
 }
 
-th {
+th 
+{
     background-color: #5762FF;
+    width: 500px;
+    height: 70px;
     font-weight: bold;
 }
 
-input[type="number"] {
+input[type="number"] 
+{
     width: 60px;
     padding: 4px;
     font-size: 14px;
 }
 
-.checkbox-container {
+.checkbox-container 
+{
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.settings abbr {
+.settings abbr 
+{
     text-decoration: none;
     cursor: pointer;
 }
 
-.settings abbr button {
+.settings abbr button 
+{
     border: 2px solid black;
     cursor: pointer;
     padding: 8px;
@@ -251,13 +261,15 @@ input[type="number"] {
     letter-spacing: 1px;
 }
 
-.settings .soru-sayisi {
+.settings .soru-sayisi 
+{
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.settings .soru-sayisi label {
+.settings .soru-sayisi label 
+{
     color: #fafafa;
     letter-spacing: 1px;
     font-weight: bold;
@@ -265,32 +277,38 @@ input[type="number"] {
     margin-right: 10px;
 }
 
-.settings .soru-sayisi input#soruSayisi {
+.settings .soru-sayisi input#soruSayisi 
+{
     width: 60px;
     height: 30px;
     padding: 5px;
     font-size: 16px;
 }
 
-/* Responsive Tasarım */
-@media (max-width: 768px) {
-    .settings {
+@media (max-width: 768px) 
+{
+    .settings 
+    {
         margin-top: 20px;
     }
 
-    .settings table {
+    .settings table
+     {
         width: 90%;
     }
 
-    .settings .soru-sayisi input#soruSayisi {
+    .settings .soru-sayisi input#soruSayisi 
+    {
         width: 50px;
     }
 
-    .settings abbr button {
+    .settings abbr button
+    {
         width: 120px;
     }
 
-    .settings p {
+    .settings p 
+    {
         font-size: 20px;
     }
 }

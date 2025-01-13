@@ -6,7 +6,6 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                    <li><a href="/members"> <i class="fa-solid fa-person"></i> Üyeler</a></li>
                     <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
@@ -24,7 +23,7 @@
                     <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
                     <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
                     <abbr title="Kaydol">
-                        <button v-if="!Logged" draggable="false" type="submit">Kaydol</button>
+                        <button draggable="false" type="submit">Kaydol</button>
                     </abbr>
                 </form>
             </div>
@@ -41,7 +40,7 @@ export default
   {
     Logged() 
     {
-      return this.$store.state.Logged;
+      return this.$store.state.login;
     },
   },
   methods:
@@ -123,13 +122,32 @@ export default
 
 <style>
 
-.register-screen
+.register-screen 
 {
-    margin-left: 500px;
-    text-align: center;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 600px;
     max-width: 100%;
+    padding: 20px;
+    background-color: #800000;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    opacity: 0.7;
+}
+
+.register-screen label 
+{
+    color: #fafafa;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 10px 0 5px;
 }
 
 .register-screen label.f-title
@@ -170,8 +188,16 @@ export default
 .register-screen textarea
 {
     text-align: center;
-    width: 100%;
-    height: 100px;
+    width: 80%;
+    max-width: 400px;
+    height: 48px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .register-screen .form
@@ -181,19 +207,34 @@ export default
 
 .register-screen button
 {
-    border: 2px solid black;
-    cursor: pointer;
-    padding: 3px;
-    box-shadow: 3px 3px 5px black;
+    border: none;
+    padding: 8px 16px;
     font-size: 14px;
     font-weight: 600;
-    width: 100px;
     color: #fafafa;
-    border-radius: 30px 30px;
-    background-color: blue;
+    background-color: #1a73e8;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
     outline: 0;
     letter-spacing: 1px;
     margin-top: 30px;
+}
+
+.register-screen button:hover
+{
+    background-color: #0c5bd5;
+    transform: scale(1.05);
+}
+
+.register-screen .input-wrap 
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 </style>
