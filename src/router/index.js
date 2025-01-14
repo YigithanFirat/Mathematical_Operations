@@ -16,7 +16,6 @@ const routes =
   { path: '/history', name: 'History', component: History}
 ];
 
-
 const router = createRouter
 ({
   history: createWebHistory(process.env.BASE_URL),

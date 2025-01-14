@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const http = require('http');
 const path = require('path');
+const util = require('util');
 
 const app = express();
 app.use(express.json());
@@ -14,18 +15,31 @@ const server = http.createServer(app);
 server.maxHeadersCount = 1000;
 server.headersTimeout = 60000;
 
+const allowedOrigins = ['http://localhost:8080', 'https://myapp.com'];
 app.use(cors
 ({
-  origin: 'http://localhost:8080',
+  origin: (origin, callback) => 
+  {
+    if(!origin || allowedOrigins.includes(origin)) 
+    {
+      callback(null, true);
+    } 
+    else 
+    {
+      callback(new Error('CORS policy: Origin not allowed'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true 
 }));
+app.options('*', cors());
 
-
-app.use((req, res, next) => 
+app.use((err, req, res, next)  => 
 {
   console.log('Gelen Başlıklar:', req.headers);
+  console.error('Beklenmeyen Hata:', err.message);
+  res.status(500).json({ error: 'Beklenmeyen bir hata oluştu.' });
   next();
 });
 
@@ -34,7 +48,8 @@ const sql = mysql.createConnection
   host: 'localhost',
   user: 'root',
   password: '[priadon1.5]',
-  database: 'site'
+  database: 'site',
+  connectTimeout: 10000,
 });
 
 sql.connect(function(err) 
@@ -46,6 +61,8 @@ sql.connect(function(err)
   }
   console.log('[MySQL]: Veritabanı bağlantısı başarıyla kuruldu!');
 });
+
+sql.query = util.promisify(sql.query);
 
 app.post('/register', async (req, res) => 
 {
@@ -147,30 +164,31 @@ app.post('/login', (req, res) =>
   });
 });
 
-app.post('/logout', (req, res) =>
+app.post('/logout', async (req, res) => 
 {
   console.log('Gelen Veri: ', req.body);
   const { userId } = req.body;
-  if (!userId) 
+
+  if(!userId) 
   {
-      return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
+    return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
   }
-  const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-  sql.query(query, [userId], (err, results) => 
+  try 
   {
-      if (err) 
-      {
-          console.error('Logout işleminde veritabanı hatası:', err.message);
-          return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
-      }
-      if (results.affectedRows === 0) 
-      {
-          return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
-      }
-      console.log('Logout işlemi başarılı: ', results);
-      res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
-      console.log('Veritabanı güncellemesi sonuçları:', results);
-  });
+    const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
+    const results = await sql.query(query, [userId]);
+    if(results.affectedRows === 0) 
+    {
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
+    }
+    console.log('Logout işlemi başarılı: ', results);
+    res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
+  }
+  catch(error)
+  {
+    console.error('Veritabanı hatası:', error.message);
+    res.status(500).json({ error: 'Veritabanı hatası: ' + error.message });
+  }
 });
 
 app.listen(port, () => 
