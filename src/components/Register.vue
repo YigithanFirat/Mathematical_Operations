@@ -47,27 +47,27 @@ export default
   {
     async logout() 
     {
-        try 
+      try
+      {
+        const response = await axios.post("http://localhost:3000/logout", 
         {
-            const response = await axios.post('http://localhost:3000/logout', 
-            {
-                userId: 1,
-            });
-            if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
-            {
-                alert('Başarıyla çıkış yaptınız.');
-                this.$router.push('/');
-            }
-            else
-            {
-                alert(response.data.error || 'Çıkış işlemi başarısız. Tekrar deneyin.');
-            }
-        }
-        catch(error) 
+          userId: 1,
+        });
+        if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
         {
-            console.error('Hata Detayı:', error.response?.data || error.message || error);
-            alert('Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.');
+          alert("Başarıyla çıkış yaptınız.");
+          this.$store.dispatch("logout");
         }
+        else
+        {
+          alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
+        }
+      }
+      catch(error)
+      {
+        console.error("Hata Detayı:", error.response?.data || error.message || error);
+        alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
+      }
     },
     navigateToLogin()
     {

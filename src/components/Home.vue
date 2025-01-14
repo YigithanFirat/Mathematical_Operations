@@ -102,7 +102,7 @@ export default
   name: "Home",
   computed: {
   isLogged() {
-    return this.$store.getters.isLogged;
+    return this.$store.getters.isLogged; // Vuex getter'ını izliyor
   },
 },
   data() 
@@ -125,7 +125,7 @@ export default
   {
     async logout() 
     {
-      try 
+      try
       {
         const response = await axios.post("http://localhost:3000/logout", 
         {
@@ -134,15 +134,14 @@ export default
         if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
         {
           alert("Başarıyla çıkış yaptınız.");
-          this.$router.dispatch("logout");
-          this.$router.push("/");
+          this.$store.dispatch("logout");
         }
-        else 
+        else
         {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
       } 
-      catch (error) 
+      catch(error)
       {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");

@@ -57,18 +57,19 @@ export default
 
     async logout() 
     {
-      try 
+      try
       {
         const response = await axios.post("http://localhost:3000/logout", 
         {
           userId: 1,
         });
-        if (response.data && response.data.message === "Çıkış işlemi başarılı.") 
+        if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
         {
           alert("Başarıyla çıkış yaptınız.");
-          this.$store.dispatch('logout');
-          this.$router.push("/");
-        } else {
+          this.$store.dispatch("logout");
+        }
+        else
+        {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
       }

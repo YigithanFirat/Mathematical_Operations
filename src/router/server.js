@@ -169,9 +169,9 @@ app.post('/logout', (req, res) =>
       }
       console.log('Logout işlemi başarılı: ', results);
       res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
+      console.log('Veritabanı güncellemesi sonuçları:', results);
   });
 });
-
 
 app.listen(port, () => 
 {

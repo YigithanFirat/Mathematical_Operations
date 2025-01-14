@@ -96,26 +96,26 @@ export default
 
         async logout() 
         {
-            try 
+            try
             {
-                const response = await axios.post('http://localhost:3000/logout', 
+                const response = await axios.post("http://localhost:3000/logout", 
                 {
                     userId: 1,
                 });
-                if(response.data && response.data.message === 'Çıkış işlemi başarılı.')
+                if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
                 {
-                    alert('Başarıyla çıkış yaptınız.');
-                    this.$router.push('/');
+                    alert("Başarıyla çıkış yaptınız.");
+                    this.$store.dispatch("logout");
                 }
                 else
                 {
-                    alert(response.data.error || 'Çıkış işlemi başarısız. Tekrar deneyin.');
+                    alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
                 }
             }
-            catch(error) 
+            catch(error)
             {
-                console.error('Hata Detayı:', error.response?.data || error.message || error);
-                alert('Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.');
+                console.error("Hata Detayı:", error.response?.data || error.message || error);
+                alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
             }
         },
 
