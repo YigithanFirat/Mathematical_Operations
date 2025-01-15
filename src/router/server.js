@@ -191,6 +191,38 @@ app.post('/logout', async (req, res) =>
   }
 });
 
+app.post('/checkResult', async (req, res) => 
+{
+  const { userId, points } = req.body;
+  console.log(req.body);
+  if(!userId || !Number.isInteger(userId)) 
+  {
+    return res.status(400).json({ error: 'Geçersiz veya eksik kullanıcı ID!' });
+  }
+  if(points === undefined || typeof points !== 'number' || isNaN(points)) 
+  {
+    return res.status(400).json({ error: 'Geçersiz veya eksik puan!' });
+  }
+  try 
+  {
+    const [results] = await sql.query
+    (
+      'UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?',
+      [points, userId]
+    );
+    if(results.affectedRows === 0) 
+    {
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı veya Login durumu aktif değil.' });
+    }
+    res.status(200).json({ message: 'Puan başarıyla eklendi!' });
+  } 
+  catch(error) 
+  {
+    console.error('Hata:', error.message || error);
+    res.status(500).json({ error: 'Sunucu hatası. Lütfen tekrar deneyin.' });
+  }
+});
+
 app.listen(port, () => 
 {
   console.log(`Sunucu http://localhost:${port} adresinde çalışıyor.`);
