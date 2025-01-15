@@ -176,7 +176,7 @@ app.post('/logout', async (req, res) =>
   try 
   {
     const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-    const results = await sql.query(query, [userId]);
+    const results = sql.query(query, [userId]);
     if(results.affectedRows === 0) 
     {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
@@ -205,7 +205,11 @@ app.post('/checkResult', async (req, res) =>
   }
   try 
   {
-    const [results] = await sql.query('UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?', [points, userId]);
+    const [results] = sql.query
+    (
+      'UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?',
+      [points, userId]
+    );    
     console.log('Results:', results);
     if (!results || typeof results !== 'object') 
     {
