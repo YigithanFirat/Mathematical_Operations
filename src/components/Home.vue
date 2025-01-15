@@ -178,7 +178,7 @@ export default
             points: 10
           });
           alert(response.data.message);
-        } 
+        }
         catch(error) 
         {
           console.error("Hata Detayı:", error.response?.data || error.message || error);

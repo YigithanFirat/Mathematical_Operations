@@ -205,21 +205,26 @@ app.post('/checkResult', async (req, res) =>
   }
   try 
   {
-    const [results] = await sql.query
-    (
-      'UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?',
-      [points, userId]
-    );
+    const [results] = await sql.query('UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?', [points, userId]);
+    console.log('Results:', results);
+    if (!results || typeof results !== 'object') 
+    {
+      return res.status(500).json({ error: 'SQL sorgusundan beklenmeyen bir sonuç döndü.' });
+    }
     if(results.affectedRows === 0) 
     {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı veya Login durumu aktif değil.' });
     }
     res.status(200).json({ message: 'Puan başarıyla eklendi!' });
   } 
-  catch(error) 
+  catch(error)
   {
     console.error('Hata:', error.message || error);
-    res.status(500).json({ error: 'Sunucu hatası. Lütfen tekrar deneyin.' });
+    res.status(500).json
+    ({
+      error: 'Sunucu hatası. Lütfen tekrar deneyin.',
+      details: error.message,
+    });
   }
 });
 
