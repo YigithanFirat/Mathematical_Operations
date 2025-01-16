@@ -116,12 +116,12 @@ export default
             alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
           }
         } 
-        catch(error) 
-        {
-          console.error("Hata Detayı:", error.response?.data || error.message || error);
-          alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
-        }
-      },
+      catch(error) 
+      {
+        console.error("Hata Detayı:", error.response?.data || error.message || error);
+        alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    },
 
     generateRandomNumbers() 
     {

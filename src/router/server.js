@@ -5,6 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const path = require('path');
 const util = require('util');
+const { Date } = require('core-js');
 
 const app = express();
 app.use(express.json());
@@ -96,7 +97,7 @@ app.post('/register', async (req, res) =>
 
 app.post('/save', (req, res) => 
 {
-  const { soruSayisi, id, Zorluk } = req.body;
+  const { soruSayisi, id, Zorluk, nickname } = req.body;
   console.log('Gelen Veri: ', req.body);
   if(!soruSayisi || isNaN(soruSayisi) || soruSayisi <= 0) 
   {
@@ -110,8 +111,12 @@ app.post('/save', (req, res) =>
   {
     return res.status(400).json({ error: 'Geçerli bir kullanıcı ID\'si belirtilmelidir.' });
   }
-  const query = 'UPDATE kullanicilar SET SoruSayisi = ?, Zorluk = ? WHERE id = ?';
-  sql.query(query, [soruSayisi, Zorluk, id], (err, results) => 
+  if(!nickname || typeof nickname !== 'string' || nickname.trim() === '') 
+  {
+    return res.status(400).json({ error: 'Geçerli bir kullanıcı adı belirtilmelidir.' });
+  }
+  const query = 'UPDATE kullanicilar SET SoruSayisi = ?, Zorluk = ?, nickname = ? WHERE id = ?';
+  sql.query(query, [soruSayisi, Zorluk, nickname, id], (err, results) => 
   {
     if(err) 
     {
@@ -119,9 +124,9 @@ app.post('/save', (req, res) =>
       return res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
     }
     console.log('Güncelleme Sonucu: ', results);
-    res.status(200).json({ message: 'Soru sayısı ve zorluk başarıyla güncellendi!' });
+    res.status(200).json({ message: 'Soru sayısı, zorluk ve kullanıcı adı başarıyla güncellendi!' });
   });
-});
+});  
 
 app.post('/login', (req, res) => 
 {
@@ -209,7 +214,12 @@ app.post('/checkResult', async (req, res) =>
     const results = await sql.query
     (
       'UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?',
-      [points, userId]
+      [points, userId],
+    );
+    const sorgu = await sql.query
+    (
+      'INSERT INTO backup (puan) VALUES(?)',
+      [points],
     );
     if(!results || results.affectedRows === 0) 
     {
@@ -228,6 +238,20 @@ app.post('/checkResult', async (req, res) =>
       error: 'Sunucu hatası. Lütfen tekrar deneyin.',
       details: error.message,
     });
+  }
+});
+
+app.get('/history', async (req, res) => 
+{
+  try 
+  {
+    const result = await sql.query('SELECT * FROM backup ORDER BY date DESC');
+    res.json(result.rows);
+  } 
+  catch(error) 
+  {
+    console.error('Veri çekme hatası:', error);
+    res.status(500).json({ error: 'Veritabanı hatası' });
   }
 });
 

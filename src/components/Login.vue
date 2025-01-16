@@ -42,11 +42,13 @@
 import axios from "axios";
 export default 
 {
-  computed: {
-  isLogged() {
-    return this.$store.getters.isLogged; // Vuex getter'ı kullan
+  computed: 
+  {
+    isLogged() 
+    {
+      return this.$store.getters.isLogged;
+    },
   },
-},
   name: "Login",
   methods: 
   {

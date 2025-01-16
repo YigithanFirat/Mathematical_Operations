@@ -1,5 +1,5 @@
 <template>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
     <div id="app">
         <router-view />
         <div class="full-body">
@@ -10,20 +10,10 @@
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
-                        <button 
-                        v-if="isLogged == 0" 
-                        @click="navigateToLogin()"
-                        >
-                        Giriş Yap
-                        </button>
+                        <button v-if="isLogged == 0" @click="navigateToLogin"> Giriş Yap </button>
                     </abbr>
                     <abbr title="Kaydol">
-                        <button 
-                        v-if="isLogged == 0" 
-                        @click="navigateToRegister()"
-                        >
-                        Kaydol
-                        </button>
+                        <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
                     </abbr>
                 </ul>
             </div>
@@ -34,6 +24,7 @@
                             <th>Zorluk</th>
                             <th>Tarih</th>
                             <th>Soru Sayısı</th>
+                            <th>Nickname</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,6 +32,7 @@
                             <td>{{ entry.difficulty }}</td>
                             <td>{{ entry.date }}</td>
                             <td>{{ entry.questionCount }}</td>
+                            <td>{{ entry.nickname }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -55,53 +47,22 @@ import axios from 'axios';
 export default 
 {
     name: 'History',
-    computed: {
-  isLogged() {
-    return this.$store.getters.isLogged; // Vuex getter'ı kullan
-  },
-},
+    computed: 
+    {
+        isLogged() 
+        {
+            return this.$store.getters.isLogged;
+        },
+    },
     data() 
     {
         return {
             historyData: [],
         };
     },
+
     methods: 
     {
-        async logout() 
-        {
-            try
-            {
-                const response = await axios.post("http://localhost:3000/logout", 
-                {
-                    userId: 1,
-                });
-                if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
-                {
-                    alert("Başarıyla çıkış yaptınız.");
-                    this.$store.dispatch("logout");
-                }
-                else
-                {
-                    alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
-                }
-            }
-            catch(error)
-            {
-                console.error("Hata Detayı:", error.response?.data || error.message || error);
-                alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
-            }
-        },
-        navigateToLogin() 
-        {
-            return this.$router.push('/login');
-        },
-
-        navigateToRegister() 
-        {
-            return this.$router.push('/register');
-        },
-
         async logout() 
         {
             try 
@@ -113,7 +74,7 @@ export default
                 if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
                 {
                     alert("Başarıyla çıkış yaptınız.");
-                    this.$store.commit("logout");
+                    this.$store.dispatch("logout");
                 } 
                 else 
                 {
@@ -127,14 +88,24 @@ export default
             }
         },
 
+        navigateToLogin() 
+        {
+            return this.$router.push('/login');
+        },
+
+        navigateToRegister() 
+        {
+            return this.$router.push('/register');
+        },
+
         async fetchHistory() 
         {
             try 
             {
-                const response = await axios.get('/api/user/history');
+                const response = await axios.get('http://localhost:3000/api/user/history');
                 this.historyData = response.data;
             } 
-            catch (error) 
+            catch(error) 
             {
                 console.error('Veriler alınamadı:', error);
             }
@@ -142,9 +113,10 @@ export default
     },
     mounted() 
     {
-        this.fetchHistory(); // Bileşen yüklendiğinde verileri al
+        this.fetchHistory();
     },
 };
+
 </script>
 
 <style>
@@ -155,7 +127,8 @@ export default
     border-collapse: collapse;
 }
 
-.history-table table th, .history-table table td 
+.history-table table th,
+.history-table table td 
 {
     padding: 10px;
     border: 1px solid #ddd;
@@ -185,4 +158,5 @@ export default
     color: #fafafa;
     font-weight: bold;
 }
+
 </style>

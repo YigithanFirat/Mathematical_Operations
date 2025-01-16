@@ -10,20 +10,10 @@
                     <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
-                        <button 
-                        v-if="isLogged == 0" 
-                        @click="navigateToLogin()"
-                        >
-                        Giriş Yap
-                        </button>
+                        <button v-if="isLogged == 0" @click="navigateToLogin()"> Giriş Yap </button>
                     </abbr>
                     <abbr title="Kaydol">
-                        <button 
-                        v-if="isLogged == 0" 
-                        @click="navigateToRegister()"
-                        >
-                        Kaydol
-                        </button>
+                        <button v-if="isLogged == 0" @click="navigateToRegister()"> Kaydol </button>
                     </abbr>
                 </ul>
             </div>
@@ -41,7 +31,6 @@
                             <td>Soru Sayısı</td>
                             <td>
                                 <input id="soruSayisi" v-model="soruSayisi" type="number" min="1" max="100" step="1" value="10">
-
                             </td>
                         </tr>
                         <tr>
@@ -61,6 +50,12 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td>Nickname</td>
+                            <td>
+                                <input type="text" v-model="nickname"  placeholder="Yeni Kullanıcı Adınızı Giriniz"class="nickname-input">
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <abbr title="Kaydet">
@@ -75,16 +70,19 @@
 import axios from "axios";
 export default
 {
-    computed: {
-  isLogged() {
-    return this.$store.getters.isLogged; // Vuex getter'ı kullan
-  },
-},
+    computed: 
+    {
+        isLogged() 
+        {
+            return this.$store.getters.isLogged;
+        },
+    },
     data() 
     {
         return {
             soruSayisi: 10,
             zorluk: 1,
+            nickname: "",
         };
     },
     methods:
@@ -134,41 +132,48 @@ export default
                     soruSayisi: this.soruSayisi,
                     Zorluk: this.Zorluk,
                     id: userId,
+                    nickname: this.nickname,
                 });
                 alert(response.data.message);
             } 
-            catch(error) 
+            catch (error) 
             {
                 console.error('Hata Detayı:', error.response?.data || error.message || error);
-                alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+                if(error.response && error.response.data && error.response.data.error) 
+                {
+                    alert(`Hata: ${error.response.data.error}`);
+                } 
+                else 
+                {
+                    alert('Bir hata oluştu, lütfen tekrar deneyiniz.');
+                }
             }
         },
 
-        async logout()
+        async logout() 
         {
-            try
+            try 
             {
-                const userId = 1;
-                const response = await axios.post('http://localhost:3000/logout',
+                const response = await axios.post("http://localhost:3000/logout", 
                 {
-                    id: userId,
+                    userId: 1,
                 });
-                if(response.data.success)
+                if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
                 {
-                    alert('Başarıyla çıkış yaptınız.');
-                    this.$router.push('/');
-                }
-                else
+                    alert("Başarıyla çıkış yaptınız.");
+                    this.$store.dispatch("logout");
+                } 
+                else 
                 {
-                    alert('Çıkış işlemi tamamlanamadı, lütfen tekrar deneyiniz.');
+                    alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
                 }
-            }
-            catch(error)
+            } 
+            catch(error) 
             {
-                console.error('Hata: ', error);
-                alert('Bir hata oluştu, lütfen daha sonra tekrar deneyiniz.');
+                console.error("Hata Detayı:", error.response?.data || error.message || error);
+                alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
             }
-        }
+        },
     }
 }
 </script>
@@ -227,6 +232,17 @@ input[type="number"]
     width: 60px;
     padding: 4px;
     font-size: 14px;
+}
+
+input[type="text"].nickname-input
+{
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .checkbox-container 
