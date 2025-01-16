@@ -67,6 +67,7 @@
 </template>
 
 <script>
+
 import axios from "axios";
 
 export default 
@@ -79,14 +80,16 @@ export default
       return this.$store.getters.isLogged;
     },
   },
-  data() {
+  data() 
+  {
     return {
       firstNumber: 0,
       secondNumber: 0,
       selectedOperation: "add",
       result: "",
       selectedDifficulty: "easy",
-      zorlukOptions: [
+      zorlukOptions: 
+      [
         { value: "easy", label: "Kolay" },
         { value: "medium", label: "Orta" },
         { value: "hard", label: "Zor" },
@@ -143,6 +146,7 @@ export default
     async checkResult() 
     {
       let expectedResult;
+      let points;
       switch(this.selectedOperation) 
       {
         case "add":
@@ -168,6 +172,18 @@ export default
           expectedResult = this.firstNumber / this.secondNumber;
           break;
       }
+      switch(this.selectedDifficulty) 
+      {
+        case "easy":
+          points = 10;
+          break;
+        case "medium":
+          points = 20;
+          break;
+        case "hard":
+          points = 30;
+          break;
+      }
       if(Number(this.result) === expectedResult) 
       {
         try 
@@ -175,9 +191,13 @@ export default
           const response = await axios.post("http://localhost:3000/checkResult", 
           {
             userId: 1,
-            points: 10
+            points: points
           });
-          alert(response.data.message);
+          if(response.data && response.data.message === "Puan başarıyla eklendi!") 
+          {
+            alert(`${points} puan kazandınız!`);
+            this.generateRandomNumbers();
+          } 
         }
         catch(error) 
         {
@@ -212,9 +232,11 @@ export default
     this.generateRandomNumbers();
   },
 };
+
 </script>
 
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 *
@@ -430,4 +452,5 @@ body, html
   color: #495057;
   cursor: not-allowed;
 }
+
 </style>

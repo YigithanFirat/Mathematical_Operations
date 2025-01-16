@@ -29,10 +29,12 @@ app.use(cors
       callback(new Error('CORS policy: Origin not allowed'));
     }
   },
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true 
+  credentials: true
 }));
+
 app.options('*', cors());
 
 app.use((err, req, res, next)  => 
@@ -194,34 +196,31 @@ app.post('/logout', async (req, res) =>
 app.post('/checkResult', async (req, res) => 
 {
   const { userId, points } = req.body;
-  console.log(req.body);
   if(!userId || !Number.isInteger(userId)) 
   {
     return res.status(400).json({ error: 'Geçersiz veya eksik kullanıcı ID!' });
   }
-  if(points === undefined || typeof points !== 'number' || isNaN(points)) 
+  if(points === undefined || typeof points !== 'number') 
   {
     return res.status(400).json({ error: 'Geçersiz veya eksik puan!' });
   }
-  try 
+  try
   {
-    const [results] = sql.query
+    const results = await sql.query
     (
       'UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?',
       [points, userId]
-    );    
-    console.log('Results:', results);
-    if (!results || typeof results !== 'object') 
+    );
+    if(!results || results.affectedRows === 0) 
     {
-      return res.status(500).json({ error: 'SQL sorgusundan beklenmeyen bir sonuç döndü.' });
-    }
-    if(results.affectedRows === 0) 
-    {
-      return res.status(404).json({ error: 'Kullanıcı bulunamadı veya Login durumu aktif değil.' });
+      return res.status(404).json
+      ({
+        error: 'Kullanıcı bulunamadı veya Login durumu aktif değil.',
+      });
     }
     res.status(200).json({ message: 'Puan başarıyla eklendi!' });
   } 
-  catch(error)
+  catch(error) 
   {
     console.error('Hata:', error.message || error);
     res.status(500).json
