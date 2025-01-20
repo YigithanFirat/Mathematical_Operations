@@ -6,8 +6,8 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
-                    <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+                    <li><a v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
+                    <li><a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button draggable="false" @click="navigateToLogin()">Giriş Yap</button>

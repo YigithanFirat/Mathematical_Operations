@@ -6,8 +6,8 @@
             <div class="header">
                 <ul>
                     <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
-                    <li><a href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+                    <li><a v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
+                    <li><a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
                     <abbr title="Giriş Yap">
                         <button v-if="isLogged == 0" @click="navigateToLogin()"> Giriş Yap </button>
@@ -17,7 +17,7 @@
                     </abbr>
                 </ul>
             </div>
-            <div class="settings">
+            <div v-if="isLogged == 1" class="settings">
                 <p>Ayarlar Sayfası</p>
                 <table border="1" cellspacing="0" cellpadding="8">
                     <thead>
