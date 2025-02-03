@@ -200,7 +200,9 @@ app.post('/logout', async (req, res) =>
 
 app.post('/checkResult', async (req, res) => 
 {
-  const { userId, points } = req.body;
+  const { userId, points, zorlukSeviyesi, nickname, sorusayisi, tarih} = req.body;
+  const now = new Date();
+  const dateOnly = now.toISOString().split("T")[0];
   if(!userId || !Number.isInteger(userId)) 
   {
     return res.status(400).json({ error: 'Geçersiz veya eksik kullanıcı ID!' });
@@ -208,6 +210,18 @@ app.post('/checkResult', async (req, res) =>
   if(points === undefined || typeof points !== 'number') 
   {
     return res.status(400).json({ error: 'Geçersiz veya eksik puan!' });
+  }
+  if(sorusayisi === undefined || typeof sorusayisi !== 'number') 
+  {
+    return res.status(400).json({ error: 'Geçersiz veya eksik soru sayısı!' });
+  }
+  if(!nickname || typeof nickname !== 'string') 
+  {
+    return res.status(400).json({ error: 'Geçersiz veya eksik nickname!' });
+  }
+  if(!zorlukSeviyesi || typeof zorlukSeviyesi !== 'string') 
+  {
+    return res.status(400).json({ error: 'Geçersiz veya eksik zorluk seviyesi!' });
   }
   try
   {
@@ -218,8 +232,8 @@ app.post('/checkResult', async (req, res) =>
     );
     const sorgu = await sql.query
     (
-      'INSERT INTO backup (puan) VALUES(?)',
-      [points],
+      'INSERT INTO backup (zorluk, tarih, sorusayisi, nickname, puan) VALUES(?, ?, ?, ?, ?)',
+      [zorlukSeviyesi, dateOnly, sorusayisi, nickname, points]
     );
     if(!results || results.affectedRows === 0) 
     {
