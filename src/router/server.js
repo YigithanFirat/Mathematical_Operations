@@ -245,7 +245,7 @@ app.get('/api/user/history', async (req, res) =>
 {
     try 
     {
-        const history = await db.query('SELECT zorluk, tarih, sorusayisi AS sorusayisi, nickname FROM backup ORDER BY tarih DESC');
+        const history = await sql.query('SELECT zorluk, tarih, sorusayisi AS sorusayisi, nickname FROM backup ORDER BY tarih DESC');
         res.json(history.rows);
     } 
     catch(error) 

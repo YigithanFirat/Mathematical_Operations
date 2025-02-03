@@ -15,7 +15,11 @@
           <li>
             <a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
           </li>
-          <li><a v-if="isLogged == 1" href="/" @click="logout"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+          <li>
+          <a v-if="isLogged == 1" @click="logout" href="/">
+            <i class="fa-solid fa-door-open"></i> Çıkış
+          </a>
+        </li>
           <abbr title="Giriş Yap">
               <button v-if="isLogged == 0" @click="navigateToLogin"> Giriş Yap </button>
           </abbr>
