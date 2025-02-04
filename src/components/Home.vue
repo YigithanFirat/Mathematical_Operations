@@ -91,7 +91,7 @@ export default
       secondNumber: 0,
       selectedOperation: "add",
       result: "",
-      nickname: "",
+      nickname: "Abusivesnake",
       sorusayisi: 10,
       selectedDifficulty: "easy",
       zorlukOptions: 
@@ -190,15 +190,15 @@ export default
     try {
       const response = await axios.post("http://localhost:3000/checkResult", 
       {
-        userId: 1, // Kullanıcı ID (örnek olarak sabit verdim, dinamik yapabilirsin)
-        points: points, // Hesaplanan puan
-        zorlukSeviyesi: this.selectedDifficulty, // Kullanıcının seçtiği zorluk seviyesi
-        nickname: this.nickname || "Bilinmeyen Kullanıcı", // Kullanıcı takma adı
+        userId: 1,
+        points: points,
+        zorlukSeviyesi: this.selectedDifficulty,
+        nickname: this.nickname || "Bilinmeyen Kullanıcı",
         sorusayisi: this.sorusayisi,
       });
       if (response.data && response.data.message === "Puan başarıyla eklendi!") {
         alert(`${points} puan kazandınız!`);
-        this.generateRandomNumbers(); // Yeni rastgele sayılar oluştur
+        this.generateRandomNumbers();
       }
     } catch (error) {
       console.error("Hata Detayı:", error.response?.data || error.message || error);

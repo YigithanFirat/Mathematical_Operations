@@ -256,38 +256,25 @@ app.post('/checkResult', async (req, res) =>
 });
 
 app.get('/api/user/history', async (req, res) => 
-{
-    try 
-    {
-        const history = await sql.query('SELECT zorluk, tarih, sorusayisi AS sorusayisi, nickname FROM backup ORDER BY tarih DESC');
-        res.json(history.rows);
-    } 
-    catch(error) 
-    {
-        console.error('Veritabanı hatası:', error);
-        res.status(500).json({ error: 'Veritabanı sorgusu başarısız.' });
-    }
-});
-
-app.get('/api/user/history', async (req, res) => 
-{
-    try 
-    {
-        const history = await sql.query('SELECT zorluk, tarih, sorusayisi AS sorusayisi, nickname FROM backup ORDER BY tarih DESC');
-        res.json(history.rows);
-    } 
-    catch(error) 
-    {
-        console.error('Veritabanı hatası:', error);
-        res.status(500).json({ error: 'Veritabanı sorgusu başarısız.' });
-    }
-});
+  {
+      try 
+      {
+          const history = await sql.query('SELECT * FROM backup');
+          console.log('Veritabanından gelen veri:', history.rows);
+          res.json(history.rows);
+      } 
+      catch(error) 
+      {
+          console.error('Veritabanı bağlantı hatası:', error);
+          res.status(500).json({ error: 'Veritabanı bağlantısı başarısız.' });
+      }
+  });  
 
 app.get('/history', async (req, res) => 
 {
   try 
   {
-    const result = await sql.query('SELECT * FROM backup ORDER BY date DESC');
+    const result = await sql.query('SELECT * FROM backup ORDER BY tarih DESC');
     res.json(result.rows);
   } 
   catch(error) 

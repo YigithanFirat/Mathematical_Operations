@@ -105,12 +105,14 @@ export default
             {
                 const response = await axios.get('http://localhost:3000/api/user/history');
                 this.historyData = response.data;
+                console.log('Gelen veri:', this.historyData);
             } 
             catch(error) 
             {
-                console.error('Veriler alınamadı:', error);
+                console.error('Veriler alınamadı:', error.response || error.message);
             }
         },
+
     },
     mounted() 
     {
