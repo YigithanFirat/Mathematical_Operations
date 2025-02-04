@@ -269,6 +269,20 @@ app.get('/api/user/history', async (req, res) =>
     }
 });
 
+app.get('/api/user/history', async (req, res) => 
+{
+    try 
+    {
+        const history = await sql.query('SELECT zorluk, tarih, sorusayisi AS sorusayisi, nickname FROM backup ORDER BY tarih DESC');
+        res.json(history.rows);
+    } 
+    catch(error) 
+    {
+        console.error('Veritabanı hatası:', error);
+        res.status(500).json({ error: 'Veritabanı sorgusu başarısız.' });
+    }
+});
+
 app.get('/history', async (req, res) => 
 {
   try 

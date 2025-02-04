@@ -58,15 +58,7 @@ export default
     {
         return {
             historyData:
-            [
-                {
-                    "zorluk": "Orta",
-                    "tarih": "2025-01-19",
-                    "sorusayisi": 15,
-                    "nickname": "Abusivesnake"
-                },
-            ]
-
+            []
         };
     },
 
