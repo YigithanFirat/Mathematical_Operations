@@ -255,32 +255,20 @@ app.post('/checkResult', async (req, res) =>
   }
 });
 
-app.get('/api/user/history', async (req, res) => 
-  {
-      try 
-      {
-          const history = await sql.query('SELECT * FROM backup');
-          console.log('Veritabanından gelen veri:', history.rows);
-          res.json(history.rows);
-      } 
-      catch(error) 
-      {
-          console.error('Veritabanı bağlantı hatası:', error);
-          res.status(500).json({ error: 'Veritabanı bağlantısı başarısız.' });
-      }
-  });  
-
-app.get('/history', async (req, res) => 
-{
-  try 
-  {
-    const result = await sql.query('SELECT * FROM backup ORDER BY tarih DESC');
-    res.json(result.rows);
-  } 
-  catch(error) 
-  {
-    console.error('Veri çekme hatası:', error);
-    res.status(500).json({ error: 'Veritabanı hatası' });
+app.get('/history', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM backup';
+    const results = await sql.query(query);
+    if (!results || results.length === 0) {
+      return res.status(404).json({ error: 'Kayıt bulunamadı.' });
+    }
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Hata:', error.message || error);
+    res.status(500).json({
+      error: 'Sunucu hatası. Lütfen tekrar deneyin.',
+      details: error.message,
+    });
   }
 });
 

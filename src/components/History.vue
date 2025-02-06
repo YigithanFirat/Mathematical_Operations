@@ -21,21 +21,23 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Zorluk</th>
-                            <th>Tarih</th>
-                            <th>Soru Sayısı</th>
-                            <th>Nickname</th>
+                        <th>Zorluk</th>
+                        <th>Tarih</th>
+                        <th>Soru Sayısı</th>
+                        <th>Puan</th>
+                        <th>Nickname</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="entry in historyData" :key="entry.id">
-                            <td>{{ entry.zorluk }}</td>
-                            <td>{{ entry.tarih }}</td>
-                            <td>{{ entry.sorusayisi }}</td>
-                            <td>{{ entry.nickname }}</td>
+                        <td>{{ entry.zorluk }}</td>
+                        <td>{{ entry.tarih }}</td>
+                        <td>{{ entry.sorusayisi }}</td>
+                        <td>{{ entry.puan }}</td>
+                        <td>{{ entry.nickname }}</td>
                         </tr>
                     </tbody>
-                </table>
+            </table>
             </span>
         </div>
     </div>
@@ -103,7 +105,7 @@ export default
         {
             try 
             {
-                const response = await axios.get('http://localhost:3000/api/user/history');
+                const response = await axios.get('http://localhost:3000/history');
                 this.historyData = response.data;
                 console.log('Gelen veri:', this.historyData);
             } 
@@ -111,13 +113,13 @@ export default
             {
                 console.error('Veriler alınamadı:', error.response || error.message);
             }
-        },
+        }
 
     },
     mounted() 
     {
         this.fetchHistory();
-    },
+    }
 };
 
 </script>
