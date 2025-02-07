@@ -26,6 +26,7 @@
                         <th>Soru Sayısı</th>
                         <th>Puan</th>
                         <th>Nickname</th>
+                        <th>Toplam Süre</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,6 +36,7 @@
                         <td>{{ entry.sorusayisi }}</td>
                         <td>{{ entry.puan }}</td>
                         <td>{{ entry.nickname }}</td>
+                        <td>{{ entry.toplamsure }}</td>
                         </tr>
                     </tbody>
             </table>
@@ -114,8 +116,8 @@ export default
                 console.error('Veriler alınamadı:', error.response || error.message);
             }
         }
-
     },
+
     mounted() 
     {
         this.fetchHistory();

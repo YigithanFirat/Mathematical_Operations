@@ -49,7 +49,7 @@
         </div>
         <div class="islem">
           <label for="operation-select">Bir işlem seçin</label>
-          <select id="operation-select" v-model="selectedOperation">
+          <select id="operation-select" v-model="selectedOperation" :disabled="operationLocked">
             <option value="add">Toplama</option>
             <option value="subtract">Çıkarma</option>
             <option value="multiply">Çarpma</option>
@@ -73,7 +73,6 @@
 <script>
 
 import axios from "axios";
-import { response } from "express";
 
 export default 
 {
@@ -96,6 +95,7 @@ export default
       firstNumber: 0,
       secondNumber: 0,
       selectedOperation: "add",
+      operationLocked: false,
       result: "",
       nickname: "Abusivesnake",
       sorusayisi: 10,
@@ -201,7 +201,7 @@ export default
         {
           const response = await axios.post("http://localhost:3000/checkResult", 
           {
-            userId: response.data.userId,
+            userId: 1,
             points: points,
             zorlukSeviyesi: this.selectedDifficulty,
             nickname: this.nickname || "Bilinmeyen Kullanıcı",
@@ -248,6 +248,12 @@ export default
 
   mounted() 
   {
+    const operation = this.$route.query.operation;
+    if(operation) 
+    {
+      this.selectedOperation = operation;
+      this.operationLocked = true;
+    }
     this.generateRandomNumbers();
   },
 };

@@ -14,7 +14,9 @@ export default createStore
       localStorage.setItem('Logged', JSON.stringify(status));
     },
   },
-  actions: {
+
+  actions: 
+  {
     login({ commit }) 
     {
       commit('setLogged', 1);
@@ -26,6 +28,7 @@ export default createStore
       localStorage.removeItem('Logged');
     },
   },
+  
   getters: 
   {
     isLogged: (state) => state.Logged === 1,
