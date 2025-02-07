@@ -16,7 +16,7 @@
             <a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
           </li>
           <li>
-          <a v-if="isLogged == 1 && isAdmin === 1" @click="logout" href="/">
+          <a v-if="isLogged == 1" @click="logout" href="/">
             <i class="fa-solid fa-door-open"></i> Çıkış
           </a>
         </li>
@@ -25,9 +25,6 @@
           </abbr>
           <abbr title="Kaydol">
               <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
-          </abbr>
-          <abbr title="Yönetici Girişi Yap">
-            <button v-if="isLogged == 0 && isAdmin == 1" @click="navigateToAdmin"> Yönetici Girişi Yap </button>
           </abbr>
         </ul>
       </div>
@@ -61,7 +58,7 @@
         </div>
         <div id="sonuc">
           <label for="result">Sonuç</label>
-          <input type="number" id="result" v-model="result"/>
+          <input type="number" id="result" v-model="result" @keyup.enter="checkResult"/>
           <div id="kontrol">
             <abbr title="Sonucu Kontrol Et">
               <button @click="checkResult">Sonucu Kontrol Et</button>
