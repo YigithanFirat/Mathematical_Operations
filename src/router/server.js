@@ -6,6 +6,7 @@ const http = require('http');
 const path = require('path');
 const util = require('util');
 const { Date } = require('core-js');
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(express.json());
@@ -27,7 +28,7 @@ app.use(cors
     } 
     else 
     {
-      callback(new Error('CORS policy: Origin not allowed'));
+      callback(new Error('CORS politikası: Köken izin vermiyor'));
     }
   },
   origin: '*',
@@ -171,6 +172,49 @@ app.post('/login', (req, res) =>
   });
 });
 
+app.post('/loginAdmin', async (req, res) =>
+{
+  console.log(req.body);
+  const { nickname, password } = req.body;
+  if(!nickname || !password) 
+  {
+    return res.status(400).send('Nickname ve şifre gereklidir');
+  }
+  const sqlSorgu = 'SELECT * FROM kullanicilar WHERE nickname = ?';
+  sql.query(sqlSorgu, [nickname], async (err, results) => 
+  {
+    if(err) 
+    {
+      console.error('Veritabanı hatası: ', err);
+      return res.status(500).send('Veritabanı hatası');
+    }
+    if(results.length === 0) 
+    {
+        return res.status(401).send('Kullanıcı bulunamadı');
+    }
+    const user = results[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch) 
+    {
+      return res.status(401).send('Şifre hatalı');
+    }
+    const updateLoginSorgu = 'UPDATE kullanicilar SET Login = 1 WHERE id = ?';
+    sql.query(updateLoginSorgu, [user.id], (updateErr, updateResults) => 
+    {
+      if(updateErr) 
+      {
+        console.error('Login durumunu güncelleme hatası: ', updateErr);
+        return res.status(500).send('Login durumunu güncellerken bir hata oluştu.');
+      }
+      console.log('Login durumu başarıyla güncellendi: ', updateResults);
+      res.status(200).json
+      ({
+        message: 'Giriş başarılı ve Login durumu güncellendi.',
+      });
+    });
+  });
+});
+
 app.post('/logout', async (req, res) => 
 {
   console.log('Gelen Veri: ', req.body);
@@ -255,20 +299,44 @@ app.post('/checkResult', async (req, res) =>
   }
 });
 
-app.get('/history', async (req, res) => {
-  try {
+app.get('/history', async (req, res) => 
+{
+  try 
+  {
     const query = 'SELECT * FROM backup';
     const results = await sql.query(query);
-    if (!results || results.length === 0) {
+    if(!results || results.length === 0) 
+    {
       return res.status(404).json({ error: 'Kayıt bulunamadı.' });
     }
     res.status(200).json(results);
-  } catch (error) {
+  } 
+  catch(error) 
+  {
     console.error('Hata:', error.message || error);
-    res.status(500).json({
+    res.status(500).json
+    ({
       error: 'Sunucu hatası. Lütfen tekrar deneyin.',
       details: error.message,
     });
+  }
+});
+
+app.get("/api/check-admin", async (req, res) => 
+{
+  try 
+  {
+    const [rows] = await db.query("SELECT * FROM kullanicilar WHERE Administrator = 1");
+    if (rows.length === 0) 
+    {
+      return res.json({ isAdmin: false, message: "Administrator bulunamadı." });
+    }
+    return res.json({ isAdmin: true, message: "Administrator bulundu.", admins: rows });
+  } 
+  catch(error) 
+  {
+    console.error("Veritabanı hatası:", error);
+    return res.status(500).json({ error: "Sunucu hatası. Lütfen tekrar deneyin." });
   }
 });
 

@@ -16,7 +16,7 @@
             <a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
           </li>
           <li>
-          <a v-if="isLogged == 1" @click="logout" href="/">
+          <a v-if="isLogged == 1 && isAdmin === 1" @click="logout" href="/">
             <i class="fa-solid fa-door-open"></i> Çıkış
           </a>
         </li>
@@ -25,6 +25,9 @@
           </abbr>
           <abbr title="Kaydol">
               <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
+          </abbr>
+          <abbr title="Yönetici Girişi Yap">
+            <button v-if="isLogged == 0 && isAdmin == 1" @click="navigateToAdmin"> Yönetici Girişi Yap </button>
           </abbr>
         </ul>
       </div>
@@ -83,6 +86,11 @@ export default
     {
       return this.$store.getters.isLogged;
     },
+
+    isAdmin()
+    {
+      return this.$store.getters.isAdmin;
+    }
   },
   data() 
   {
@@ -217,6 +225,11 @@ export default
     navigateToLogin() 
     {
       this.$router.push("/login");
+    },
+
+    navigateToAdmin()
+    {
+      this.$router.push("/adminlogin");
     },
 
     navigateToRegister() 
