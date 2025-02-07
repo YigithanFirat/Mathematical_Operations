@@ -73,6 +73,7 @@
 <script>
 
 import axios from "axios";
+import { response } from "express";
 
 export default 
 {
@@ -155,61 +156,71 @@ export default
       this.result = "";
     },
 
-    async checkResult() {
-  let expectedResult;
-  let points;
-  switch (this.selectedOperation) {
-    case "add":
-      expectedResult = this.firstNumber + this.secondNumber;
-      break;
-    case "subtract":
-      expectedResult = this.firstNumber - this.secondNumber;
-      break;
-    case "multiply":
-      expectedResult = this.firstNumber * this.secondNumber;
-      break;
-    case "divide":
-      if (this.secondNumber === 0) {
-        alert("Bir sayıyı sıfıra bölemezsiniz!");
-        return;
-      }
-      if (this.firstNumber === 0 && this.secondNumber === 0) {
-        alert("0/0 belirsizdir!");
-        return;
-      }
-      expectedResult = this.firstNumber / this.secondNumber;
-      break;
-  }
-  switch (this.selectedDifficulty) {
-    case "easy":
-      points = 10;
-      break;
-    case "medium":
-      points = 20;
-      break;
-    case "hard":
-      points = 30;
-      break;
-  }
-  if (Number(this.result) === expectedResult) {
-    try {
-      const response = await axios.post("http://localhost:3000/checkResult", 
+    async checkResult() 
+    {
+      let expectedResult;
+      let points;
+      switch(this.selectedOperation) 
       {
-        userId: 1,
-        points: points,
-        zorlukSeviyesi: this.selectedDifficulty,
-        nickname: this.nickname || "Bilinmeyen Kullanıcı",
-        sorusayisi: this.sorusayisi,
-      });
-      if (response.data && response.data.message === "Puan başarıyla eklendi!") {
-        alert(`${points} puan kazandınız!`);
-        this.generateRandomNumbers();
+        case "add":
+          expectedResult = this.firstNumber + this.secondNumber;
+          break;
+        case "subtract":
+          expectedResult = this.firstNumber - this.secondNumber;
+          break;
+        case "multiply":
+          expectedResult = this.firstNumber * this.secondNumber;
+          break;
+        case "divide":
+          if (this.secondNumber === 0) {
+            alert("Bir sayıyı sıfıra bölemezsiniz!");
+            return;
+          }
+          if (this.firstNumber === 0 && this.secondNumber === 0) {
+            alert("0/0 belirsizdir!");
+            return;
+          }
+          expectedResult = this.firstNumber / this.secondNumber;
+          break;
       }
-    } catch (error) {
-      console.error("Hata Detayı:", error.response?.data || error.message || error);
-      alert(error.response?.data?.error || "Sunucu hatası. Lütfen tekrar deneyin.");
-    }
-  } else {
+      switch (this.selectedDifficulty) 
+      {
+        case "easy":
+          points = 10;
+          break;
+        case "medium":
+          points = 20;
+          break;
+        case "hard":
+          points = 30;
+          break;
+      }
+      if(Number(this.result) === expectedResult) 
+      {
+        try 
+        {
+          const response = await axios.post("http://localhost:3000/checkResult", 
+          {
+            userId: response.data.userId,
+            points: points,
+            zorlukSeviyesi: this.selectedDifficulty,
+            nickname: this.nickname || "Bilinmeyen Kullanıcı",
+            sorusayisi: this.sorusayisi,
+          });
+          if(response.data && response.data.message === "Puan başarıyla eklendi!") 
+          {
+            alert(`${points} puan kazandınız!`);
+            this.generateRandomNumbers();
+          }
+        } 
+        catch(error) 
+        {
+          console.error("Hata Detayı:", error.response?.data || error.message || error);
+          alert(error.response?.data?.error || "Sunucu hatası. Lütfen tekrar deneyin.");
+        }
+  } 
+  else 
+  {
     alert("Hatalı sonuç yazdınız!");
   }
 },
