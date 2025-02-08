@@ -6,6 +6,7 @@ export default createStore
   {
     Logged: JSON.parse(localStorage.getItem('Logged')) || 0,
   },
+
   mutations: 
   {
     setLogged(state, status) 
@@ -28,7 +29,7 @@ export default createStore
       localStorage.removeItem('Logged');
     },
   },
-  
+
   getters: 
   {
     isLogged: (state) => state.Logged === 1,

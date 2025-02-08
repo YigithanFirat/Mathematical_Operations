@@ -122,4 +122,9 @@ body, html
   background-color: #33CC33;
 }
 
+button
+{
+  cursor: pointer;
+}
+
 </style>

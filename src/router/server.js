@@ -326,7 +326,7 @@ app.get("/api/check-admin", async (req, res) =>
 {
   try 
   {
-    const [rows] = await db.query("SELECT * FROM kullanicilar WHERE Administrator = 1");
+    const [rows] = await sql.query("SELECT * FROM kullanicilar WHERE Administrator = 1");
     if (rows.length === 0) 
     {
       return res.json({ isAdmin: false, message: "Administrator bulunamadı." });

@@ -26,6 +26,9 @@
           <abbr title="Kaydol">
               <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
           </abbr>
+          <abbr title="Admin Girişi">
+              <button v-if="isAdmin == 1" @click="navigateToAdmin">Admin Girişi</button>
+          </abbr>
         </ul>
       </div>
       <div class="islemler">
