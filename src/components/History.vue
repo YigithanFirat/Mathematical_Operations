@@ -27,6 +27,7 @@
                         <th>Puan</th>
                         <th>Nickname</th>
                         <th>Toplam Süre</th>
+                        <th>Ortalama Süre</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,7 +37,8 @@
                         <td>{{ entry.sorusayisi }}</td>
                         <td>{{ entry.puan }}</td>
                         <td>{{ entry.nickname }}</td>
-                        <td>{{ entry.toplamsure }}</td>
+                        <td>{{ entry.toplamSure }}</td>
+                        <td>{{ entry.toplamSure/entry.sorusayisi }}</td>
                         </tr>
                     </tbody>
             </table>

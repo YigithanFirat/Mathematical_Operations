@@ -219,7 +219,6 @@ app.post('/logout', async (req, res) =>
 {
   console.log('Gelen Veri: ', req.body);
   const { userId } = req.body;
-
   if(!userId) 
   {
     return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
@@ -240,6 +239,36 @@ app.post('/logout', async (req, res) =>
     console.error('Veritabanı hatası:', error.message);
     res.status(500).json({ error: 'Veritabanı hatası: ' + error.message });
   }
+});
+
+app.post("/saveResults", (req, res) => {
+  const { zorluk, sorusayisi, nickname, puan, toplamSure } = req.body;
+
+  // Log incoming data for debugging
+  console.log("Gelen veri:", req.body);
+
+  // Validate the input data
+  if (!zorluk || !sorusayisi || !nickname || !puan || !toplamSure) {
+    console.error("Eksik veya hatalı veri:", req.body);
+    return res.status(400).json({ message: "Eksik veri gönderildi." });
+  }
+
+  const query = `
+    INSERT INTO backup (zorluk, sorusayisi, nickname, puan, toplamSure)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const values = [zorluk, sorusayisi, nickname, puan, toplamSure];
+
+  // Use sql.query instead of db.query
+  sql.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Veritabanına ekleme hatası:", err);
+      return res.status(500).json({ message: "Veritabanına eklenirken bir hata oluştu." });
+    }
+
+    // Respond with success
+    res.status(200).json({ message: "Sonuç başarıyla kaydedildi.", id: result.insertId });
+  });
 });
 
 app.post('/checkResult', async (req, res) => 
@@ -276,8 +305,8 @@ app.post('/checkResult', async (req, res) =>
     );
     const sorgu = await sql.query
     (
-      'INSERT INTO backup (zorluk, tarih, sorusayisi, nickname, puan) VALUES(?, ?, ?, ?, ?)',
-      [zorlukSeviyesi, dateOnly, sorusayisi, nickname, points]
+      'INSERT INTO backup (zorluk, tarih, sorusayisi, nickname, puan, ToplamSure) VALUES(?, ?, ?, ?, ?, ?)',
+      [zorlukSeviyesi, dateOnly, sorusayisi, nickname, points, toplamSure]
     );
     if(!results || results.affectedRows === 0) 
     {

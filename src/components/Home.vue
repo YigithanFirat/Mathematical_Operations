@@ -86,11 +86,6 @@ export default
     {
       return this.$store.getters.isLogged;
     },
-
-    isAdmin()
-    {
-      return this.$store.getters.isAdmin;
-    }
   },
   data() 
   {
@@ -103,6 +98,9 @@ export default
       nickname: "Abusivesnake",
       sorusayisi: 10,
       selectedDifficulty: "easy",
+      quizCompleted: false,
+      questionCount: 0,
+      totalQuestions: 10,
       zorlukOptions: 
       [
         { value: "easy", label: "Kolay" },
@@ -162,7 +160,6 @@ export default
     async checkResult() 
     {
       let expectedResult;
-      let points;
       switch(this.selectedOperation) 
       {
         case "add":
@@ -175,59 +172,83 @@ export default
           expectedResult = this.firstNumber * this.secondNumber;
           break;
         case "divide":
-          if (this.secondNumber === 0) {
+          if(this.secondNumber === 0) 
+          {
             alert("Bir sayıyı sıfıra bölemezsiniz!");
             return;
           }
-          if (this.firstNumber === 0 && this.secondNumber === 0) {
+          if(this.firstNumber === 0 && this.secondNumber === 0) 
+          {
             alert("0/0 belirsizdir!");
             return;
           }
           expectedResult = this.firstNumber / this.secondNumber;
           break;
       }
-      switch (this.selectedDifficulty) 
-      {
-        case "easy":
-          points = 10;
-          break;
-        case "medium":
-          points = 20;
-          break;
-        case "hard":
-          points = 30;
-          break;
-      }
       if(Number(this.result) === expectedResult) 
       {
-        try 
+        this.questionCount++;
+        if(this.questionCount === 1) 
         {
-          const response = await axios.post("http://localhost:3000/checkResult", 
+          this.startTime = Date.now();
+        }
+        if(this.questionCount === this.sorusayisi) 
+        {
+          this.endTime = Date.now();
+          const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
+          alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
+          this.$router.push("/");
+          if(this.$store.getters.isLogged == 1)
           {
-            userId: 1,
-            points: points,
-            zorlukSeviyesi: this.selectedDifficulty,
-            nickname: this.nickname || "Bilinmeyen Kullanıcı",
-            sorusayisi: this.sorusayisi,
-          });
-          if(response.data && response.data.message === "Puan başarıyla eklendi!") 
-          {
-            alert(`${points} puan kazandınız!`);
-            this.generateRandomNumbers();
+            await this.saveResults(totalTime);
+            alert(`Tebrikler! Toplam süre: ${totalTime} saniye. ${puan} puan kazandınız`);
+            this.$router.push("/");
           }
         } 
-        catch(error) 
+        else 
         {
-          console.error("Hata Detayı:", error.response?.data || error.message || error);
-          alert(error.response?.data?.error || "Sunucu hatası. Lütfen tekrar deneyin.");
+          this.generateRandomNumbers();
         }
-  } 
-  else 
-  {
-    alert("Hatalı sonuç yazdınız!");
-  }
-},
+      } 
+      else 
+      {
+        alert("Yanlış cevap!");
+      }
+    },
 
+    async saveResults(totalTime) 
+    {
+      const puan = this.questionCount;
+      const payload = 
+      {
+        zorluk: this.selectedDifficulty,
+        sorusayisi: this.sorusayisi,
+        nickname: this.nickname,
+        puan: puan,
+        toplamSure: totalTime,
+      };
+      console.log("Gönderilen Payload:", payload);
+      try 
+      {
+        const response = await axios.post("http://localhost:3000/saveResults", payload);
+        if (response.status === 200) 
+        {
+          console.log("Sonuç başarıyla kaydedildi:", response.data);
+          alert("Sonuç başarıyla kaydedildi.");
+        } 
+        else 
+        {
+          console.error("Hata:", response.data.message);
+          alert("Sonuç kaydedilemedi: " + response.data.message);
+        }
+      } 
+      catch(error) 
+      {
+        console.error("Axios hatası:", error);
+        alert("Sonuç kaydedilirken bir hata oluştu.");
+      }
+    },
+    
     updateNumbers()
     {
       this.generateRandomNumbers();
@@ -246,6 +267,13 @@ export default
     navigateToRegister() 
     {
       this.$router.push("/register");
+    },
+
+    resetQuiz() 
+    {
+      this.quizCompleted = false;
+      this.questionCount = 0;
+      this.generateRandomNumbers();
     },
   },
 
