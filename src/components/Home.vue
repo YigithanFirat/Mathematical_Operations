@@ -160,6 +160,7 @@ export default
     async checkResult() 
     {
       let expectedResult;
+      let difficulty = this.selectedDifficulty;
       switch(this.selectedOperation) 
       {
         case "add":
@@ -196,14 +197,9 @@ export default
         {
           this.endTime = Date.now();
           const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
+          await this.saveResults(totalTime);
           alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
           this.$router.push("/");
-          if(this.$store.getters.isLogged == 1)
-          {
-            await this.saveResults(totalTime);
-            alert(`Tebrikler! Toplam süre: ${totalTime} saniye. ${puan} puan kazandınız`);
-            this.$router.push("/");
-          }
         } 
         else 
         {

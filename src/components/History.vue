@@ -22,7 +22,6 @@
                     <thead>
                         <tr>
                         <th>Zorluk</th>
-                        <th>Tarih</th>
                         <th>Soru Sayısı</th>
                         <th>Puan</th>
                         <th>Nickname</th>
@@ -33,7 +32,6 @@
                     <tbody>
                         <tr v-for="entry in historyData" :key="entry.id">
                         <td>{{ entry.zorluk }}</td>
-                        <td>{{ entry.tarih }}</td>
                         <td>{{ entry.sorusayisi }}</td>
                         <td>{{ entry.puan }}</td>
                         <td>{{ entry.nickname }}</td>
