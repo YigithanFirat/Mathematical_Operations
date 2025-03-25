@@ -95,7 +95,7 @@ export default
       selectedOperation: "add",
       operationLocked: false,
       result: "",
-      nickname: "Abusivesnake",
+      nickname: "BusraHanbaba",
       sorusayisi: 10,
       selectedDifficulty: "easy",
       quizCompleted: false,
