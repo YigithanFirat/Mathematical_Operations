@@ -18,7 +18,7 @@ Headera ait bölümler ve butonlar oluşturuldu, stillendirildi. Eksik olan Ayar
 
 ![alt text](loginheader.png)
 
-### Register ve Login Page
+## Register ve Login Page
 
 Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlendirmeler de eklendikten sonra kullanıcı kayıt ve girişleri backend olarak halledildi. server.js dosyasıyla birlikte node.js kullanılarak  veritabanı bağlantısı kuruldu ve bu şekilde sayfaların tasarımlarının sonrasında da veritabanı kayıtları tamamlandı.
 
@@ -26,7 +26,10 @@ Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlen
 
 ![alt text](login.png)
 
-### Settings Kısmına Ait Fotoğraflar
+## Settings Kısmına Ait Fotoğraflar
 Ayarlar kısmına ait sayfadır, kullanıcı bir çok bilgilerini buradan güncelleyebilmektedir.
 
 ![alt text](settings.png)
+
+## Database
+Veritabanı dosyası (.sql) paylaşıldı.
