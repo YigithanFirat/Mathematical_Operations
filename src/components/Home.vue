@@ -16,18 +16,18 @@
             <a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
           </li>
           <li>
-          <a v-if="isLogged == 1" @click="logout" href="/">
-            <i class="fa-solid fa-door-open"></i> Çıkış
-          </a>
-        </li>
+            <a v-if="isLogged == 1" @click="logout" href="/">
+              <i class="fa-solid fa-door-open"></i> Çıkış
+            </a>
+          </li>
           <abbr title="Giriş Yap">
-              <button v-if="isLogged == 0" @click="navigateToLogin"> Giriş Yap </button>
+            <button v-if="isLogged == 0" @click="navigateToLogin"> Giriş Yap </button>
           </abbr>
           <abbr title="Kaydol">
-              <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
+            <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
           </abbr>
           <abbr title="Admin Girişi">
-              <button v-if="isAdmin == 1" @click="navigateToAdmin">Admin Girişi</button>
+            <button v-if="isAdmin == 1" @click="navigateToAdmin">Admin Girişi</button>
           </abbr>
         </ul>
       </div>
@@ -74,35 +74,32 @@
 </template>
 
 <script>
-
 import axios from "axios";
 
-export default 
-{
+export default {
   name: "Home",
-  computed: 
-  {
-    isLogged() 
-    {
+  computed: {
+    isLogged() {
       return this.$store.getters.isLogged;
     },
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    }
   },
-  data() 
-  {
+  data() {
     return {
       firstNumber: 0,
       secondNumber: 0,
       selectedOperation: "add",
       operationLocked: false,
       result: "",
-      nickname: "BusraHanbaba",
+      nickname: "YigithanFirat",
       sorusayisi: 10,
       selectedDifficulty: "easy",
       quizCompleted: false,
       questionCount: 0,
       totalQuestions: 10,
-      zorlukOptions: 
-      [
+      zorlukOptions: [
         { value: "easy", label: "Kolay" },
         { value: "medium", label: "Orta" },
         { value: "hard", label: "Zor" },
@@ -110,37 +107,26 @@ export default
     };
   },
 
-  methods: 
-  {
-    async logout() 
-    {
-      try 
-      {
-          const response = await axios.post("http://localhost:3000/logout", 
-          {
-            userId: 1,
-          });
-          if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
-          {
-            alert("Başarıyla çıkış yaptınız.");
-            this.$store.dispatch("logout");
-          } 
-          else 
-          {
-            alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
-          }
-        } 
-      catch(error) 
-      {
+  methods: {
+    async logout() {
+      try {
+        const response = await axios.post("http://localhost:3000/logout", {
+          userId: 1,
+        });
+        if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
+          alert("Başarıyla çıkış yaptınız.");
+          this.$store.dispatch("logout");
+        } else {
+          alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
+        }
+      } catch (error) {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
       }
     },
 
-    generateRandomNumbers() 
-    {
-      switch(this.selectedDifficulty) 
-      {
+    generateRandomNumbers() {
+      switch (this.selectedDifficulty) {
         case "easy":
           this.firstNumber = Math.floor(Math.random() * 10) + 1;
           this.secondNumber = Math.floor(Math.random() * 10) + 1;
@@ -157,12 +143,9 @@ export default
       this.result = "";
     },
 
-    async checkResult() 
-    {
+    async checkResult() {
       let expectedResult;
-      let difficulty = this.selectedDifficulty;
-      switch(this.selectedOperation) 
-      {
+      switch (this.selectedOperation) {
         case "add":
           expectedResult = this.firstNumber + this.secondNumber;
           break;
@@ -173,118 +156,100 @@ export default
           expectedResult = this.firstNumber * this.secondNumber;
           break;
         case "divide":
-          if(this.secondNumber === 0) 
-          {
+          if (this.secondNumber === 0) {
             alert("Bir sayıyı sıfıra bölemezsiniz!");
             return;
           }
-          if(this.firstNumber === 0 && this.secondNumber === 0) 
-          {
+          if (this.firstNumber === 0 && this.secondNumber === 0) {
             alert("0/0 belirsizdir!");
             return;
           }
           expectedResult = this.firstNumber / this.secondNumber;
           break;
       }
-      if(Number(this.result) === expectedResult) 
-      {
+
+      if (Number(this.result) === expectedResult) {
         this.questionCount++;
-        if(this.questionCount === 1) 
-        {
+        if (this.questionCount === 1) {
           this.startTime = Date.now();
         }
-        if(this.questionCount === this.sorusayisi) 
-        {
+        if (this.questionCount === this.sorusayisi) {
           this.endTime = Date.now();
           const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
           await this.saveResults(totalTime);
           alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
           this.$router.push("/");
-        } 
-        else 
-        {
+        } else {
           this.generateRandomNumbers();
         }
-      } 
-      else 
-      {
+      } else {
         alert("Yanlış cevap!");
       }
     },
 
-    async saveResults(totalTime) 
-    {
+    async saveResults(totalTime) {
+      if (!this.isLogged) {
+        alert("Sonuçları kaydetmek için giriş yapmalısınız.");
+        return;
+      }
+
       const puan = this.questionCount;
-      const payload = 
-      {
+      const payload = {
         zorluk: this.selectedDifficulty,
         sorusayisi: this.sorusayisi,
         nickname: this.nickname,
         puan: puan,
         toplamSure: totalTime,
       };
+
       console.log("Gönderilen Payload:", payload);
-      try 
-      {
+      try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
-        if (response.status === 200) 
-        {
+        if (response.status === 200) {
           console.log("Sonuç başarıyla kaydedildi:", response.data);
           alert("Sonuç başarıyla kaydedildi.");
-        } 
-        else 
-        {
+        } else {
           console.error("Hata:", response.data.message);
           alert("Sonuç kaydedilemedi: " + response.data.message);
         }
-      } 
-      catch(error) 
-      {
+      } catch (error) {
         console.error("Axios hatası:", error);
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
     },
-    
-    updateNumbers()
-    {
+
+    updateNumbers() {
       this.generateRandomNumbers();
     },
 
-    navigateToLogin() 
-    {
+    navigateToLogin() {
       this.$router.push("/login");
     },
 
-    navigateToAdmin()
-    {
+    navigateToAdmin() {
       this.$router.push("/adminlogin");
     },
 
-    navigateToRegister() 
-    {
+    navigateToRegister() {
       this.$router.push("/register");
     },
 
-    resetQuiz() 
-    {
+    resetQuiz() {
       this.quizCompleted = false;
       this.questionCount = 0;
       this.generateRandomNumbers();
     },
   },
 
-  mounted() 
-  {
+  mounted() {
     const operation = this.$route.query.operation;
-    if(operation) 
-    {
+    if (operation) {
       this.selectedOperation = operation;
       this.operationLocked = true;
     }
     this.generateRandomNumbers();
   },
 };
-
 </script>
 
 <style>
