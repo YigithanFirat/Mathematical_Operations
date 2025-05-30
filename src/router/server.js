@@ -51,7 +51,7 @@ const sql = mysql.createConnection
 ({
   host: 'localhost',
   user: 'root',
-  password: '[priadon1.5]',
+  password: '',
   database: 'site',
   connectTimeout: 10000,
 });
@@ -215,29 +215,35 @@ app.post('/loginAdmin', async (req, res) =>
   });
 });
 
-app.post('/logout', async (req, res) => 
-{
-  console.log('Gelen Veri: ', req.body);
+app.post('/logout', async (req, res) => {
+  console.log('Gelen Veri:', req.body);
+
   const { userId } = req.body;
-  if(!userId) 
-  {
+
+  if (!userId) {
     return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
   }
-  try 
-  {
-    const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-    const results = sql.query(query, [userId]);
-    if(results.affectedRows === 0) 
-    {
+
+  try {
+    // Veritabanı sorgusunu await ile çağırmak için Promise'e sarıyoruz
+    const results = await new Promise((resolve, reject) => {
+      const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
+      sql.query(query, [userId], (error, results) => {
+        if (error) reject(error);
+        else resolve(results);
+      });
+    });
+
+    if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
     }
-    console.log('Logout işlemi başarılı: ', results);
-    res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
-  }
-  catch(error)
-  {
+
+    console.log('Logout işlemi başarılı:', results);
+    return res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
+
+  } catch (error) {
     console.error('Veritabanı hatası:', error.message);
-    res.status(500).json({ error: 'Veritabanı hatası: ' + error.message });
+    return res.status(500).json({ error: 'Veritabanı hatası: ' + error.message });
   }
 });
 
@@ -328,25 +334,20 @@ app.post('/checkResult', async (req, res) =>
   }
 });
 
-app.get('/history', async (req, res) => 
-{
-  try 
-  {
-    const query = 'SELECT * FROM backup';
-    const results = await sql.query(query);
-    if(!results || results.length === 0) 
-    {
+app.get('/history', async (req, res) => {
+  try {
+    const [results] = await sql.query('SELECT * FROM backup');
+
+    if (!results || results.length === 0) {
       return res.status(404).json({ error: 'Kayıt bulunamadı.' });
     }
-    res.status(200).json(results);
-  } 
-  catch(error) 
-  {
-    console.error('Hata:', error.message || error);
-    res.status(500).json
-    ({
+
+    res.status(200).json({ data: results });
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({
       error: 'Sunucu hatası. Lütfen tekrar deneyin.',
-      details: error.message,
+      details: error.message || 'Bilinmeyen bir hata oluştu.',
     });
   }
 });
