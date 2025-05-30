@@ -1,69 +1,82 @@
 <template>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <div id="app">
-        <router-view/>
-        <div class="full-body">
-            <div class="header">
-                <ul>
-                    <li><a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-                    <li><a v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
-                    <li><a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap">
-                        <button v-if="isLogged == 0" @click="navigateToLogin()"> Giriş Yap </button>
-                    </abbr>
-                    <abbr title="Kaydol">
-                        <button v-if="isLogged == 0" @click="navigateToRegister()"> Kaydol </button>
-                    </abbr>
-                </ul>
-            </div>
-            <div v-if="isLogged == 1" class="settings">
-                <p>Ayarlar Sayfası</p>
-                <table border="1" cellspacing="0" cellpadding="8">
-                    <thead>
-                        <tr>
-                            <th>Özellik</th>
-                            <th>Değer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Soru Sayısı</td>
-                            <td>
-                                <input id="soruSayisi" v-model="soruSayisi" type="number" min="1" max="100" step="1" value="10">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Zorluk Derecesi</td>
-                                <td>
-                                <div class="checkbox-container">
-                                    <input type="radio" id="derece1" v-model="Zorluk" name="zorluk" value="1">
-                                    <label for="derece1">Kolay</label>
-                                </div>
-                                <div class="checkbox-container">
-                                    <input type="radio" id="derece2" v-model="Zorluk" name="zorluk" value="2">
-                                    <label for="derece2">Orta</label>
-                                </div>
-                                <div class="checkbox-container">
-                                    <input type="radio" id="derece3" v-model="Zorluk" name="zorluk" value="3">
-                                    <label for="derece3">Zor</label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Nickname</td>
-                            <td>
-                                <input type="text" v-model="nickname"  placeholder="Yeni Kullanıcı Adınızı Giriniz"class="nickname-input">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <abbr title="Kaydet">
-                    <button @click="Save()">Kaydet</button>
-                </abbr>
-            </div>
-        </div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <div id="app">
+    <router-view />
+    <div class="full-body">
+      <div class="header">
+        <ul class="nav-left">
+          <li>
+            <a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a>
+          </li>
+          <li v-if="isLogged == 1">
+            <a class="btn" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a>
+          </li>
+          <li v-if="isLogged == 1">
+            <a class="btn" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
+          </li>
+          <li v-if="isLogged == 1">
+            <a class="btn" href="/" @click.prevent="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a>
+          </li>
+          <li v-if="isLogged == 0">
+            <abbr title="Giriş Yap">
+              <button class="btn" @click="navigateToLogin()"> <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap </button>
+            </abbr>
+          </li>
+          <li v-if="isLogged == 0">
+            <abbr title="Kaydol">
+              <button class="btn" @click="navigateToRegister()"> <i class="fa-solid fa-user-plus"></i> Kaydol </button>
+            </abbr>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="isLogged == 1" class="settings">
+        <p>Ayarlar Sayfası</p>
+        <table border="1" cellspacing="0" cellpadding="8">
+          <thead>
+            <tr>
+              <th>Özellik</th>
+              <th>Değer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Soru Sayısı</td>
+              <td>
+                <input id="soruSayisi" v-model="soruSayisi" type="number" min="1" max="100" step="1" />
+              </td>
+            </tr>
+            <tr>
+              <td>Zorluk Derecesi</td>
+              <td>
+                <div class="checkbox-container">
+                  <input type="radio" id="derece1" v-model="Zorluk" name="zorluk" value="1" />
+                  <label for="derece1">Kolay</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="radio" id="derece2" v-model="Zorluk" name="zorluk" value="2" />
+                  <label for="derece2">Orta</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="radio" id="derece3" v-model="Zorluk" name="zorluk" value="3" />
+                  <label for="derece3">Zor</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Nickname</td>
+              <td>
+                <input type="text" v-model="nickname" placeholder="Yeni Kullanıcı Adınızı Giriniz" class="nickname-input" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <abbr title="Kaydet">
+          <button @click="Save()">Kaydet</button>
+        </abbr>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
