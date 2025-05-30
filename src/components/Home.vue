@@ -259,31 +259,28 @@ export default {
         return;
       }
 
-      const userId = this.$store.getters.userId || null;
-      const nickname = this.$store.getters.nickname || "Anonim";
-
       const payload = {
-        userId,
-        nickname,
-        difficulty: this.selectedDifficulty,
-        questionCount: this.sorusayisi,
-        score: this.questionCount,
-        totalTime,
-        operation: this.selectedOperation,
+        zorluk: this.selectedDifficulty,       // ✅ backend ile uyumlu
+        sorusayisi: this.sorusayisi,           // ✅ backend ile uyumlu
+        nickname: this.$store.getters.nickname || "Anonim",
+        puan: this.questionCount,              // ✅ backend ile uyumlu
+        toplamSure: totalTime                  // ✅ backend ile uyumlu
       };
 
       try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
+
         if (response.status === 200) {
           alert("Sonuç başarıyla kaydedildi.");
         } else {
           alert("Sonuç kaydedilemedi: " + (response.data.message || "Bilinmeyen hata"));
         }
       } catch (error) {
-        console.error("Axios hatası:", error);
+        console.error("Axios hatası:", error.response?.data || error.message);
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
     },
+
 
     updateNumbers() {
       this.generateRandomNumbers();
