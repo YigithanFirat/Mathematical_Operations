@@ -26,9 +26,7 @@
           <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
           <label class="f-password" for="password">Şifreniz</label>
           <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
-          <abbr title="Giriş Yap">
-            <button class="btn-login">Giriş Yap</button>
-          </abbr>
+            <button title="Giriş Yap" class="btn-login">Giriş Yap</button>
         </form>
       </div>
     </div>
@@ -268,12 +266,6 @@ export default {
   10% { opacity: 1; transform: translateX(-50%) translateY(0); }
   90% { opacity: 1; transform: translateX(-50%) translateY(0); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-}
-
-abbr
-{
-  text-decoration: none;
-  border: none;
 }
 
 </style>
