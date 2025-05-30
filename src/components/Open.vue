@@ -2,24 +2,16 @@
   <div class="tam-govde">
     <div class="process">
       <div class="operation toplama">
-        <abbr title="Toplama">
-          <button @click="navigateToHomePage('add')">+</button>
-        </abbr>
+          <button title="Toplama" @click="navigateToHomePage('add')">+</button>
       </div>
       <div class="operation cikarma">
-        <abbr title="Çıkarma">
-          <button @click="navigateToHomePage('subtract')">-</button>
-        </abbr>
+          <button title="Çıkarma" @click="navigateToHomePage('subtract')">-</button>
       </div>
       <div class="operation carpma">
-        <abbr title="Çarpma">
-          <button @click="navigateToHomePage('multiply')">*</button>
-        </abbr>
+          <button title="Çarpma" @click="navigateToHomePage('multiply')">*</button>
       </div>
       <div class="operation bolme">
-        <abbr title="Bölme">
-          <button @click="navigateToHomePage('divide')">/</button>
-        </abbr>
+          <button title="Bölme" @click="navigateToHomePage('divide')">/</button>
       </div>
     </div>
   </div>
@@ -49,6 +41,34 @@ export default {
 body, html {
   width: 100%;
   height: 100%;
+}
+
+.operation button {
+  width: 80px;
+  height: 80px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+  color: white;
+  font-size: 36px;
+  font-weight: 700;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.operation button:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.1));
+  box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+  transform: scale(1.1);
+}
+
+.operation button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.7);
 }
 
 #app {
