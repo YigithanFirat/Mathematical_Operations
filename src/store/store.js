@@ -1,9 +1,21 @@
 import { createStore } from 'vuex';
 
+// Güvenli JSON.parse
+function safeParse(item) {
+  try {
+    if (item && item !== 'undefined') {
+      return JSON.parse(item);
+    }
+  } catch (e) {
+    console.error('JSON parse hatası:', e);
+  }
+  return null;
+}
+
 export default createStore({
   state: {
-    Logged: JSON.parse(localStorage.getItem('Logged')) || 0,
-    user: JSON.parse(localStorage.getItem('user')) || null, // kullanıcı nesnesi (id, nickname vb.)
+    Logged: safeParse(localStorage.getItem('Logged')) || 0,
+    user: safeParse(localStorage.getItem('user')) || null,
   },
 
   mutations: {
@@ -26,7 +38,7 @@ export default createStore({
   actions: {
     login({ commit }, userData) {
       commit('setLogged', 1);
-      commit('setUser', userData); // kullanıcı bilgilerini sakla (örneğin: { id: 1, nickname: "ahmet" })
+      commit('setUser', userData);
     },
 
     logout({ commit }) {
