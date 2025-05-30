@@ -47,7 +47,6 @@
           </li>
         </ul>
       </nav>
-
       <section class="islemler">
         <div class="input-group">
           <label for="first-number">İlk Sayı</label>
@@ -404,6 +403,15 @@ body, html, #app {
   text-decoration: none; /* link alt çizgisi kaldır */
   border: none;
 }
+
+/* Disabled select için özel imleç ve görünüm */
+select:disabled,
+.disabled-cursor {
+  cursor: not-allowed;
+  background-color: #e9ecef !important;
+  color: #495057;
+}
+
 
 /* Hover efekti */
 .btn:hover {
