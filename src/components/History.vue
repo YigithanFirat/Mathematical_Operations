@@ -96,6 +96,9 @@ export default {
     isLogged() {
       return this.$store.getters.isLogged;
     },
+    isAdmin() {
+      return this.$store.getters.userRole === 'admin';
+    },
     groupedHistory() {
       const grouped = {};
       this.historyData.forEach(entry => {
@@ -134,19 +137,18 @@ export default {
     async fetchHistory() {
       try {
         const response = await axios.get('http://localhost:3000/history');
-        
+        console.log('Gelen veri:', response.data);
+
         if (response.data && Array.isArray(response.data.data)) {
           this.historyData = response.data.data;
         } else {
-          this.historyData = [];
           console.warn('Beklenen formatta veri gelmedi:', response.data);
+          this.historyData = [];
         }
-
-        console.log('Gelen veri:', this.historyData);
       } catch (error) {
-        console.error('Veriler alınamadı:', error.response?.data || error.message);
+        console.error('Veri alınamadı:', error);
       }
-    }
+    },
 
   },
   mounted() {
