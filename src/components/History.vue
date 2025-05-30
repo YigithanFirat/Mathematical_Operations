@@ -134,12 +134,20 @@ export default {
     async fetchHistory() {
       try {
         const response = await axios.get('http://localhost:3000/history');
-        this.historyData = Array.isArray(response.data) ? response.data : [];
+        
+        if (response.data && Array.isArray(response.data.data)) {
+          this.historyData = response.data.data;
+        } else {
+          this.historyData = [];
+          console.warn('Beklenen formatta veri gelmedi:', response.data);
+        }
+
         console.log('Gelen veri:', this.historyData);
       } catch (error) {
-        console.error('Veriler alınamadı:', error.response || error.message);
+        console.error('Veriler alınamadı:', error.response?.data || error.message);
       }
     }
+
   },
   mounted() {
     this.fetchHistory();
