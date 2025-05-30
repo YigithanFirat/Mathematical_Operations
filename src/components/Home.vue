@@ -1,27 +1,25 @@
 <template>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <div id="app">
     <router-view />
     <div class="full-body">
       <nav class="header">
-        <ul>
+        <ul class="nav-left">
           <li>
-            <router-link to="/" class="btn" style="margin-right:auto;">
+            <router-link to="/" class="btn">
               <i class="fa-solid fa-house"></i> Anasayfa
             </router-link>
           </li>
-          
           <li v-if="isLogged">
             <router-link to="/history" class="btn">
               <i class="fa-solid fa-ghost"></i> Geçmiş
             </router-link>
           </li>
-          
           <li v-if="isLogged">
             <router-link to="/settings" class="btn">
               <i class="fa-solid fa-user-gear"></i> Ayarlar
             </router-link>
           </li>
-          
           <li v-if="isLogged">
             <button class="btn" @click="logout" type="button">
               <i class="fa-solid fa-door-open"></i> Çıkış
@@ -41,7 +39,7 @@
               </button>
             </li>
           </template>
-          
+
           <li v-if="isAdmin">
             <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
               Admin Girişi
@@ -356,35 +354,67 @@ body, html, #app {
   justify-content: flex-start;
 }
 
+/* HEADER */
 .header {
   background-color: #112479;
   width: 100%;
   padding: 10px 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.header ul {
-  list-style-type: none;
+  height: 50px;
   display: flex;
-  justify-content: space-around;
   align-items: center;
 }
 
-.header ul li a {
-  display: inline-block;
-  padding: 10px 20px;
-  text-decoration: none;
-  font-size: 18px;
-  color: #fafafa;
-  font-weight: 500;
-  letter-spacing: 1px;
-  transition: color 0.3s, background-color 0.3s;
-  border-radius: 4px;
+/* Nav list with left aligned buttons */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Butonlar arası boşluk */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: flex-start; /* En sola yasla */
+  width: 100%;
 }
 
-.header abbr {
-  text-decoration: none;
+.nav-left li {
+  display: inline-block;
+}
+
+/* Buton ortak temel stil */
+.btn {
+  background-color: #1a73e8;
+  border: none;
+  color: #fafafa;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
+  padding: 10px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* İkon ve yazı arası */
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  text-decoration: none; /* link alt çizgisi kaldır */
+  border: none;
+}
+
+/* Hover efekti */
+.btn:hover {
+  background-color: #80b9ff; /* Açık mavi */
+  border-radius: 15px;
+  transform: scale(1.05);
+}
+
+.btn i {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .zorluk {
@@ -407,6 +437,7 @@ body, html, #app {
   font-weight: 600;
 }
 
+/* İşlemler bölümü */
 .islemler {
   margin-top: 30px;
   text-align: center;
@@ -426,7 +457,8 @@ body, html, #app {
   letter-spacing: 0.5px;
 }
 
-.islemler input, .islemler select {
+.islemler input,
+.islemler select {
   width: 100%;
   padding: 10px;
   font-size: 14px;
@@ -438,7 +470,8 @@ body, html, #app {
   transition: border-color 0.3s;
 }
 
-.islemler input:focus, .islemler select:focus {
+.islemler input:focus,
+.islemler select:focus {
   border-color: #0c5bd5;
 }
 
@@ -448,53 +481,10 @@ body, html, #app {
   cursor: not-allowed;
 }
 
-/* Butonlar için ortak temel stil */
-/* .btn sınıfı hem button hem de a için kullanılabilir */
-.btn {
-  background-color: #1a73e8;
-  border: none;
-  color: #fafafa;
-  font-weight: 600;
-  font-size: 16px;
-  border-radius: 4px;
+/* Abbr etiketinin pointer pointer olması */
+.header abbr {
+  text-decoration: none;
   cursor: pointer;
-  padding: 10px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s, transform 0.3s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px; /* İkon ve yazı arasında boşluk */
-  text-align: center;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  text-decoration: none; /* link alt çizgisini kaldır */
-  border: none;
-}
-
-/* Hover efekti */
-.btn:hover {
-  background-color: #80b9ff; /* Açık mavi */
-  border-radius: 15px;       /* Hoverda radius azaltıldı */
-  transform: scale(1.05);
-}
-
-/* İkon varsa boyutu */
-.btn i {
-  font-size: 18px;
-  line-height: 1;
-}
-
-/* Header'daki tüm li'lar arasında boşluk */
-.header ul li {
-  margin-left: 30px;
-}
-
-/* İlk li olan Anasayfa butonunun sola yapışık kalması için özel stil */
-.header ul li:first-child {
-  margin-left: 0;
-  margin-right: auto;
 }
 
 </style>
