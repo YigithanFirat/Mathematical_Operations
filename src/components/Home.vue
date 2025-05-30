@@ -1,74 +1,116 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
-  <link rel="icon" href="/public/favicon.ico" type="image/icon type"/>
   <div id="app">
-    <router-view/>
+    <router-view />
     <div class="full-body">
-      <div class="header">
+      <nav class="header">
         <ul>
           <li>
-            <a href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a>
+            <router-link to="/" class="btn" style="margin-right:auto;">
+              <i class="fa-solid fa-house"></i> Anasayfa
+            </router-link>
           </li>
-          <li>
-            <a v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a>
+          
+          <li v-if="isLogged">
+            <router-link to="/history" class="btn">
+              <i class="fa-solid fa-ghost"></i> Geçmiş
+            </router-link>
           </li>
-          <li>
-            <a v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a>
+          
+          <li v-if="isLogged">
+            <router-link to="/settings" class="btn">
+              <i class="fa-solid fa-user-gear"></i> Ayarlar
+            </router-link>
           </li>
-          <li>
-            <a v-if="isLogged == 1" @click="logout" href="/">
+          
+          <li v-if="isLogged">
+            <button class="btn" @click="logout" type="button">
               <i class="fa-solid fa-door-open"></i> Çıkış
-            </a>
+            </button>
           </li>
-          <abbr title="Giriş Yap">
-            <button v-if="isLogged == 0" @click="navigateToLogin"> Giriş Yap </button>
-          </abbr>
-          <abbr title="Kaydol">
-            <button v-if="isLogged == 0" @click="navigateToRegister"> Kaydol </button>
-          </abbr>
-          <abbr title="Admin Girişi">
-            <button v-if="isAdmin == 1" @click="navigateToAdmin">Admin Girişi</button>
-          </abbr>
+          
+          <!-- Giriş Yap ve Kaydol butonları birlikte ve aynı şartla görünür -->
+          <template v-if="!isLogged">
+            <li>
+              <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
+                Giriş Yap
+              </button>
+            </li>
+            <li>
+              <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
+                Kaydol
+              </button>
+            </li>
+          </template>
+          
+          <li v-if="isAdmin">
+            <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
+              Admin Girişi
+            </button>
+          </li>
         </ul>
-      </div>
-      <div class="islemler">
-        <div id="randomsayi1">
+      </nav>
+
+      <section class="islemler">
+        <div class="input-group">
           <label for="first-number">İlk Sayı</label>
           <input type="number" id="first-number" :value="firstNumber" readonly />
         </div>
+
         <div class="zorluk">
-          <template v-for="(option, index) in zorlukOptions" :key="index">
-            <div class="checkbox-container">
-              <input :id="'derece' + (index + 1)" type="radio" name="zorluk" :value="option.value" v-model="selectedDifficulty" @change="updateNumbers"/>
-              <label :for="'derece' + (index + 1)">
-                {{ option.label }}
-              </label>
-            </div>
-          </template>
+          <div
+            class="checkbox-container"
+            v-for="(option, index) in zorlukOptions"
+            :key="index"
+          >
+            <input
+              :id="'derece' + (index + 1)"
+              type="radio"
+              name="zorluk"
+              :value="option.value"
+              v-model="selectedDifficulty"
+              @change="generateRandomNumbers"
+            />
+            <label :for="'derece' + (index + 1)">{{ option.label }}</label>
+          </div>
         </div>
-        <div id="randomsayi2">
+
+        <div class="input-group">
           <label for="second-number">İkinci Sayı</label>
           <input type="number" id="second-number" :value="secondNumber" readonly />
         </div>
-        <div class="islem">
+
+        <div class="islem input-group">
           <label for="operation-select">Bir işlem seçin</label>
-          <select id="operation-select" v-model="selectedOperation" :disabled="operationLocked">
+          <select
+            id="operation-select"
+            v-model="selectedOperation"
+            :disabled="operationLocked"
+          >
             <option value="add">Toplama</option>
             <option value="subtract">Çıkarma</option>
             <option value="multiply">Çarpma</option>
             <option value="divide">Bölme</option>
           </select>
         </div>
-        <div id="sonuc">
+
+        <div class="input-group" id="sonuc">
           <label for="result">Sonuç</label>
-          <input type="number" id="result" v-model="result" @keyup.enter="checkResult"/>
+          <input
+            type="number"
+            id="result"
+            v-model.number="result"
+            @keyup.enter="checkResult"
+            autocomplete="off"
+          />
           <div id="kontrol">
             <abbr title="Sonucu Kontrol Et">
-              <button @click="checkResult">Sonucu Kontrol Et</button>
+              <button class="btn" @click="checkResult" type="button">
+                Sonucu Kontrol Et
+              </button>
             </abbr>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
@@ -93,17 +135,17 @@ export default {
       selectedOperation: "add",
       operationLocked: false,
       result: "",
-      nickname: "YigithanFirat",
+      nickname: "", 
       sorusayisi: 10,
       selectedDifficulty: "easy",
-      quizCompleted: false,
       questionCount: 0,
-      totalQuestions: 10,
       zorlukOptions: [
         { value: "easy", label: "Kolay" },
         { value: "medium", label: "Orta" },
         { value: "hard", label: "Zor" },
       ],
+      startTime: null,
+      endTime: null,
     };
   },
 
@@ -126,25 +168,39 @@ export default {
     },
 
     generateRandomNumbers() {
+      let min, max;
+
       switch (this.selectedDifficulty) {
         case "easy":
-          this.firstNumber = Math.floor(Math.random() * 10) + 1;
-          this.secondNumber = Math.floor(Math.random() * 10) + 1;
+          min = 1;
+          max = 10;
           break;
         case "medium":
-          this.firstNumber = Math.floor(Math.random() * 90) + 10;
-          this.secondNumber = Math.floor(Math.random() * 90) + 10;
+          min = 10;
+          max = 100;
           break;
         case "hard":
-          this.firstNumber = Math.floor(Math.random() * 900) + 100;
-          this.secondNumber = Math.floor(Math.random() * 900) + 100;
+          min = 100;
+          max = 1000;
           break;
+        default:
+          min = 1;
+          max = 10;
       }
+
+      this.firstNumber = Math.floor(Math.random() * (max - min)) + min;
+      this.secondNumber = Math.floor(Math.random() * (max - min)) + min;
+
+      if (this.selectedOperation === "divide" && this.secondNumber === 0) {
+        this.secondNumber = min === 0 ? 1 : min;
+      }
+
       this.result = "";
     },
 
     async checkResult() {
       let expectedResult;
+
       switch (this.selectedOperation) {
         case "add":
           expectedResult = this.firstNumber + this.secondNumber;
@@ -160,31 +216,44 @@ export default {
             alert("Bir sayıyı sıfıra bölemezsiniz!");
             return;
           }
-          if (this.firstNumber === 0 && this.secondNumber === 0) {
-            alert("0/0 belirsizdir!");
-            return;
-          }
-          expectedResult = this.firstNumber / this.secondNumber;
+          expectedResult = parseFloat((this.firstNumber / this.secondNumber).toFixed(2));
           break;
       }
 
-      if (Number(this.result) === expectedResult) {
-        this.questionCount++;
-        if (this.questionCount === 1) {
-          this.startTime = Date.now();
-        }
-        if (this.questionCount === this.sorusayisi) {
-          this.endTime = Date.now();
-          const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
-          await this.saveResults(totalTime);
-          alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
-          this.$router.push("/");
+      let userResult = parseFloat(this.result);
+      if (this.selectedOperation === "divide") {
+        if (Math.abs(userResult - expectedResult) < 0.01) {
+          this.handleCorrectAnswer();
         } else {
-          this.generateRandomNumbers();
+          alert("Yanlış cevap!");
         }
       } else {
-        alert("Yanlış cevap!");
+        if (userResult === expectedResult) {
+          this.handleCorrectAnswer();
+        } else {
+          alert("Yanlış cevap!");
+        }
       }
+    },
+
+    async handleCorrectAnswer() {
+      this.questionCount++;
+
+      if (this.questionCount === 1) {
+        this.startTime = Date.now();
+      }
+
+      if (this.questionCount >= this.sorusayisi) {
+        this.endTime = Date.now();
+        const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
+        await this.saveResults(totalTime);
+        alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
+        this.$router.push("/");
+      } else {
+        this.generateRandomNumbers();
+      }
+
+      this.result = "";
     },
 
     async saveResults(totalTime) {
@@ -193,24 +262,25 @@ export default {
         return;
       }
 
-      const puan = this.questionCount;
+      const userId = this.$store.getters.userId || null;
+      const nickname = this.$store.getters.nickname || "Anonim";
+
       const payload = {
-        zorluk: this.selectedDifficulty,
-        sorusayisi: this.sorusayisi,
-        nickname: this.nickname,
-        puan: puan,
-        toplamSure: totalTime,
+        userId,
+        nickname,
+        difficulty: this.selectedDifficulty,
+        questionCount: this.sorusayisi,
+        score: this.questionCount,
+        totalTime,
+        operation: this.selectedOperation,
       };
 
-      console.log("Gönderilen Payload:", payload);
       try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
         if (response.status === 200) {
-          console.log("Sonuç başarıyla kaydedildi:", response.data);
           alert("Sonuç başarıyla kaydedildi.");
         } else {
-          console.error("Hata:", response.data.message);
-          alert("Sonuç kaydedilemedi: " + response.data.message);
+          alert("Sonuç kaydedilemedi: " + (response.data.message || "Bilinmeyen hata"));
         }
       } catch (error) {
         console.error("Axios hatası:", error);
@@ -220,6 +290,7 @@ export default {
 
     updateNumbers() {
       this.generateRandomNumbers();
+      this.result = "";
     },
 
     navigateToLogin() {
@@ -235,15 +306,17 @@ export default {
     },
 
     resetQuiz() {
-      this.quizCompleted = false;
       this.questionCount = 0;
+      this.startTime = null;
+      this.endTime = null;
       this.generateRandomNumbers();
+      this.result = "";
     },
   },
 
   mounted() {
     const operation = this.$route.query.operation;
-    if (operation) {
+    if (operation && ["add", "subtract", "multiply", "divide"].includes(operation)) {
       this.selectedOperation = operation;
       this.operationLocked = true;
     }
@@ -256,28 +329,19 @@ export default {
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-*
-{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
 }
 
-body, html 
-{
+body, html, #app {
   width: 100%;
   height: 100%;
 }
 
-#app 
-{
-  width: 100%;
-  height: 100%;
-}
-
-.full-body 
-{
+.full-body {
   position: relative;
   width: 100%;
   height: 100vh;
@@ -292,26 +356,21 @@ body, html
   justify-content: flex-start;
 }
 
-.header 
-{
+.header {
   background-color: #112479;
   width: 100%;
   padding: 10px 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.header ul 
-{
+.header ul {
   list-style-type: none;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin: 0;
-  padding: 0;
 }
 
-.header ul li a 
-{
+.header ul li a {
   display: inline-block;
   padding: 10px 20px;
   text-decoration: none;
@@ -323,83 +382,32 @@ body, html
   border-radius: 4px;
 }
 
-.header ul li a:hover 
-{
-  background-color: black;
-}
-
-.header abbr 
-{
+.header abbr {
   text-decoration: none;
   cursor: pointer;
 }
 
-.header abbr button 
-{
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fafafa;
-  background-color: #1a73e8;
-  border-radius: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.header abbr button:hover 
-{
-  background-color: #0c5bd5;
-  transform: scale(1.05);
-}
-
-.zorluk-container 
-{
-  margin-top: 50px;
-  padding: 20px;
-  background-color: rgba(17, 36, 121, 0.8);
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.zorluk-container h3 
-{
-  color: #fafafa;
-  font-size: 20px;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-.zorluk 
-{
+.zorluk {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
+  margin-top: 30px;
 }
 
-.zorluk .checkbox-container 
-{
+.zorluk .checkbox-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.zorluk label 
-{
+.zorluk label {
   font-size: 16px;
   color: #fafafa;
   font-weight: 600;
 }
 
-.islemler 
-{
+.islemler {
   margin-top: 30px;
   text-align: center;
   padding: 20px;
@@ -410,8 +418,7 @@ body, html
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.islemler label 
-{
+.islemler label {
   color: #fafafa;
   font-weight: bold;
   display: block;
@@ -419,8 +426,7 @@ body, html
   letter-spacing: 0.5px;
 }
 
-.islemler input, .islemler select 
-{
+.islemler input, .islemler select {
   width: 100%;
   padding: 10px;
   font-size: 14px;
@@ -432,42 +438,63 @@ body, html
   transition: border-color 0.3s;
 }
 
-.islemler input:focus, .islemler select:focus 
-{
+.islemler input:focus, .islemler select:focus {
   border-color: #0c5bd5;
 }
 
-.islemler button 
-{
-  border: none;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fafafa;
-  background-color: #1a73e8;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.islemler button:hover 
-{
-  background-color: #0c5bd5;
-  transform: scale(1.05);
-}
-
-.islemler #sonuc abbr button 
-{
-  width: auto;
-  padding: 10px 20px;
-}
-
-.islemler input[readonly] 
-{
+.islemler input[readonly] {
   background-color: #e9ecef;
   color: #495057;
   cursor: not-allowed;
+}
+
+/* Butonlar için ortak temel stil */
+/* .btn sınıfı hem button hem de a için kullanılabilir */
+.btn {
+  background-color: #1a73e8;
+  border: none;
+  color: #fafafa;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* İkon ve yazı arasında boşluk */
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  text-decoration: none; /* link alt çizgisini kaldır */
+  border: none;
+}
+
+/* Hover efekti */
+.btn:hover {
+  background-color: #80b9ff; /* Açık mavi */
+  border-radius: 15px;       /* Hoverda radius azaltıldı */
+  transform: scale(1.05);
+}
+
+/* İkon varsa boyutu */
+.btn i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Header'daki tüm li'lar arasında boşluk */
+.header ul li {
+  margin-left: 30px;
+}
+
+/* İlk li olan Anasayfa butonunun sola yapışık kalması için özel stil */
+.header ul li:first-child {
+  margin-left: 0;
+  margin-right: auto;
 }
 
 </style>
