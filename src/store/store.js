@@ -3,25 +3,24 @@ import { createStore } from 'vuex';
 // Güvenli JSON.parse
 function safeParse(item) {
   try {
-    if (item && item !== 'undefined') {
-      return JSON.parse(item);
-    }
+    const parsed = JSON.parse(item);
+    return parsed ?? null;
   } catch (e) {
     console.error('JSON parse hatası:', e);
+    return null;
   }
-  return null;
 }
 
 export default createStore({
   state: {
-    Logged: safeParse(localStorage.getItem('Logged')) || 0,
-    user: safeParse(localStorage.getItem('user')) || null,
+    Logged: safeParse(localStorage.getItem('Logged')) === 1,
+    user: safeParse(localStorage.getItem('user')),
   },
 
   mutations: {
     setLogged(state, status) {
       state.Logged = status;
-      localStorage.setItem('Logged', JSON.stringify(status));
+      localStorage.setItem('Logged', JSON.stringify(status ? 1 : 0));
     },
 
     setUser(state, userData) {
@@ -37,20 +36,20 @@ export default createStore({
 
   actions: {
     login({ commit }, userData) {
-      commit('setLogged', 1);
+      commit('setLogged', true);
       commit('setUser', userData);
     },
 
     logout({ commit }) {
-      commit('setLogged', 0);
+      commit('setLogged', false);
       commit('clearUser');
       localStorage.removeItem('Logged');
     },
   },
 
   getters: {
-    isLogged: (state) => state.Logged === 1,
-    userId: (state) => state.user?.id || null,
-    userNickname: (state) => state.user?.nickname || '',
+    isLogged: (state) => state.Logged,
+    userId: (state) => state.user?.id ?? null,
+    userNickname: (state) => state.user?.nickname ?? '',
   },
 });
