@@ -1,26 +1,28 @@
 import { createStore } from 'vuex';
 
 // Güvenli JSON.parse
-function safeParse(item) {
+function safeParse(data) {
   try {
-    const parsed = JSON.parse(item);
-    return parsed ?? null;
+    return data ? JSON.parse(data) : null;
   } catch (e) {
-    console.error('JSON parse hatası:', e);
+    console.error("JSON parse hatası:", e);
     return null;
   }
 }
 
+const saved = localStorage.getItem('myStore');
+const parsed = safeParse(saved);
+
 export default createStore({
   state: {
-    Logged: safeParse(localStorage.getItem('Logged')) === 1,
+    Logged: Boolean(safeParse(localStorage.getItem('Logged'))), // true/false olarak tut
     user: safeParse(localStorage.getItem('user')),
   },
 
   mutations: {
     setLogged(state, status) {
-      state.Logged = status;
-      localStorage.setItem('Logged', JSON.stringify(status ? 1 : 0));
+      state.Logged = Boolean(status);
+      localStorage.setItem('Logged', JSON.stringify(state.Logged ? 1 : 0));
     },
 
     setUser(state, userData) {
@@ -51,5 +53,7 @@ export default createStore({
     isLogged: (state) => state.Logged,
     userId: (state) => state.user?.id ?? null,
     userNickname: (state) => state.user?.nickname ?? '',
+    userRole: (state) => state.user?.role ?? '', // ← History.vue için önemli
+    isAdmin: (state) => state.user?.role === 'admin', // ← Şartlı kontrol kolaylığı
   },
 });
