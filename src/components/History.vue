@@ -164,10 +164,17 @@ export default {
   },
   methods: {
     async logout() {
+      const userId = this.$store.getters.userId;
+
+      if (!userId) {
+        console.warn("Logout: Kullanıcı ID bulunamadı! Mevcut user:", this.$store.state.user);
+        alert("Kullanıcı bilgisi eksik. Oturumu kapatmadan önce tekrar giriş yapın.");
+        return;
+      }
+
       try {
-        const response = await axios.post("http://localhost:3000/logout", {
-          userId: this.$store.getters.userId,
-        });
+        const response = await axios.post("http://localhost:3000/logout", { userId });
+
         if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
