@@ -1,22 +1,22 @@
 import { createStore } from 'vuex';
 
-// Güvenli JSON.parse
+// Güvenli JSON.parse fonksiyonu
 function safeParse(data) {
   try {
-    return data ? JSON.parse(data) : null;
+    if (!data || data === 'undefined') return null;
+    return JSON.parse(data);
   } catch (e) {
     console.error("JSON parse hatası:", e);
     return null;
   }
 }
 
-const saved = localStorage.getItem('myStore');
-const parsed = safeParse(saved);
-
 export default createStore({
   state: {
-    Logged: Boolean(safeParse(localStorage.getItem('Logged'))), // true/false olarak tut
+    // localStorage'dan güvenli şekilde veri alınıyor
+    Logged: safeParse(localStorage.getItem('Logged')) === 1, // 1 ise true, değilse false
     user: safeParse(localStorage.getItem('user')),
+    operations: safeParse(localStorage.getItem('operations')) || [],
   },
 
   mutations: {
@@ -34,6 +34,18 @@ export default createStore({
       state.user = null;
       localStorage.removeItem('user');
     },
+
+    addOperation(state, operation) {
+      state.operations.push(operation);
+      localStorage.setItem('operations', JSON.stringify(state.operations));
+    },
+
+    cleanOldOperations(state) {
+      const now = Date.now();
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      state.operations = state.operations.filter(op => now - op.timestamp <= THIRTY_DAYS);
+      localStorage.setItem('operations', JSON.stringify(state.operations));
+    }
   },
 
   actions: {
@@ -47,13 +59,36 @@ export default createStore({
       commit('clearUser');
       localStorage.removeItem('Logged');
     },
+
+    recordOperation({ commit }, operation) {
+      commit('addOperation', operation);
+      commit('cleanOldOperations');
+    }
   },
 
   getters: {
     isLogged: (state) => state.Logged,
     userId: (state) => state.user?.id ?? null,
     userNickname: (state) => state.user?.nickname ?? '',
-    userRole: (state) => state.user?.role ?? '', // ← History.vue için önemli
-    isAdmin: (state) => state.user?.role === 'admin', // ← Şartlı kontrol kolaylığı
+    userRole: (state) => state.user?.role ?? '',
+    isAdmin: (state) => state.user?.role === 'admin',
+
+    recentOperations: (state) => {
+      const now = Date.now();
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      return state.operations.filter(op => now - op.timestamp <= THIRTY_DAYS);
+    },
+
+    maxDurationLastMonth: (state, getters) => {
+      const ops = getters.recentOperations;
+      if (ops.length === 0) return null;
+      return Math.max(...ops.map(op => op.duration));
+    },
+
+    minDurationLastMonth: (state, getters) => {
+      const ops = getters.recentOperations;
+      if (ops.length === 0) return null;
+      return Math.min(...ops.map(op => op.duration));
+    },
   },
 });
