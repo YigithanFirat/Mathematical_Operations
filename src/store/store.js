@@ -20,8 +20,8 @@ const defaultUser = {
 
 export default createStore({
   state: {
-    // localStorage'dan güvenli şekilde veri alınıyor
-    Logged: safeParse(localStorage.getItem('Logged')) === 1, // 1 ise true, değilse false
+    // localStorage'dan güvenli şekilde veri alınıyor, boolean olarak "true"/"false" bekleniyor
+    Logged: safeParse(localStorage.getItem('Logged')) || false,
     user: { ...defaultUser, ...(safeParse(localStorage.getItem('user')) || {}) },
     operations: safeParse(localStorage.getItem('operations')) || [],
   },
@@ -29,7 +29,7 @@ export default createStore({
   mutations: {
     setLogged(state, status) {
       state.Logged = Boolean(status);
-      localStorage.setItem('Logged', JSON.stringify(state.Logged ? 1 : 0));
+      localStorage.setItem('Logged', JSON.stringify(state.Logged)); // "true" veya "false"
     },
 
     setUser(state, userData) {
