@@ -3,48 +3,51 @@
   <div id="app">
     <router-view />
     <div class="full-body">
-      <nav class="header">
-        <ul class="nav-left">
-          <li>
-            <router-link to="/" class="btn">
-              <i class="fa-solid fa-house"></i> Anasayfa
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <router-link to="/history" class="btn">
-              <i class="fa-solid fa-ghost"></i> Geçmiş
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <router-link to="/settings" class="btn">
-              <i class="fa-solid fa-user-gear"></i> Ayarlar
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <button class="btn" @click="logout" type="button">
-              <i class="fa-solid fa-door-open"></i> Çıkış
-            </button>
-          </li>
+    <nav class="header">
+      <ul class="nav-left">
+        <li>
+          <router-link to="/" class="btn">
+            <i class="fa-solid fa-house"></i> Anasayfa
+          </router-link>
+        </li>
 
-          <template v-if="!isLogged">
-            <li>
-              <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
-                Giriş Yap
-              </button>
-            </li>
-            <li>
-              <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
-                Kaydol
-              </button>
-            </li>
-          </template>
-          <li v-if="isAdmin">
-            <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
-              Admin Girişi
-            </button>
-          </li>
-        </ul>
-      </nav>
+        <li v-if="isLogged">
+          <router-link to="/history" class="btn">
+            <i class="fa-solid fa-ghost"></i> Geçmiş
+          </router-link>
+        </li>
+
+        <li v-if="isLogged">
+          <router-link to="/settings" class="btn">
+            <i class="fa-solid fa-user-gear"></i> Ayarlar
+          </router-link>
+        </li>
+
+        <li v-if="isAdmin">
+          <router-link to="/admin" class="btn" title="Admin Paneli">
+            <i class="fa-solid fa-lock"></i> Admin
+          </router-link>
+        </li>
+
+        <li v-if="isLogged">
+          <button class="btn" @click="logout" type="button">
+            <i class="fa-solid fa-door-open"></i> Çıkış
+          </button>
+        </li>
+
+        <li v-else>
+          <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
+            <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
+          </button>
+        </li>
+
+        <li v-else>
+          <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
+            <i class="fa-solid fa-user-plus"></i> Kaydol
+          </button>
+        </li>
+      </ul>
+    </nav>
     <div v-if="isLogged && backupData.length" class="history-table">
       <h2 style="margin-top: 30px; color: #2641FE">Yedek (Backup) İşlemleri</h2>
       <table>
