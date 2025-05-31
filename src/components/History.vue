@@ -211,7 +211,6 @@ body, html, #app {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -220,7 +219,7 @@ body, html, #app {
 }
 
 .nav-left li {
-  display: inline-block;
+  display: inline-flex;
 }
 
 .btn {
@@ -228,18 +227,14 @@ body, html, #app {
   border: none;
   color: #fafafa;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px; /* 16px -> 14px'e düşürüldü */
   border-radius: 4px;
   cursor: pointer;
-  padding: 10px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Daha hafif gölge */
   transition: background-color 0.3s, transform 0.3s;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   text-align: center;
-  user-select: none;
-  text-decoration: none;
 }
 
 .btn:hover {
@@ -392,8 +387,4 @@ body, html, #app {
   }
 }
 
-.header abbr {
-  text-decoration: none;
-  cursor: pointer;
-}
 </style>
