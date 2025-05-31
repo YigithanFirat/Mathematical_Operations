@@ -113,15 +113,21 @@
 </template>
 
 <script>
+
 import axios from "axios";
 
-export default {
+export default
+{
   name: "Home",
-  computed: {
-    isLogged() {
+  computed:
+  {
+    isLogged()
+    {
       return this.$store.getters.isLogged;
     },
-    isAdmin() {
+
+    isAdmin()
+    {
       return this.$store.getters.isAdmin;
     }
   },
@@ -135,7 +141,8 @@ export default {
       sorusayisi: 10,
       selectedDifficulty: "easy",
       questionCount: 0,
-      zorlukOptions: [
+      zorlukOptions: 
+      [
         { value: "easy", label: "Kolay" },
         { value: "medium", label: "Orta" },
         { value: "hard", label: "Zor" },
@@ -145,28 +152,39 @@ export default {
     };
   },
 
-  methods: {
-    async logout() {
-      try {
-        const response = await axios.post("http://localhost:3000/logout", {
+  methods: 
+  {
+    async logout() 
+    {
+      try 
+      {
+        const response = await axios.post("http://localhost:3000/logout", 
+        {
           userId: this.$store.getters.userId,
         });
-        if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
+        if(response.data && response.data.message === "Çıkış işlemi başarılı.")
+        {
           alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
-        } else {
+        }
+        else
+        {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
-      } catch (error) {
+      }
+      catch(error)
+      {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
       }
     },
 
-    generateRandomNumbers() {
+    generateRandomNumbers()
+    {
       let min, max;
 
-      switch (this.selectedDifficulty) {
+      switch(this.selectedDifficulty)
+      {
         case "easy":
           min = 1;
           max = 10;
@@ -183,21 +201,20 @@ export default {
           min = 1;
           max = 10;
       }
-
       this.firstNumber = Math.floor(Math.random() * (max - min)) + min;
       this.secondNumber = Math.floor(Math.random() * (max - min)) + min;
-
-      if (this.selectedOperation === "divide" && this.secondNumber === 0) {
+      if(this.selectedOperation === "divide" && this.secondNumber === 0)
+      {
         this.secondNumber = min === 0 ? 1 : min;
       }
-
       this.result = "";
     },
 
-    async checkResult() {
+    async checkResult()
+    {
       let expectedResult;
-
-      switch (this.selectedOperation) {
+      switch(this.selectedOperation)
+      {
         case "add":
           expectedResult = this.firstNumber + this.secondNumber;
           break;
@@ -208,57 +225,70 @@ export default {
           expectedResult = this.firstNumber * this.secondNumber;
           break;
         case "divide":
-          if (this.secondNumber === 0) {
+          if(this.secondNumber === 0)
+          {
             alert("Bir sayıyı sıfıra bölemezsiniz!");
             return;
           }
           expectedResult = parseFloat((this.firstNumber / this.secondNumber).toFixed(2));
           break;
       }
-
       let userResult = parseFloat(this.result);
-      if (this.selectedOperation === "divide") {
-        if (Math.abs(userResult - expectedResult) < 0.01) {
+      if(this.selectedOperation === "divide")
+      {
+        if(Math.abs(userResult - expectedResult) < 0.01)
+        {
           this.handleCorrectAnswer();
-        } else {
+        }
+        else
+        {
           alert("Yanlış cevap!");
         }
-      } else {
-        if (userResult === expectedResult) {
+      }
+      else
+      {
+        if(userResult === expectedResult)
+        {
           this.handleCorrectAnswer();
-        } else {
+        }
+        else
+        {
           alert("Yanlış cevap!");
         }
       }
     },
 
-    async handleCorrectAnswer() {
+    async handleCorrectAnswer()
+    {
       this.questionCount++;
-
-      if (this.questionCount === 1) {
+      if(this.questionCount === 1)
+      {
         this.startTime = Date.now();
       }
-
-      if (this.questionCount >= this.sorusayisi) {
+      if(this.questionCount >= this.sorusayisi)
+      {
         this.endTime = Date.now();
         const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
         await this.saveResults(totalTime);
         alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
         this.$router.push("/");
-      } else {
+      }
+      else
+      {
         this.generateRandomNumbers();
       }
-
       this.result = "";
     },
 
-    async saveResults(totalTime) {
-      if (!this.isLogged) {
+    async saveResults(totalTime)
+    {
+      if(!this.isLogged)
+      {
         alert("Sonuçları kaydetmek için giriş yapmalısınız.");
         return;
       }
-
-      const payload = {
+      const payload =
+      {
         zorluk: this.selectedDifficulty,
         sorusayisi: this.sorusayisi,
         nickname: this.$store.getters.nickname || "Anonim",
@@ -266,33 +296,42 @@ export default {
         toplamSure: totalTime
       };
 
-      try {
+      try
+      {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
-
-        if (response.status === 200) {
+        if(response.status === 200)
+        {
           alert("Sonuç başarıyla kaydedildi.");
-        } else {
+        }
+        else
+        {
           alert("Sonuç kaydedilemedi: " + (response.data.message || "Bilinmeyen hata"));
         }
-      } catch (error) {
+      }
+      catch(error)
+      {
         console.error("Axios hatası:", error.response?.data || error.message);
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
     },
 
-    navigateToLogin() {
+    navigateToLogin()
+    {
       this.$router.push("/login");
     },
 
-    navigateToAdmin() {
+    navigateToAdmin()
+    {
       this.$router.push("/adminlogin");
     },
 
-    navigateToRegister() {
+    navigateToRegister()
+    {
       this.$router.push("/register");
     },
 
-    resetQuiz() {
+    resetQuiz()
+    {
       this.questionCount = 0;
       this.startTime = null;
       this.endTime = null;
@@ -301,15 +340,18 @@ export default {
     },
   },
 
-  mounted() {
+  mounted()
+  {
     const operation = this.$route.query.operation;
-    if (operation && ["add", "subtract", "multiply", "divide"].includes(operation)) {
+    if(operation && ["add", "subtract", "multiply", "divide"].includes(operation))
+    {
       this.selectedOperation = operation;
       this.operationLocked = true;
     }
     this.generateRandomNumbers();
   },
 };
+
 </script>
 
 <style scoped>
