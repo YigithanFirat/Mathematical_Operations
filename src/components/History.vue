@@ -118,7 +118,12 @@ export default {
   data() {
     return {
       historyData: [],
-      backupData: []
+      backupData: [],
+      "zorluk": "",
+      "sorusayisi": 10,
+      "nickname": "",
+      "puan": 0,
+      "toplamsure": ""
     };
   },
   computed: {
