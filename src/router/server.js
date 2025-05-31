@@ -334,21 +334,16 @@ app.post('/checkResult', async (req, res) =>
   }
 });
 
-app.get('/history', async (req, res) => {
+app.get('/history/:userId', async (req, res) => {
+  const { userId } = req.params;
+
   try {
-    const [results] = await sql.query('SELECT * FROM backup');
-
-    if (!results || results.length === 0) {
-      return res.status(404).json({ error: 'Kayıt bulunamadı.' });
-    }
-
+    const results = await sql.query('SELECT * FROM backup WHERE userId = ?', [userId]);
+    if (!results.length) return res.status(404).json({ error: 'Kayıt bulunamadı' });
     res.status(200).json({ data: results });
-  } catch (error) {
-    console.error('Hata:', error);
-    res.status(500).json({
-      error: 'Sunucu hatası. Lütfen tekrar deneyin.',
-      details: error.message || 'Bilinmeyen bir hata oluştu.',
-    });
+  } catch (err) {
+    console.error('history hatası:', err);
+    res.status(500).json({ error: 'Sunucu hatası' });
   }
 });
 
@@ -370,7 +365,7 @@ app.get("/api/check-admin", async (req, res) =>
   }
 });
 
-app.listen(port, () => 
+app.listen(port, () =>
 {
   console.log(`Sunucu http://localhost:${port} adresinde çalışıyor.`);
 });
