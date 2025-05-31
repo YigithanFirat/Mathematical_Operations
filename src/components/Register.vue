@@ -9,9 +9,7 @@
                     <li><a class="btn" v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
                     <li><a class="btn" v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
                     <li><a class="btn" v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <abbr title="Giriş Yap">
-                        <button class="btn" draggable="false" @click="navigateToLogin()">Giriş Yap</button>
-                    </abbr>
+                    <button title="Giriş Yap" class="btn" draggable="false" @click="navigateToLogin()">Giriş Yap</button>
                 </ul>
             </div>
             <div class="register-screen">
@@ -20,7 +18,7 @@
                 <input type="email" id="email" name="email" class="input" placeholder="E-Posta Adresiniz" required>
 
                 <label class="f-age" for="number">Yaşınız</label>
-                <input type="number" id="age", name="age" class="input" placeholder="Yaşınız" required>
+                <input type="number" id="age" name="age" class="input" placeholder="Yaşınız" required>
 
                 <label class="f-password" for="password">Şifreniz</label>
                 <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
@@ -28,7 +26,7 @@
                 <label class="f-nickname" for="nickname">Kullanıcı Adınız</label>
                 <input type="text" id="nickname" name="nickname" class="input" placeholder="Kullanıcı Adınız" required>
 
-                <button type="submit" class="btn-register">Kaydol</button>
+                <button title="Kaydol" type="submit" class="btn-register">Kaydol</button>
             </form>
             </div>
         </div>
