@@ -1,76 +1,111 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <div id="app">
     <router-view />
     <div class="full-body">
-    <nav class="header">
-      <ul class="nav-left">
-        <li>
-          <router-link to="/" class="btn">
-            <i class="fa-solid fa-house"></i> Anasayfa
-          </router-link>
-        </li>
+      <nav class="header">
+        <ul class="nav-left">
+          <li>
+            <router-link to="/" class="btn">
+              <i class="fa-solid fa-house"></i> Anasayfa
+            </router-link>
+          </li>
 
-        <li v-if="isLogged">
-          <router-link to="/history" class="btn">
-            <i class="fa-solid fa-ghost"></i> Geçmiş
-          </router-link>
-        </li>
+          <li v-if="isLogged">
+            <router-link to="/history" class="btn">
+              <i class="fa-solid fa-ghost"></i> Geçmiş
+            </router-link>
+          </li>
 
-        <li v-if="isLogged">
-          <router-link to="/settings" class="btn">
-            <i class="fa-solid fa-user-gear"></i> Ayarlar
-          </router-link>
-        </li>
+          <li v-if="isLogged">
+            <router-link to="/settings" class="btn">
+              <i class="fa-solid fa-user-gear"></i> Ayarlar
+            </router-link>
+          </li>
 
-        <li v-if="isAdmin">
-          <router-link to="/admin" class="btn" title="Admin Paneli">
-            <i class="fa-solid fa-lock"></i> Admin
-          </router-link>
-        </li>
+          <li v-if="isAdmin">
+            <router-link to="/admin" class="btn" title="Admin Paneli">
+              <i class="fa-solid fa-lock"></i> Admin
+            </router-link>
+          </li>
 
-        <li v-if="isLogged">
-          <button class="btn" @click="logout" type="button">
-            <i class="fa-solid fa-door-open"></i> Çıkış
-          </button>
-        </li>
+          <li v-if="isLogged">
+            <button class="btn" @click="logout" type="button">
+              <i class="fa-solid fa-door-open"></i> Çıkış
+            </button>
+          </li>
 
-        <li v-else>
-          <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
-            <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
-          </button>
-        </li>
+          <li v-else>
+            <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
+              <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
+            </button>
+          </li>
 
-        <li v-else>
-          <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
-            <i class="fa-solid fa-user-plus"></i> Kaydol
-          </button>
-        </li>
-      </ul>
-    </nav>
-    <div v-if="isLogged && backupData.length" class="history-table">
-      <h2 style="margin-top: 30px; color: #2641FE">Yedek (Backup) İşlemleri</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Zorluk</th>
-            <th>Soru Sayısı</th>
-            <th>Nickname</th>
-            <th>Puan</th>
-            <th>Toplam Süre</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(entry, index) in backupData" :key="index">
-            <td>{{ entry.zorluk }}</td>
-            <td>{{ entry.sorusayisi }}</td>
-            <td>{{ entry.nickname }}</td>
-            <td>{{ entry.puan }}</td>
-            <td>{{ entry.toplamsure }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          <li v-else>
+            <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
+              <i class="fa-solid fa-user-plus"></i> Kaydol
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- İşlem Geçmişi (İşlem Türüne Göre Gruplanmış) -->
+      <div v-if="isLogged && historyData.length" class="history-section">
+        <h2 style="margin-top: 30px; color: #2641FE">İşlem Geçmişi</h2>
+
+        <div
+          v-for="(entries, operation) in groupedHistory"
+          :key="operation"
+          class="operation-group"
+        >
+          <h3>{{ operation }}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Zorluk</th>
+                <th>Soru Sayısı</th>
+                <th>Nickname</th>
+                <th>Puan</th>
+                <th>Toplam Süre</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(entry, index) in entries" :key="index">
+                <td>{{ entry.zorluk }}</td>
+                <td>{{ entry.sorusayisi }}</td>
+                <td>{{ entry.nickname }}</td>
+                <td>{{ entry.puan }}</td>
+                <td>{{ entry.toplamsure }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Yedek (Backup) İşlemleri -->
+      <div v-if="isLogged && backupData.length" class="history-section">
+        <h2 style="margin-top: 30px; color: #2641FE">Yedek (Backup) İşlemleri</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Zorluk</th>
+              <th>Soru Sayısı</th>
+              <th>Nickname</th>
+              <th>Puan</th>
+              <th>Toplam Süre</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(entry, index) in backupData" :key="index">
+              <td>{{ entry.zorluk }}</td>
+              <td>{{ entry.sorusayisi }}</td>
+              <td>{{ entry.nickname }}</td>
+              <td>{{ entry.puan }}</td>
+              <td>{{ entry.toplamsure }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -94,13 +129,30 @@ export default {
       return this.$store.getters.userRole === 'admin';
     },
     groupedHistory() {
-      const grouped = {};
+      const grouped = {
+        Toplama: [],
+        Çıkarma: [],
+        Çarpma: [],
+        Bölme: [],
+        Diğer: []
+      };
       this.historyData.forEach(entry => {
-        const islem = entry.islem || 'Bilinmeyen';
-        if (!grouped[islem]) {
-          grouped[islem] = [];
+        switch (entry.islem) {
+          case 'Toplama':
+            grouped.Toplama.push(entry);
+            break;
+          case 'Çıkarma':
+            grouped.Çıkarma.push(entry);
+            break;
+          case 'Çarpma':
+            grouped.Çarpma.push(entry);
+            break;
+          case 'Bölme':
+            grouped.Bölme.push(entry);
+            break;
+          default:
+            grouped.Diğer.push(entry);
         }
-        grouped[islem].push(entry);
       });
       return grouped;
     }
@@ -206,6 +258,15 @@ body, html, #app {
   height: 50px;
   display: flex;
   align-items: center;
+}
+
+.operation-group {
+  margin-bottom: 30px;
+}
+
+.operation-group h3 {
+  color: #112479;
+  margin-bottom: 10px;
 }
 
 .nav-left {
