@@ -4,13 +4,13 @@
         <router-view/>
         <div class="full-body">
             <div class="header">
-                <ul>
-                    <li><a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
-                    <li><a class="btn" v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
-                    <li><a class="btn" v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-                    <li><a class="btn" v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-                    <button title="Giriş Yap" class="btn" draggable="false" @click="navigateToLogin()">Giriş Yap</button>
-                </ul>
+            <ul>
+              <li><a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
+              <li><button title="Giriş Yap" class="btn btn-login" draggable="false" @click="navigateToLogin()">Giriş Yap</button></li>
+              <li><a class="btn" v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş</a></li>
+              <li><a class="btn" v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+              <li><a class="btn" v-if="Logged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+            </ul>
             </div>
             <div class="register-screen">
             <form id="registerform" class="input-wrap" @submit.prevent="registerUser()">
@@ -157,6 +157,24 @@ export default
 .btn i {
   font-size: 18px;
   line-height: 1;
+}
+
+.header ul {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* "Giriş Yap" butonunu Anasayfa'nın yanına alır, aralarında boşluk olur */
+.header ul li:nth-child(2) {
+  margin-left: 8px;
+}
+
+/* Diğer menü öğelerini en sağa iter */
+.header ul li:nth-child(n+3) {
+  margin-left: auto;
 }
 
 .register-screen {
