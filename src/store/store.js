@@ -11,11 +11,18 @@ function safeParse(data) {
   }
 }
 
+// Kullanıcı için varsayılan yapı
+const defaultUser = {
+  id: null,
+  nickname: '',
+  role: '',
+};
+
 export default createStore({
   state: {
     // localStorage'dan güvenli şekilde veri alınıyor
     Logged: safeParse(localStorage.getItem('Logged')) === 1, // 1 ise true, değilse false
-    user: safeParse(localStorage.getItem('user')),
+    user: { ...defaultUser, ...(safeParse(localStorage.getItem('user')) || {}) },
     operations: safeParse(localStorage.getItem('operations')) || [],
   },
 
@@ -26,12 +33,12 @@ export default createStore({
     },
 
     setUser(state, userData) {
-      state.user = userData;
-      localStorage.setItem('user', JSON.stringify(userData));
+      state.user = { ...defaultUser, ...userData }; // eksik alanlar default ile tamamlanır
+      localStorage.setItem('user', JSON.stringify(state.user));
     },
 
     clearUser(state) {
-      state.user = null;
+      state.user = { ...defaultUser };
       localStorage.removeItem('user');
     },
 
