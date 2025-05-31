@@ -25,8 +25,7 @@
               <i class="fa-solid fa-door-open"></i> Çıkış
             </button>
           </li>
-          
-          <!-- Giriş Yap ve Kaydol butonları birlikte ve aynı şartla görünür -->
+
           <template v-if="!isLogged">
             <li>
               <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
@@ -47,6 +46,7 @@
           </li>
         </ul>
       </nav>
+
       <section class="islemler">
         <div class="input-group">
           <label for="first-number">İlk Sayı</label>
@@ -132,7 +132,6 @@ export default {
       selectedOperation: "add",
       operationLocked: false,
       result: "",
-      nickname: "", 
       sorusayisi: 10,
       selectedDifficulty: "easy",
       questionCount: 0,
@@ -150,7 +149,7 @@ export default {
     async logout() {
       try {
         const response = await axios.post("http://localhost:3000/logout", {
-          userId: 1,
+          userId: this.$store.getters.userId,
         });
         if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
@@ -260,11 +259,11 @@ export default {
       }
 
       const payload = {
-        zorluk: this.selectedDifficulty,       // ✅ backend ile uyumlu
-        sorusayisi: this.sorusayisi,           // ✅ backend ile uyumlu
+        zorluk: this.selectedDifficulty,
+        sorusayisi: this.sorusayisi,
         nickname: this.$store.getters.nickname || "Anonim",
-        puan: this.questionCount,              // ✅ backend ile uyumlu
-        toplamSure: totalTime                  // ✅ backend ile uyumlu
+        puan: this.questionCount,
+        toplamSure: totalTime
       };
 
       try {
@@ -279,12 +278,6 @@ export default {
         console.error("Axios hatası:", error.response?.data || error.message);
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
-    },
-
-
-    updateNumbers() {
-      this.generateRandomNumbers();
-      this.result = "";
     },
 
     navigateToLogin() {
@@ -319,8 +312,7 @@ export default {
 };
 </script>
 
-<style>
-
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 * {
@@ -394,11 +386,7 @@ body, html, #app {
   gap: 8px; /* İkon ve yazı arası */
   text-align: center;
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  text-decoration: none; /* link alt çizgisi kaldır */
-  border: none;
+  text-decoration: none;
 }
 
 /* Disabled select için özel imleç ve görünüm */
@@ -408,7 +396,6 @@ select:disabled,
   background-color: #e9ecef !important;
   color: #495057;
 }
-
 
 /* Hover efekti */
 .btn:hover {
@@ -442,7 +429,6 @@ select:disabled,
   font-weight: 600;
 }
 
-/* İşlemler bölümü */
 .islemler {
   margin-top: 30px;
   text-align: center;
@@ -486,7 +472,7 @@ select:disabled,
   cursor: not-allowed;
 }
 
-/* Abbr etiketinin pointer pointer olması */
+/* Abbr etiketinin pointer olması */
 .header abbr {
   text-decoration: none;
   cursor: pointer;
