@@ -3,81 +3,74 @@
   <div id="app">
     <router-view />
     <div class="full-body">
-      <nav class="header">
-        <ul class="nav-left">
+    <nav class="header">
+      <ul class="nav-left">
+        <li>
+          <router-link to="/" class="btn">
+            <i class="fa-solid fa-house"></i> Anasayfa
+          </router-link>
+        </li>
+        <li v-if="isLogged">
+          <router-link to="/history" class="btn">
+            <i class="fa-solid fa-ghost"></i> Geçmiş
+          </router-link>
+        </li>
+        <li v-if="isLogged">
+          <router-link to="/settings" class="btn">
+            <i class="fa-solid fa-user-gear"></i> Ayarlar
+          </router-link>
+        </li>
+        <li v-if="isLogged">
+          <button class="btn" @click="logout" type="button">
+            <i class="fa-solid fa-door-open"></i> Çıkış
+          </button>
+        </li>
+
+        <template v-if="!isLogged">
           <li>
-            <router-link to="/" class="btn">
-              <i class="fa-solid fa-house"></i> Anasayfa
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <router-link to="/history" class="btn">
-              <i class="fa-solid fa-ghost"></i> Geçmiş
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <router-link to="/settings" class="btn">
-              <i class="fa-solid fa-user-gear"></i> Ayarlar
-            </router-link>
-          </li>
-          <li v-if="isLogged">
-            <button class="btn" @click="logout" type="button">
-              <i class="fa-solid fa-door-open"></i> Çıkış
+            <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
+              Giriş Yap
             </button>
           </li>
-          
-          <!-- Giriş Yap ve Kaydol butonları birlikte ve aynı şartla görünür -->
-          <template v-if="!isLogged">
-            <li>
-              <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
-                Giriş Yap
-              </button>
-            </li>
-            <li>
-              <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
-                Kaydol
-              </button>
-            </li>
-          </template>
-
-          <li v-if="isAdmin">
-            <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
-              Admin Girişi
+          <li>
+            <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
+              Kaydol
             </button>
           </li>
-        </ul>
-      </nav>
+        </template>
 
-      <!-- İşlem geçmişi tablo görünümü -->
-      <div v-if="isLogged === 1" class="history-table">
-        <div v-for="(entries, islem) in groupedHistory" :key="islem">
-          <h2 style="margin-top: 30px; color: #2641FE">{{ islem }} İşlemleri</h2>
-          <table v-if="entries.length > 0">
-            <thead>
-              <tr>
-                <th>Zorluk</th>
-                <th>Soru</th>
-                <th>Kullanıcı Cevabı</th>
-                <th>Doğru Cevap</th>
-                <th>Puan</th>
-                <th>Süre</th>
-                <th>Tarih</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="entry in entries" :key="entry.id">
-                <td>{{ entry.zorluk }}</td>
-                <td>{{ entry.soru }}</td>
-                <td>{{ entry.kullaniciCevabi }}</td>
-                <td>{{ entry.cevap }}</td>
-                <td>{{ entry.puan }}</td>
-                <td>{{ entry.sure }}</td>
-                <td>{{ entry.tarih }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <li v-if="isAdmin">
+          <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
+            Admin Girişi
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Backup verileri tablosu -->
+    <div v-if="isLogged && backupData.length" class="history-table">
+      <h2 style="margin-top: 30px; color: #2641FE">Yedek (Backup) İşlemleri</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Zorluk</th>
+            <th>Soru Sayısı</th>
+            <th>Nickname</th>
+            <th>Puan</th>
+            <th>Toplam Süre</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(entry, index) in backupData" :key="index">
+            <td>{{ entry.zorluk }}</td>
+            <td>{{ entry.sorusayisi }}</td>
+            <td>{{ entry.nickname }}</td>
+            <td>{{ entry.puan }}</td>
+            <td>{{ entry.toplamsure }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     </div>
   </div>
 </template>
@@ -89,7 +82,8 @@ export default {
   name: 'History',
   data() {
     return {
-      historyData: []
+      historyData: [],
+      backupData: []
     };
   },
   computed: {
@@ -115,7 +109,7 @@ export default {
     async logout() {
       try {
         const response = await axios.post("http://localhost:3000/logout", {
-          userId: 1,
+          userId: this.$store.getters.userId,
         });
         if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
@@ -134,11 +128,27 @@ export default {
     navigateToRegister() {
       this.$router.push('/register');
     },
+
+    async fetchBackupData() {
+      try {
+        const userId = this.$store.getters.userId;
+        const response = await axios.get(`http://localhost:3000/history/backup/${userId}`);
+        if (response.data && Array.isArray(response.data.data)) {
+          this.backupData = response.data.data;
+        } else {
+          this.backupData = [];
+        }
+      } catch (error) {
+        console.error("Backup verisi alınamadı:", error);
+      }
+    },
+
     async fetchHistory() {
       try {
-        const response = await axios.get('http://localhost:3000/history');
-        console.log('Gelen veri:', response.data);
+        const userId = this.$store.getters.userId;
+        if (!userId) return;
 
+        const response = await axios.get(`http://localhost:3000/history/${userId}`);
         if (response.data && Array.isArray(response.data.data)) {
           this.historyData = response.data.data;
         } else {
@@ -148,11 +158,12 @@ export default {
       } catch (error) {
         console.error('Veri alınamadı:', error);
       }
-    },
+    }
 
   },
   mounted() {
     this.fetchHistory();
+    this.fetchBackupData();
   }
 };
 </script>
