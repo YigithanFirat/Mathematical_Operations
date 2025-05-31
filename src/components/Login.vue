@@ -63,30 +63,28 @@ export default {
     },
 
     async logout() {
+      const userId = this.$store.getters.userId;
+
+      if (!userId) {
+        console.warn("Logout: Kullanıcı ID bulunamadı! Mevcut user:", this.$store.state.user);
+        alert("Kullanıcı bilgisi eksik. Oturumu kapatmadan önce tekrar giriş yapın.");
+        return;
+      }
+
       try {
-        const userId = this.$store.getters.userId;
-
-        if (!userId) {
-          this.showMessage("Kullanıcı bilgisi alınamadı!", "error");
-          return;
-        }
-
-        const response = await axios.post("http://localhost:3000/logout", {
-          userId: this.$store.getters.userId,
-        });
+        const response = await axios.post("http://localhost:3000/logout", { userId });
 
         if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
-          this.showMessage("Başarıyla çıkış yaptınız.", "success");
+          alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
-          this.$router.push("/");
         } else {
-          this.showMessage(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.", "error");
+          alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
       } catch (error) {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
-        this.showMessage("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.", "error");
+        alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
       }
-    }, // <-- BU VİRGÜL EKSİKTİ
+    },
 
     async loginUser() {
       const nickname = document.getElementById("nickname").value;
