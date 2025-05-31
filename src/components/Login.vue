@@ -71,7 +71,9 @@ export default {
           return;
         }
 
-        const response = await axios.post("http://localhost:3000/logout", { userId });
+        const response = await axios.post("http://localhost:3000/logout", {
+          userId: this.$store.getters.userId,
+        });
 
         if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
           this.showMessage("Başarıyla çıkış yaptınız.", "success");
