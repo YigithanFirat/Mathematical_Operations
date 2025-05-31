@@ -215,35 +215,39 @@ app.post('/loginAdmin', async (req, res) =>
   });
 });
 
+// Logout endpoint
 app.post('/logout', async (req, res) => {
-  console.log('Gelen Veri:', req.body);
-
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: 'Kullanıcı ID belirtilmedi.' });
-  }
-
   try {
-    // Veritabanı sorgusunu await ile çağırmak için Promise'e sarıyoruz
+    // Gelen isteği logla
+    console.log('Gelen Logout Verisi:', req.body);
+
+    const userId = req.body?.userId;
+
+    // userId kontrolü
+    if (!userId || isNaN(userId)) {
+      return res.status(400).json({ error: 'Geçerli bir kullanıcı ID belirtilmedi.' });
+    }
+
+    // Veritabanı sorgusu
     const results = await new Promise((resolve, reject) => {
       const query = 'UPDATE kullanicilar SET Login = 0 WHERE id = ?';
-      sql.query(query, [userId], (error, results) => {
-        if (error) reject(error);
-        else resolve(results);
+      sql.query(query, [userId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
       });
     });
 
+    // Kullanıcı bulunamadıysa
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
     }
 
-    console.log('Logout işlemi başarılı:', results);
+    console.log('Çıkış başarılı:', results);
     return res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
 
-  } catch (error) {
-    console.error('Veritabanı hatası:', error.message);
-    return res.status(500).json({ error: 'Veritabanı hatası: ' + error.message });
+  } catch (err) {
+    console.error('Logout sırasında hata:', err.message);
+    return res.status(500).json({ error: 'Sunucu hatası: ' + err.message });
   }
 });
 
