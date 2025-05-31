@@ -30,6 +30,3 @@ Register ve Login sayfaları vue.js ile tasarımları yapıldı. Gerekli yönlen
 Ayarlar kısmına ait sayfadır, kullanıcı bir çok bilgilerini buradan güncelleyebilmektedir.
 
 ![alt text](settings.png)
-
-## Database
-Veritabanı dosyası (.sql) paylaşıldı.
