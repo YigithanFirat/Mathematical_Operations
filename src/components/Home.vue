@@ -399,12 +399,13 @@ body, html, #app {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px; /* Butonlar arası boşluk */
+  gap: 250px; /* Butonlar arası boşluk */
   list-style: none;
   padding: 0;
   margin: 0;
   justify-content: flex-start; /* En sola yasla */
   width: 100%;
+  padding-left: 130px;
 }
 
 .nav-left li {
