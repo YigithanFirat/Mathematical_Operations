@@ -6,12 +6,10 @@
       <div class="header">
         <ul>
           <li><a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-          <li><a class="btn" v-if="isLogged == 1" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
-          <li><a class="btn" v-if="isLogged == 1" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-          <li><a class="btn" v-if="isLogged == 1" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-          <abbr title="Kaydol">
-            <button class="btn" v-if="isLogged == 0" @click="navigateToRegister()"> Kaydol </button>
-          </abbr>
+          <li><a class="btn" v-if="isLogged" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
+          <li><a class="btn" v-if="isLogged" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
+          <li><a class="btn" v-if="isLogged" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
+          <button title="Kaydol" class="btn" v-if="!isLogged" @click="navigateToRegister()"> Kaydol </button>
         </ul>
       </div>
 
@@ -44,7 +42,8 @@ export default {
     };
   },
   computed: {
-    isLogged() {
+    isLogged()
+    {
       return this.$store.getters.isLogged;
     },
   },
