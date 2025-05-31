@@ -3,51 +3,48 @@
   <div id="app">
     <router-view />
     <div class="full-body">
-    <nav class="header">
-      <ul class="nav-left">
-        <li>
-          <router-link to="/" class="btn">
-            <i class="fa-solid fa-house"></i> Anasayfa
-          </router-link>
-        </li>
-        <li v-if="isLogged">
-          <router-link to="/history" class="btn">
-            <i class="fa-solid fa-ghost"></i> Geçmiş
-          </router-link>
-        </li>
-        <li v-if="isLogged">
-          <router-link to="/settings" class="btn">
-            <i class="fa-solid fa-user-gear"></i> Ayarlar
-          </router-link>
-        </li>
-        <li v-if="isLogged">
-          <button class="btn" @click="logout" type="button">
-            <i class="fa-solid fa-door-open"></i> Çıkış
-          </button>
-        </li>
-
-        <template v-if="!isLogged">
+      <nav class="header">
+        <ul class="nav-left">
           <li>
-            <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
-              Giriş Yap
+            <router-link to="/" class="btn">
+              <i class="fa-solid fa-house"></i> Anasayfa
+            </router-link>
+          </li>
+          <li v-if="isLogged">
+            <router-link to="/history" class="btn">
+              <i class="fa-solid fa-ghost"></i> Geçmiş
+            </router-link>
+          </li>
+          <li v-if="isLogged">
+            <router-link to="/settings" class="btn">
+              <i class="fa-solid fa-user-gear"></i> Ayarlar
+            </router-link>
+          </li>
+          <li v-if="isLogged">
+            <button class="btn" @click="logout" type="button">
+              <i class="fa-solid fa-door-open"></i> Çıkış
             </button>
           </li>
-          <li>
-            <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
-              Kaydol
+
+          <template v-if="!isLogged">
+            <li>
+              <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
+                Giriş Yap
+              </button>
+            </li>
+            <li>
+              <button class="btn" @click="navigateToRegister" type="button" title="Kaydol">
+                Kaydol
+              </button>
+            </li>
+          </template>
+          <li v-if="isAdmin">
+            <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
+              Admin Girişi
             </button>
           </li>
-        </template>
-
-        <li v-if="isAdmin">
-          <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
-            Admin Girişi
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Backup verileri tablosu -->
+        </ul>
+      </nav>
     <div v-if="isLogged && backupData.length" class="history-table">
       <h2 style="margin-top: 30px; color: #2641FE">Yedek (Backup) İşlemleri</h2>
       <table>
@@ -183,7 +180,6 @@ body, html, #app {
   height: 100%;
 }
 
-/* Arka plan */
 .full-body {
   position: relative;
   width: 100%;
@@ -199,7 +195,6 @@ body, html, #app {
   justify-content: flex-start;
 }
 
-/* HEADER */
 .header {
   background-color: #112479;
   width: 100%;
@@ -210,15 +205,14 @@ body, html, #app {
   align-items: center;
 }
 
-/* Nav list with left aligned buttons */
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px; /* Butonlar arası boşluk */
+  gap: 20px;
   list-style: none;
   padding: 0;
   margin: 0;
-  justify-content: flex-start; /* En sola yasla */
+  justify-content: flex-start;
   width: 100%;
 }
 
@@ -226,7 +220,6 @@ body, html, #app {
   display: inline-block;
 }
 
-/* Buton ortak temel stil */
 .btn {
   background-color: #1a73e8;
   border: none;
@@ -240,15 +233,14 @@ body, html, #app {
   transition: background-color 0.3s, transform 0.3s;
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* İkon ve yazı arası */
+  gap: 8px;
   text-align: center;
   user-select: none;
   text-decoration: none;
 }
 
-/* Hover efekti */
 .btn:hover {
-  background-color: #80b9ff; /* Açık mavi */
+  background-color: #80b9ff;
   border-radius: 15px;
   transform: scale(1.05);
 }
@@ -258,7 +250,6 @@ body, html, #app {
   line-height: 1;
 }
 
-/* Zorluk bölümü */
 .zorluk {
   display: flex;
   justify-content: center;
@@ -279,7 +270,6 @@ body, html, #app {
   font-weight: 600;
 }
 
-/* İşlemler bölümü */
 .islemler {
   margin-top: 30px;
   text-align: center;
@@ -323,7 +313,6 @@ body, html, #app {
   cursor: not-allowed;
 }
 
-/* Geçmiş tablosu */
 .history-table {
   width: 90%;
   max-width: 1100px;
@@ -379,7 +368,6 @@ body, html, #app {
   color: #112479;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .nav-left {
     flex-wrap: wrap;
@@ -401,7 +389,6 @@ body, html, #app {
   }
 }
 
-/* Tooltip */
 .header abbr {
   text-decoration: none;
   cursor: pointer;
