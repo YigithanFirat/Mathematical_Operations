@@ -19,6 +19,9 @@
                 <label class="f-title" for="email">E-Posta Adresiniz</label>
                 <input type="email" id="email" name="email" class="input" placeholder="E-Posta Adresiniz" required>
 
+                <label class="f-age" for="number">Yaşınız</label>
+                <input type="number" id="age", name="age" class="input" placeholder="Yaşınız" required>
+
                 <label class="f-password" for="password">Şifreniz</label>
                 <input type="password" id="password" name="password" class="input" placeholder="Şifreniz" required>
 
@@ -46,25 +49,25 @@ export default
   },
   methods:
   {
-    async logout() 
-    {
-      try
-      {
-        const response = await axios.post("http://localhost:3000/logout", {
-          userId: this.$store.getters.userId,
-        });
-        if(response.data && response.data.message === "Çıkış işlemi başarılı.") 
-        {
+    async logout() {
+      const userId = this.$store.getters.userId;
+
+      if (!userId) {
+        console.warn("Logout: Kullanıcı ID bulunamadı! Mevcut user:", this.$store.state.user);
+        alert("Kullanıcı bilgisi eksik. Oturumu kapatmadan önce tekrar giriş yapın.");
+        return;
+      }
+
+      try {
+        const response = await axios.post("http://localhost:3000/logout", { userId });
+
+        if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
-        }
-        else
-        {
+        } else {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
-      }
-      catch(error)
-      {
+      } catch (error) {
         console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
       }
