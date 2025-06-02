@@ -193,6 +193,41 @@ export default
 
 <style>
 
+.full-body {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url("/src/assets/logo.png");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.nav-left {
+  display: flex;
+  justify-content: space-between; /* Aralarında eşit boşluk */
+  align-items: center;
+  list-style: none;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0;
+}
+
+.nav-left li {
+  flex: 1; /* Her bir li eşit genişlikte olsun */
+  text-align: center; /* Butonları ortala */
+}
+
+.nav-left li .btn {
+  width: 50%; /* Butonlar li içini kaplasın */
+  box-sizing: border-box;
+}
+
 .settings 
 {
     display: flex;
