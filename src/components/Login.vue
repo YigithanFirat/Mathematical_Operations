@@ -1,17 +1,53 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <div id="app">
     <router-view />
     <div class="full-body">
-      <div class="header">
-        <ul>
-          <li><a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa </a></li>
-          <li><a class="btn" v-if="isLogged" href="/history"> <i class="fa-solid fa-ghost"></i> Geçmiş </a></li>
-          <li><a class="btn" v-if="isLogged" href="/settings"> <i class="fa-solid fa-user-gear"></i> Ayarlar </a></li>
-          <li><a class="btn" v-if="isLogged" href="/" @click="logout()"> <i class="fa-solid fa-door-open"></i> Çıkış </a></li>
-          <button title="Kaydol" class="btn" v-if="!isLogged" @click="navigateToRegister()"> Kaydol </button>
+      <nav class="header">
+        <ul class="nav-left">
+          <li>
+            <router-link to="/" class="btn">
+              <i class="fa-solid fa-house"></i> Anasayfa
+            </router-link>
+          </li>
+
+          <li v-if="isLogged">
+            <router-link to="/history" class="btn">
+              <i class="fa-solid fa-ghost"></i> Geçmiş
+            </router-link>
+          </li>
+
+          <li v-if="isLogged">
+            <router-link to="/settings" class="btn">
+              <i class="fa-solid fa-user-gear"></i> Ayarlar
+            </router-link>
+          </li>
+
+          <li v-if="isAdmin">
+            <router-link to="/admin" class="btn" title="Admin Paneli">
+              <i class="fa-solid fa-lock"></i> Admin
+            </router-link>
+          </li>
+
+          <li v-if="isLogged">
+            <button class="btn" @click="logout" type="button">
+              <i class="fa-solid fa-door-open"></i> Çıkış
+            </button>
+          </li>
+
+          <li v-else>
+            <button class="btn" @click="navigateToLogin" type="button">
+              <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
+            </button>
+          </li>
+
+          <li v-else>
+            <button class="btn" @click="navigateToRegister" type="button">
+              <i class="fa-solid fa-user-plus"></i> Kaydol
+            </button>
+          </li>
         </ul>
-      </div>
+      </nav>
 
       <!-- Bildirim mesajları -->
       <div v-if="message" :class="['message-box', messageType]">
