@@ -3,7 +3,7 @@
     <div id="app">
         <router-view/>
         <div class="full-body">
-            <div class="header">
+          <div class="header">
             <ul>
               <li><a class="btn" href="/"> <i class="fa-solid fa-house"></i> Anasayfa</a></li>
               <li><button title="Giriş Yap" class="btn btn-login" draggable="false" @click="navigateToLogin()">Giriş Yap</button></li>
@@ -29,7 +29,7 @@
                 <button title="Kaydol" type="submit" class="btn-register">Kaydol</button>
             </form>
             </div>
-        </div>
+          </div>
     </div>
 </template>
 
