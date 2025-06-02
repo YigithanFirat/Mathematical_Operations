@@ -398,18 +398,22 @@ body, html, #app {
 /* Nav list with left aligned buttons */
 .nav-left {
   display: flex;
+  justify-content: space-between; /* Aralarında eşit boşluk */
   align-items: center;
-  gap: 250px; /* Butonlar arası boşluk */
   list-style: none;
-  padding: 0;
-  margin: 0;
-  justify-content: flex-start; /* En sola yasla */
   width: 100%;
-  padding-left: 130px;
+  padding: 0 20px;
+  margin: 0;
 }
 
 .nav-left li {
-  display: inline-block;
+  flex: 1; /* Her bir li eşit genişlikte olsun */
+  text-align: center; /* Butonları ortala */
+}
+
+.nav-left li .btn {
+  width: 50%; /* Butonlar li içini kaplasın */
+  box-sizing: border-box;
 }
 
 /* Buton ortak temel stil */
