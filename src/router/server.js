@@ -20,7 +20,6 @@ server.headersTimeout = 60000;
 const allowedOrigins = ['http://localhost:8080', 'https://myapp.com'];
 app.use(cors({
   origin: (origin, callback) => {
-    // Eğer origin yoksa (örneğin Postman), izin ver.
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -30,10 +29,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-
 app.options('*', cors());
 
-// Hata yakalama middleware'i (en son middleware olarak olmalı)
+// Hata yakalama middleware'i
 app.use((err, req, res, next) => {
   console.error('Beklenmeyen Hata:', err.message);
   if (res.headersSent) {
@@ -58,26 +56,49 @@ sql.connect(err => {
   }
   console.log('[MySQL]: Veritabanı bağlantısı başarıyla kuruldu!');
 });
-
-// Promisify query fonksiyonu (async/await kullanmak için)
 sql.query = util.promisify(sql.query);
 
 // REGISTER
 app.post('/register', async (req, res) => {
-  const { email, password, nickname } = req.body;
+  const { email, password, nickname, birthdate } = req.body;
+
   if (!email || !password || !nickname) {
-    return res.status(400).send('Eksik veri');
+    return res.status(400).send('Eksik veri: email, password ve nickname gerekli.');
   }
+
+  if (birthdate && !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+    return res.status(400).send('Geçersiz doğum tarihi formatı. YYYY-MM-DD olmalı.');
+  }
+
   try {
+    const existingUsers = await sql.query(
+      'SELECT id FROM kullanicilar WHERE email = ?',
+      [email]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(409).send('Bu email zaten kayıtlı.');
+    }
+
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const sqlSorgu = `INSERT INTO kullanicilar 
-      (email, Administrator, password, nickname, Puan, Zorluk, SoruSayisi, Login) 
-      VALUES (?, 0, ?, ?, 0, 1, 20, 0)`;
-    await sql.query(sqlSorgu, [email, hashedPassword, nickname]);
-    res.status(201).send('Kayıt başarıyla oluşturuldu');
+
+    const sqlSorgu = `
+      INSERT INTO kullanicilar 
+      (email, administrator, password, nickname, puan, zorluk, soru_sayisi, login, birthdate) 
+      VALUES (?, 0, ?, ?, 0, 1, 0, 0, ?)
+    `;
+
+    await sql.query(sqlSorgu, [
+      email,
+      hashedPassword,
+      nickname,
+      birthdate ?? null
+    ]);
+
+    res.status(201).send('Kayıt başarıyla oluşturuldu.');
   } catch (error) {
-    console.error('Register hatası:', error);
-    res.status(500).send('Sunucu hatası');
+    console.error('Register hatası:', error.message);
+    res.status(500).send('Sunucu hatası: ' + error.message);
   }
 });
 
@@ -99,37 +120,55 @@ app.post('/save', async (req, res) => {
 
   try {
     const query = 'UPDATE kullanicilar SET SoruSayisi = ?, Zorluk = ?, nickname = ? WHERE id = ?';
-    const results = await sql.query(query, [soruSayisi, Zorluk, nickname, id]);
-    res.status(200).json({ message: 'Soru sayısı, zorluk ve kullanıcı adı başarıyla güncellendi!' });
+    await sql.query(query, [soruSayisi, Zorluk, nickname, id]);
+    res.status(200).json({ message: 'Bilgiler güncellendi.' });
   } catch (err) {
     console.error('Veritabanı güncelleme hatası:', err.message);
     res.status(500).json({ error: 'Veritabanı hatası: ' + err.message });
   }
 });
 
-// LOGIN
+// LOGIN ENDPOINT
 app.post('/login', async (req, res) => {
   const { nickname, password } = req.body;
+
+  // 1. Girdi kontrolü
   if (!nickname || !password) {
-    return res.status(400).send('Nickname ve şifre gereklidir');
+    return res.status(400).json({ error: 'Nickname ve şifre gereklidir' });
   }
+
   try {
+    // 2. Kullanıcıyı veritabanından çek
     const results = await sql.query('SELECT * FROM kullanicilar WHERE nickname = ?', [nickname]);
-    if (results.length === 0) return res.status(401).send('Kullanıcı bulunamadı');
+
+    if (!results || results.length === 0) {
+      return res.status(401).json({ error: 'Kullanıcı bulunamadı' });
+    }
 
     const user = results[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).send('Şifre hatalı');
 
+    // 3. Şifre kontrolü
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Şifre hatalı' });
+    }
+
+    // 4. Giriş başarılı, kullanıcı durumu güncelleniyor
     await sql.query('UPDATE kullanicilar SET Login = 1 WHERE id = ?', [user.id]);
-    res.status(200).json({ message: 'Giriş başarılı ve Login durumu güncellendi.' });
+
+    // 5. Başarılı dönüş
+    res.status(200).json({
+      message: 'Giriş başarılı ve Login durumu güncellendi.',
+      userId: user.id,
+    });
+
   } catch (err) {
     console.error('Login hatası:', err);
-    res.status(500).send('Sunucu hatası');
+    res.status(500).json({ error: 'Sunucu hatası' });
   }
 });
 
-// LOGIN ADMIN (aynı login fonksiyonu gibi, farklı sadece)
+// ADMIN LOGIN
 app.post('/loginAdmin', async (req, res) => {
   const { nickname, password } = req.body;
   if (!nickname || !password) {
@@ -148,7 +187,7 @@ app.post('/loginAdmin', async (req, res) => {
     if (!isMatch) return res.status(401).send('Şifre hatalı');
 
     await sql.query('UPDATE kullanicilar SET Login = 1 WHERE id = ?', [user.id]);
-    res.status(200).json({ message: 'Yönetici girişi başarılı ve Login durumu güncellendi.' });
+    res.status(200).json({ message: 'Yönetici girişi başarılı.', id: user.id });
   } catch (err) {
     console.error('Admin login hatası:', err);
     res.status(500).send('Sunucu hatası');
@@ -168,9 +207,9 @@ app.post('/logout', async (req, res) => {
     if (results.affectedRows === 0) {
       return res.status(404).json({ error: 'Kullanıcı bulunamadı veya zaten çıkış yapmış.' });
     }
-    res.status(200).json({ message: 'Çıkış işlemi başarılı.' });
+    res.status(200).json({ message: 'Çıkış başarılı.' });
   } catch (err) {
-    console.error('Logout sırasında hata:', err.message);
+    console.error('Logout hatası:', err.message);
     res.status(500).json({ error: 'Sunucu hatası: ' + err.message });
   }
 });
@@ -184,59 +223,42 @@ app.post("/saveResults", async (req, res) => {
   }
 
   try {
-    const query = `INSERT INTO backup (zorluk, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?)`;
-    const values = [zorluk, sorusayisi, nickname, puan, toplamSure];
-    const result = await sql.query(query, values);
+    const result = await sql.query(
+      `INSERT INTO backup (zorluk, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?)`,
+      [zorluk, sorusayisi, nickname, puan, toplamSure]
+    );
     res.status(200).json({ message: "Sonuç başarıyla kaydedildi.", id: result.insertId });
   } catch (err) {
     console.error("Veritabanına ekleme hatası:", err);
-    res.status(500).json({ message: "Veritabanına eklenirken bir hata oluştu." });
+    res.status(500).json({ message: "Veritabanına eklenirken hata oluştu." });
   }
 });
 
-// CHECK RESULT (puan güncelleme ve backup tablosuna ekleme)
+// CHECK RESULT
 app.post('/checkResult', async (req, res) => {
   const { userId, points, zorlukSeviyesi, nickname, sorusayisi, toplamSure } = req.body;
-  const now = new Date();
-  const dateOnly = now.toISOString().split("T")[0];
+  const dateOnly = new Date().toISOString().split("T")[0];
 
-  if (!userId || !Number.isInteger(userId)) {
-    return res.status(400).json({ error: 'Geçersiz veya eksik kullanıcı ID!' });
-  }
-  if (typeof points !== 'number') {
-    return res.status(400).json({ error: 'Geçersiz veya eksik puan!' });
-  }
-  if (typeof sorusayisi !== 'number') {
-    return res.status(400).json({ error: 'Geçersiz veya eksik soru sayısı!' });
-  }
-  if (!nickname || typeof nickname !== 'string') {
-    return res.status(400).json({ error: 'Geçersiz veya eksik nickname!' });
-  }
-  if (!zorlukSeviyesi || typeof zorlukSeviyesi !== 'string') {
-    return res.status(400).json({ error: 'Geçersiz veya eksik zorluk seviyesi!' });
-  }
-  if (!toplamSure || typeof toplamSure !== 'number') {
-    return res.status(400).json({ error: 'Geçersiz veya eksik toplam süre!' });
+  if (!userId || typeof points !== 'number' || typeof sorusayisi !== 'number' ||
+      !nickname || !zorlukSeviyesi || typeof toplamSure !== 'number') {
+    return res.status(400).json({ error: 'Eksik veya geçersiz veri gönderildi!' });
   }
 
   try {
     const updateResult = await sql.query('UPDATE kullanicilar SET Puan = Puan + ? WHERE id = ?', [points, userId]);
     if (updateResult.affectedRows === 0) {
-      return res.status(404).json({ error: 'Kullanıcı bulunamadı veya Login durumu aktif değil.' });
+      return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
     }
 
-    const insertBackup = await sql.query(
+    await sql.query(
       'INSERT INTO backup (zorluk, tarih, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?, ?)',
       [zorlukSeviyesi, dateOnly, sorusayisi, nickname, points, toplamSure]
     );
 
-    res.status(200).json({ message: 'Puan başarıyla eklendi!' });
+    res.status(200).json({ message: 'Puan ve sonuç kaydedildi.' });
   } catch (error) {
-    console.error('Hata:', error.message || error);
-    res.status(500).json({
-      error: 'Sunucu hatası. Lütfen tekrar deneyin.',
-      details: error.message,
-    });
+    console.error('checkResult hatası:', error.message);
+    res.status(500).json({ error: 'Sunucu hatası: ' + error.message });
   }
 });
 
@@ -254,10 +276,10 @@ app.get('/history/:userId', async (req, res) => {
   }
 });
 
+// CHECK ADMIN
 app.get("/api/check-admin", async (req, res) => {
   try {
     const rows = await sql.query("SELECT * FROM kullanicilar WHERE Administrator = 1");
-    // sql.query promisify edilmiş, doğrudan sonuç döner
     if (!rows || rows.length === 0) {
       return res.json({ isAdmin: false, message: "Administrator bulunamadı." });
     }
@@ -268,7 +290,6 @@ app.get("/api/check-admin", async (req, res) => {
   }
 });
 
-app.listen(port, () =>
-{
+app.listen(port, () => {
   console.log(`Sunucu http://localhost:${port} adresinde çalışıyor.`);
 });
