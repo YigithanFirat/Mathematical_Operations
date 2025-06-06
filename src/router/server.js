@@ -224,7 +224,7 @@ app.post("/saveResults", async (req, res) => {
 
   try {
     const result = await sql.query(
-      `INSERT INTO backup (zorluk, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO kullanici_stats (zorluk, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?)`,
       [zorluk, sorusayisi, nickname, puan, toplamSure]
     );
     res.status(200).json({ message: "Sonuç başarıyla kaydedildi.", id: result.insertId });
@@ -251,7 +251,7 @@ app.post('/checkResult', async (req, res) => {
     }
 
     await sql.query(
-      'INSERT INTO backup (zorluk, tarih, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO kullanici_stats (zorluk, tarih, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?, ?)',
       [zorlukSeviyesi, dateOnly, sorusayisi, nickname, points, toplamSure]
     );
 
@@ -267,7 +267,7 @@ app.get('/history/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const results = await sql.query('SELECT * FROM backup WHERE userId = ?', [userId]);
+    const results = await sql.query('SELECT * FROM kullanici_stats WHERE id = ?', [userId]);
     if (!results.length) return res.status(404).json({ error: 'Kayıt bulunamadı' });
     res.status(200).json({ data: results });
   } catch (err) {
