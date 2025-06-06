@@ -111,7 +111,7 @@ export default
           if (!userId) {
             console.warn("Logout: Kullanıcı ID bulunamadı! Mevcut user:", this.$store.state.user);
             alert("Kullanıcı bilgisi eksik. Oturumu kapatmadan önce tekrar giriş yapın.");
-            this.$router.push({ name: 'Register' });
+            this.$router.push({ name: 'Login' });
             return;
           }
 
