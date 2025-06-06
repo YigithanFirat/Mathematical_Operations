@@ -161,6 +161,7 @@ export default {
       const userId = this.$store.getters.userId;
       if (!userId) {
         alert("Kullanıcı bilgisi eksik. Lütfen tekrar giriş yapın.");
+        this.$router.push({ name: 'Login' });
         return;
       }
       try {
