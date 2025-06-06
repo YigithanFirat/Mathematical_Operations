@@ -1,3 +1,4 @@
+@ -1,32 +0,0 @@
 # Web Tabanlı Matematiksel İşlem Uygulamaları
 
 Bitirme Projesi
