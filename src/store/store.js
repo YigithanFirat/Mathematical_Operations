@@ -20,8 +20,7 @@ const defaultUser = {
 
 export default createStore({
   state: {
-    // localStorage'dan güvenli şekilde veri alınıyor, boolean olarak "true"/"false" bekleniyor
-    Logged: safeParse(localStorage.getItem('Logged')) || false,
+    Logged: Boolean(safeParse(localStorage.getItem('Logged'))) || false,
     user: { ...defaultUser, ...(safeParse(localStorage.getItem('user')) || {}) },
     operations: safeParse(localStorage.getItem('operations')) || [],
   },
@@ -29,11 +28,16 @@ export default createStore({
   mutations: {
     setLogged(state, status) {
       state.Logged = Boolean(status);
-      localStorage.setItem('Logged', JSON.stringify(state.Logged)); // "true" veya "false"
+      localStorage.setItem('Logged', JSON.stringify(state.Logged));
     },
 
     setUser(state, userData) {
-      state.user = { ...defaultUser, ...userData }; // eksik alanlar default ile tamamlanır
+      const cleanedUser = {
+        id: userData?.id ?? null,
+        nickname: userData?.nickname ?? '',
+        role: userData?.role ?? '',
+      };
+      state.user = { ...defaultUser, ...cleanedUser };
       localStorage.setItem('user', JSON.stringify(state.user));
     },
 
@@ -65,6 +69,7 @@ export default createStore({
       commit('setLogged', false);
       commit('clearUser');
       localStorage.removeItem('Logged');
+      localStorage.removeItem('operations');
     },
 
     recordOperation({ commit }, operation) {
@@ -74,11 +79,11 @@ export default createStore({
   },
 
   getters: {
-    isLogged: (state) => state.Logged,
+    isLogged: (state) => !!state.Logged,
     userId: (state) => state.user?.id ?? null,
     userNickname: (state) => state.user?.nickname ?? '',
     userRole: (state) => state.user?.role ?? '',
-    isAdmin: (state) => state.user?.role === 'admin',
+    isAdmin: (state) => (state.user?.role || '').toLowerCase() === 'admin',
 
     recentOperations: (state) => {
       const now = Date.now();
