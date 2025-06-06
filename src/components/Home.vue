@@ -25,7 +25,6 @@
               <i class="fa-solid fa-door-open"></i> Çıkış
             </button>
           </li>
-
           <template v-if="!isLogged">
             <li>
               <button class="btn" @click="navigateToLogin" type="button" title="Giriş Yap">
@@ -38,7 +37,6 @@
               </button>
             </li>
           </template>
-
           <li v-if="isAdmin">
             <button class="btn" @click="navigateToAdmin" type="button" title="Admin Girişi">
               Admin Girişi
@@ -54,19 +52,8 @@
         </div>
 
         <div class="zorluk">
-          <div
-            class="checkbox-container"
-            v-for="(option, index) in zorlukOptions"
-            :key="index"
-          >
-            <input
-              :id="'derece' + (index + 1)"
-              type="radio"
-              name="zorluk"
-              :value="option.value"
-              v-model="selectedDifficulty"
-              @change="generateRandomNumbers"
-            />
+          <div class="checkbox-container" v-for="(option, index) in zorlukOptions" :key="index">
+            <input :id="'derece' + (index + 1)" type="radio" name="zorluk" :value="option.value" v-model="selectedDifficulty" @change="generateRandomNumbers" />
             <label :for="'derece' + (index + 1)">{{ option.label }}</label>
           </div>
         </div>
@@ -78,11 +65,7 @@
 
         <div class="islem input-group">
           <label for="operation-select">Bir işlem seçin</label>
-          <select
-            id="operation-select"
-            v-model="selectedOperation"
-            :disabled="operationLocked"
-          >
+          <select id="operation-select" v-model="selectedOperation" :disabled="operationLocked">
             <option value="add">Toplama</option>
             <option value="subtract">Çıkarma</option>
             <option value="multiply">Çarpma</option>
@@ -92,13 +75,7 @@
 
         <div class="input-group" id="sonuc">
           <label for="result">Sonuç</label>
-          <input
-            type="number"
-            id="result"
-            v-model.number="result"
-            @keyup.enter="checkResult"
-            autocomplete="off"
-          />
+          <input type="number" id="result" v-model.number="result" @keyup.enter="checkResult" autocomplete="off" />
           <div id="kontrol">
             <abbr title="Sonucu Kontrol Et">
               <button class="btn" @click="checkResult" type="button">
@@ -113,23 +90,17 @@
 </template>
 
 <script>
-
 import axios from "axios";
 
-export default
-{
+export default {
   name: "Home",
-  computed:
-  {
-    isLogged()
-    {
+  computed: {
+    isLogged() {
       return this.$store.getters.isLogged;
     },
-
-    isAdmin()
-    {
+    isAdmin() {
       return this.$store.getters.isAdmin;
-    }
+    },
   },
   data() {
     return {
@@ -141,8 +112,7 @@ export default
       sorusayisi: 10,
       selectedDifficulty: "easy",
       questionCount: 0,
-      zorlukOptions: 
-      [
+      zorlukOptions: [
         { value: "easy", label: "Kolay" },
         { value: "medium", label: "Orta" },
         { value: "hard", label: "Zor" },
@@ -151,187 +121,100 @@ export default
       endTime: null,
     };
   },
-
-  methods: 
-  {
+  methods: {
     async logout() {
       const userId = this.$store.getters.userId;
-
       if (!userId) {
-        console.warn("Logout: Kullanıcı ID bulunamadı! Mevcut user:", this.$store.state.user);
         alert("Kullanıcı bilgisi eksik. Oturumu kapatmadan önce tekrar giriş yapın.");
-        this.$router.push({ name: 'Login' });
+        this.$router.push({ name: "Login" });
         return;
       }
-
       try {
         const response = await axios.post("http://localhost:3000/logout", { userId });
-
-        if (response.data && response.data.message === "Çıkış işlemi başarılı.") {
+        if (response.data?.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
         } else {
           alert(response.data.error || "Çıkış işlemi başarısız. Tekrar deneyin.");
         }
       } catch (error) {
-        console.error("Hata Detayı:", error.response?.data || error.message || error);
         alert("Sunucuya bağlanırken bir hata oluştu. Lütfen tekrar deneyin.");
       }
     },
-
-    generateRandomNumbers()
-    {
+    generateRandomNumbers() {
       let min, max;
-
-      switch(this.selectedDifficulty)
-      {
-        case "easy":
-          min = 1;
-          max = 10;
-          break;
-        case "medium":
-          min = 10;
-          max = 100;
-          break;
-        case "hard":
-          min = 100;
-          max = 1000;
-          break;
-        default:
-          min = 1;
-          max = 10;
+      switch (this.selectedDifficulty) {
+        case "easy": min = 1; max = 10; break;
+        case "medium": min = 10; max = 100; break;
+        case "hard": min = 100; max = 1000; break;
+        default: min = 1; max = 10;
       }
       this.firstNumber = Math.floor(Math.random() * (max - min)) + min;
       this.secondNumber = Math.floor(Math.random() * (max - min)) + min;
-      if(this.selectedOperation === "divide" && this.secondNumber === 0)
-      {
+      if (this.selectedOperation === "divide" && this.secondNumber === 0) {
         this.secondNumber = min === 0 ? 1 : min;
       }
       this.result = "";
     },
-
-    async checkResult()
-    {
+    checkResult() {
       let expectedResult;
-      switch(this.selectedOperation)
-      {
-        case "add":
-          expectedResult = this.firstNumber + this.secondNumber;
-          break;
-        case "subtract":
-          expectedResult = this.firstNumber - this.secondNumber;
-          break;
-        case "multiply":
-          expectedResult = this.firstNumber * this.secondNumber;
-          break;
+      switch (this.selectedOperation) {
+        case "add": expectedResult = this.firstNumber + this.secondNumber; break;
+        case "subtract": expectedResult = this.firstNumber - this.secondNumber; break;
+        case "multiply": expectedResult = this.firstNumber * this.secondNumber; break;
         case "divide":
-          if(this.secondNumber === 0)
-          {
+          if (this.secondNumber === 0) {
             alert("Bir sayıyı sıfıra bölemezsiniz!");
             return;
           }
           expectedResult = parseFloat((this.firstNumber / this.secondNumber).toFixed(2));
           break;
       }
-      let userResult = parseFloat(this.result);
-      if(this.selectedOperation === "divide")
-      {
-        if(Math.abs(userResult - expectedResult) < 0.01)
-        {
-          this.handleCorrectAnswer();
-        }
-        else
-        {
-          alert("Yanlış cevap!");
-        }
-      }
-      else
-      {
-        if(userResult === expectedResult)
-        {
-          this.handleCorrectAnswer();
-        }
-        else
-        {
-          alert("Yanlış cevap!");
-        }
-      }
+      const userResult = parseFloat(this.result);
+      const isCorrect = this.selectedOperation === "divide"
+        ? Math.abs(userResult - expectedResult) < 0.01
+        : userResult === expectedResult;
+      isCorrect ? this.handleCorrectAnswer() : alert("Yanlış cevap!");
     },
-
-    async handleCorrectAnswer()
-    {
+    async handleCorrectAnswer() {
       this.questionCount++;
-      if(this.questionCount === 1)
-      {
-        this.startTime = Date.now();
-      }
-      if(this.questionCount >= this.sorusayisi)
-      {
+      if (this.questionCount === 1) this.startTime = Date.now();
+      if (this.questionCount >= this.sorusayisi) {
         this.endTime = Date.now();
         const totalTime = Math.floor((this.endTime - this.startTime) / 1000);
         await this.saveResults(totalTime);
         alert(`Tebrikler! Toplam süre: ${totalTime} saniye.`);
         this.$router.push("/");
-      }
-      else
-      {
+      } else {
         this.generateRandomNumbers();
       }
       this.result = "";
     },
-
-    async saveResults(totalTime)
-    {
-      if(!this.isLogged)
-      {
+    async saveResults(totalTime) {
+      if (!this.isLogged) {
         alert("Sonuçları kaydetmek için giriş yapmalısınız.");
         return;
       }
-      const payload =
-      {
+      const payload = {
         zorluk: this.selectedDifficulty,
         sorusayisi: this.sorusayisi,
         nickname: this.$store.getters.nickname || "Anonim",
         puan: this.questionCount,
-        toplamSure: totalTime
+        toplamSure: totalTime,
       };
-
-      try
-      {
+      try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
-        if(response.status === 200)
-        {
-          alert("Sonuç başarıyla kaydedildi.");
-        }
-        else
-        {
-          alert("Sonuç kaydedilemedi: " + (response.data.message || "Bilinmeyen hata"));
-        }
-      }
-      catch(error)
-      {
-        console.error("Axios hatası:", error.response?.data || error.message);
+        response.status === 200
+          ? alert("Sonuç başarıyla kaydedildi.")
+          : alert("Sonuç kaydedilemedi.");
+      } catch (error) {
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
     },
-
-    navigateToLogin()
-    {
-      this.$router.push("/login");
-    },
-
-    navigateToAdmin()
-    {
-      this.$router.push("/adminlogin");
-    },
-
-    navigateToRegister()
-    {
-      this.$router.push("/register");
-    },
-
-    resetQuiz()
-    {
+    navigateToLogin() { this.$router.push("/login"); },
+    navigateToRegister() { this.$router.push("/register"); },
+    navigateToAdmin() { this.$router.push("/adminlogin"); },
+    resetQuiz() {
       this.questionCount = 0;
       this.startTime = null;
       this.endTime = null;
@@ -339,19 +222,15 @@ export default
       this.result = "";
     },
   },
-
-  mounted()
-  {
+  mounted() {
     const operation = this.$route.query.operation;
-    if(operation && ["add", "subtract", "multiply", "divide"].includes(operation))
-    {
+    if (["add", "subtract", "multiply", "divide"].includes(operation)) {
       this.selectedOperation = operation;
       this.operationLocked = true;
     }
     this.generateRandomNumbers();
   },
 };
-
 </script>
 
 <style scoped>
