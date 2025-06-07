@@ -262,42 +262,38 @@ app.post('/checkResult', async (req, res) => {
   }
 });
 
-// GET HISTORY (Sadece giriş yapmış kullanıcıların geçmişi)
 app.get('/history/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    // 1. Kullanıcı gerçekten var mı ve login olmuş mu kontrolü (örnek)
-    const [userRows] = await sql.query(
-      'SELECT id, login FROM kullanicilar WHERE id = ?',
-      [userId]
-    );
-
-    if (!userRows || userRows.length === 0) {
-      return res.status(401).json({ error: 'Geçersiz kullanıcı. Lütfen giriş yapın.' });
-    }
-
-    const user = userRows[0];
-
-    if (!user.is_logged_in) {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok. Lütfen giriş yapın.' });
-    }
-
-    // 2. Kullanıcının geçmiş verisini al
-    const [rows] = await sql.query(
-      `SELECT 
-         islem, zorluk, sorusayisi, nickname, puan, toplamsure 
-       FROM kullanici_stats 
-       WHERE id = ? 
-       ORDER BY created_at DESC`,
+    const rows = await sql.query(
+      'SELECT login FROM kullanicilar WHERE id = ?',
       [userId]
     );
 
     if (!rows || rows.length === 0) {
+      return res.status(401).json({ error: 'Geçersiz kullanıcı. Lütfen giriş yapın.' });
+    }
+
+    const user = rows[0];
+
+    if (!user.login) {
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok. Lütfen giriş yapın.' });
+    }
+
+    const history = await sql.query(
+      `SELECT 
+         zorluk, tarih, sorusayisi, nickname, puan, toplamSure 
+       FROM kullanici_stats 
+       WHERE nickname = (SELECT nickname FROM kullanicilar WHERE id = ?)`,
+      [userId]
+    );
+
+    if (!history || history.length === 0) {
       return res.status(404).json({ error: 'Kullanıcıya ait geçmiş bulunamadı.' });
     }
 
-    res.status(200).json({ data: rows });
+    res.status(200).json({ data: history });
   } catch (err) {
     console.error('GET /history/:userId hatası:', err);
     res.status(500).json({ error: 'Sunucu hatası. Lütfen tekrar deneyin.' });
