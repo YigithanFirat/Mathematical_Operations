@@ -1,5 +1,5 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <div id="app">
     <router-view />
     <div class="full-body">
@@ -30,37 +30,31 @@
           </li>
 
           <li v-if="isLogged">
-            <button class="btn" @click="logout" type="button">
+            <button class="btn" @click="logout">
               <i class="fa-solid fa-door-open"></i> Çıkış
             </button>
           </li>
 
-          <li v-else>
-            <button class="btn" @click="navigateToLogin" type="button">
+          <li v-if="!isLogged">
+            <button class="btn" @click="navigateToLogin">
               <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
             </button>
           </li>
 
-          <li v-else>
-            <button class="btn" @click="navigateToRegister" type="button">
+          <li v-if="!isLogged">
+            <button class="btn" @click="navigateToRegister">
               <i class="fa-solid fa-user-plus"></i> Kaydol
             </button>
           </li>
         </ul>
       </nav>
 
-      <!-- İşlem Geçmişi (İşlem İşlem Gruplanmış) -->
-      <div v-if="isLogged && hasHistory" class="history-section">
+      <!-- İşlem Geçmişi -->
+      <section v-if="isLogged && hasHistory" class="history-section">
         <h2>İşlem Geçmişi</h2>
-
-        <div
-          v-for="(entries, operation) in groupedHistory"
-          :key="operation"
-          class="operation-group"
-        >
+        <div v-for="(entries, operation) in groupedHistory" :key="operation" class="operation-group">
           <h3>{{ operation }}</h3>
-
-          <table v-if="entries.length > 0">
+          <table v-if="entries.length">
             <thead>
               <tr>
                 <th>Zorluk</th>
@@ -80,13 +74,12 @@
               </tr>
             </tbody>
           </table>
-
           <p v-else class="empty-msg">Bu işlem için kayıt bulunamadı.</p>
         </div>
-      </div>
+      </section>
 
       <!-- Yedek İşlemleri -->
-      <div v-if="isLogged && backupData.length" class="history-section">
+      <section v-if="isLogged && backupData.length" class="history-section">
         <h2>Yedek (Backup) İşlemleri</h2>
         <table>
           <thead>
@@ -108,7 +101,7 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
   </div>
 </template>
@@ -132,7 +125,6 @@ export default {
       return this.$store.getters.userRole === "admin";
     },
     groupedHistory() {
-      // İşlem türlerine göre grupla
       const grouped = {
         Toplama: [],
         Çıkarma: [],
@@ -141,7 +133,7 @@ export default {
         Diğer: [],
       };
       this.historyData.forEach((entry) => {
-        if (grouped.hasOwnProperty(entry.islem)) {
+        if (grouped[entry.islem]) {
           grouped[entry.islem].push(entry);
         } else {
           grouped.Diğer.push(entry);
@@ -150,10 +142,7 @@ export default {
       return grouped;
     },
     hasHistory() {
-      // Geçmiş veri var mı kontrolü (en az bir işlemde kayıt var mı)
-      return Object.values(this.groupedHistory).some(
-        (entries) => entries.length > 0
-      );
+      return Object.values(this.groupedHistory).some((entries) => entries.length > 0);
     },
   },
   methods: {
@@ -161,51 +150,55 @@ export default {
       const userId = this.$store.getters.userId;
       if (!userId) {
         alert("Kullanıcı bilgisi eksik. Lütfen tekrar giriş yapın.");
-        this.$router.push({ name: 'Login' });
+        this.$router.push({ name: "Login" });
         return;
       }
+
       try {
-        const response = await axios.post("http://localhost:3000/logout", { userId });
-        if (response.data?.message === "Çıkış işlemi başarılı.") {
+        const { data } = await axios.post("http://localhost:3000/logout", { userId });
+        if (data.message === "Çıkış işlemi başarılı.") {
           alert("Başarıyla çıkış yaptınız.");
           this.$store.dispatch("logout");
+          this.$router.push("/");
         } else {
-          alert(response.data.error || "Çıkış işlemi başarısız.");
+          alert(data.error || "Çıkış işlemi başarısız.");
         }
-      } catch (error) {
+      } catch (err) {
+        console.error(err);
         alert("Sunucu hatası. Lütfen tekrar deneyin.");
-        console.error(error);
       }
     },
+
     navigateToLogin() {
       this.$router.push("/login");
     },
+
     navigateToRegister() {
       this.$router.push("/register");
     },
-    async fetchBackupData() {
-      try {
-        const userId = this.$store.getters.userId;
-        const response = await axios.get(`http://localhost:3000/history/backup/${userId}`);
-        this.backupData = Array.isArray(response.data?.data) ? response.data.data : [];
-      } catch (error) {
-        console.error("Backup verisi alınamadı:", error);
-      }
-    },
+
     async fetchHistory() {
+      const userId = this.$store.getters.userId;
+      console.log("fetchHistory -> userId:", userId);
+
+      if (!userId) {
+        console.warn("Kullanıcı ID bulunamadı. Giriş yapılmamış olabilir.");
+        return;
+      }
+
       try {
-        const userId = this.$store.getters.userId;
         const response = await axios.get(`http://localhost:3000/history/${userId}`);
         this.historyData = Array.isArray(response.data?.data) ? response.data.data : [];
       } catch (error) {
-        console.error("Veri alınamadı:", error);
+        console.error("Geçmiş verisi alınamadı:", error);
       }
-    },
+    }
   },
   mounted() {
-    this.fetchHistory();
-    this.fetchBackupData();
-  },
+    if (this.isLogged) {
+      this.fetchHistory();
+    }
+  }
 };
 </script>
 
@@ -229,11 +222,11 @@ html,
 
 .full-body {
   padding-top: 60px;
-  width: 100%;
   min-height: 100vh;
+  width: 100%;
   background-image: url("/src/assets/logo.png");
-  background-position: center;
   background-size: cover;
+  background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
   display: flex;
@@ -241,11 +234,9 @@ html,
   align-items: center;
 }
 
-/* HEADER */
 .header {
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
   height: 60px;
   background-color: #112479;
@@ -255,25 +246,18 @@ html,
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* NAVBAR */
 .nav-left {
   display: flex;
-  justify-content: space-between; /* Aralarında eşit boşluk */
+  justify-content: space-between;
   align-items: center;
   list-style: none;
   width: 100%;
   padding: 0 20px;
-  margin: 0;
 }
 
 .nav-left li {
-  flex: 1; /* Her bir li eşit genişlikte olsun */
-  text-align: center; /* Butonları ortala */
-}
-
-.nav-left li .btn {
-  width: 50%; /* Butonlar li içini kaplasın */
-  box-sizing: border-box;
+  flex: 1;
+  text-align: center;
 }
 
 .btn {
@@ -287,9 +271,9 @@ html,
   padding: 8px 16px;
   display: inline-flex;
   align-items: center;
-  transition: all 0.3s ease;
   text-decoration: none;
   height: 40px;
+  transition: all 0.3s ease;
 }
 
 .btn i {
@@ -304,15 +288,14 @@ html,
   box-shadow: 0 8px 20px rgba(128, 185, 255, 0.7);
 }
 
-/* GEÇMİŞ */
 .history-section {
   width: 90%;
   max-width: 1100px;
   background-color: rgba(255, 255, 255, 0.95);
   padding: 20px;
+  margin: 30px 0;
   border-radius: 12px;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-  margin-bottom: 30px;
 }
 
 .history-section h2 {
@@ -335,7 +318,6 @@ html,
   padding-bottom: 4px;
 }
 
-/* Boş işlem grupları için mesaj */
 .empty-msg {
   font-style: italic;
   color: #777;
@@ -376,16 +358,22 @@ table td {
   color: #112479;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .nav-left {
+    flex-wrap: wrap;
     justify-content: center;
-    margin-left: 0;
+  }
+
+  .nav-left li {
+    flex: 0 0 48%;
+    margin: 4px 0;
   }
 
   .btn {
     font-size: 13px;
     padding: 6px 12px;
+    width: 100%;
+    justify-content: center;
   }
 
   .history-section {
@@ -396,7 +384,6 @@ table td {
     font-size: 20px;
   }
 
-  /* İşlem başlıkları biraz küçültülebilir */
   .operation-group h3 {
     font-size: 18px;
   }
@@ -404,6 +391,7 @@ table td {
   table th,
   table td {
     padding: 8px;
+    font-size: 13px;
   }
 }
 </style>
