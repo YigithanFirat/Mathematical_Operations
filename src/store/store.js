@@ -3,10 +3,10 @@ import { createStore } from 'vuex';
 // Güvenli JSON.parse fonksiyonu
 function safeParse(data) {
   try {
-    if (!data || data === 'undefined') return null;
+    if (!data || data === 'undefined' || typeof data !== 'string') return null;
     return JSON.parse(data);
   } catch (e) {
-    console.error("JSON parse hatası:", e);
+    console.error("safeParse hatası:", e);
     return null;
   }
 }
@@ -18,16 +18,20 @@ const defaultUser = {
   role: '',
 };
 
+// 30 gün = milisaniye cinsinden
+const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+// Vuex store
 export default createStore({
   state: {
-    Logged: Boolean(safeParse(localStorage.getItem('Logged'))) || false,
+    Logged: !!safeParse(localStorage.getItem('Logged')),
     user: { ...defaultUser, ...(safeParse(localStorage.getItem('user')) || {}) },
     operations: safeParse(localStorage.getItem('operations')) || [],
   },
 
   mutations: {
     setLogged(state, status) {
-      state.Logged = Boolean(status);
+      state.Logged = !!status;
       localStorage.setItem('Logged', JSON.stringify(state.Logged));
     },
 
@@ -47,15 +51,21 @@ export default createStore({
     },
 
     addOperation(state, operation) {
-      state.operations.push(operation);
-      localStorage.setItem('operations', JSON.stringify(state.operations));
+      if (operation && typeof operation === 'object') {
+        state.operations.push(operation);
+        localStorage.setItem('operations', JSON.stringify(state.operations));
+      }
     },
 
     cleanOldOperations(state) {
       const now = Date.now();
-      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       state.operations = state.operations.filter(op => now - op.timestamp <= THIRTY_DAYS);
       localStorage.setItem('operations', JSON.stringify(state.operations));
+    },
+
+    clearOperations(state) {
+      state.operations = [];
+      localStorage.removeItem('operations');
     }
   },
 
@@ -68,8 +78,8 @@ export default createStore({
     logout({ commit }) {
       commit('setLogged', false);
       commit('clearUser');
+      commit('clearOperations');
       localStorage.removeItem('Logged');
-      localStorage.removeItem('operations');
     },
 
     recordOperation({ commit }, operation) {
@@ -79,28 +89,25 @@ export default createStore({
   },
 
   getters: {
-    isLogged: (state) => !!state.Logged,
-    userId: (state) => state.user?.id ?? null,
-    userNickname: (state) => state.user?.nickname ?? '',
-    userRole: (state) => state.user?.role ?? '',
-    isAdmin: (state) => (state.user?.role || '').toLowerCase() === 'admin',
+    isLogged: state => !!state.Logged,
+    userId: state => state.user?.id ?? null,
+    userNickname: state => state.user?.nickname ?? '',
+    userRole: state => state.user?.role ?? '',
+    isAdmin: state => (state.user?.role || '').toLowerCase() === 'admin',
 
-    recentOperations: (state) => {
+    recentOperations: state => {
       const now = Date.now();
-      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       return state.operations.filter(op => now - op.timestamp <= THIRTY_DAYS);
     },
 
     maxDurationLastMonth: (state, getters) => {
       const ops = getters.recentOperations;
-      if (ops.length === 0) return null;
-      return Math.max(...ops.map(op => op.duration));
+      return ops.length ? Math.max(...ops.map(op => op.duration || 0)) : null;
     },
 
     minDurationLastMonth: (state, getters) => {
       const ops = getters.recentOperations;
-      if (ops.length === 0) return null;
-      return Math.min(...ops.map(op => op.duration));
+      return ops.length ? Math.min(...ops.map(op => op.duration || 0)) : null;
     },
   },
 });
