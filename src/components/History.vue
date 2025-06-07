@@ -178,19 +178,27 @@ export default {
     },
 
     async fetchHistory() {
-      const userId = this.$store.getters.userId;
-      console.log("fetchHistory -> userId:", userId);
-
-      if (!userId) {
-        console.warn("Kullanıcı ID bulunamadı. Giriş yapılmamış olabilir.");
-        return;
-      }
-
       try {
-        const response = await axios.get(`http://localhost:3000/history/${userId}`);
-        this.historyData = Array.isArray(response.data?.data) ? response.data.data : [];
+        const userId = this.$store.getters.userId;
+        console.log("fetchHistory -> userId:", userId);
+
+        if (!userId) {
+          console.warn("Kullanıcı ID bulunamadı. Giriş yapılmamış olabilir.");
+          return;
+        }
+
+        const { data } = await axios.get(`http://localhost:3000/history/${userId}`);
+
+        if (data && Array.isArray(data.data)) {
+          this.historyData = data.data;
+        } else {
+          console.warn("Beklenen formatta veri alınamadı:", data);
+          this.historyData = [];
+        }
+
       } catch (error) {
-        console.error("Geçmiş verisi alınamadı:", error);
+        console.error("Geçmiş verisi alınırken hata oluştu:", error.response?.data || error.message);
+        this.historyData = [];
       }
     }
   },
