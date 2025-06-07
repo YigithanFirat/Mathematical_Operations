@@ -262,17 +262,45 @@ app.post('/checkResult', async (req, res) => {
   }
 });
 
-// GET HISTORY
+// GET HISTORY (Sadece giriş yapmış kullanıcıların geçmişi)
 app.get('/history/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const results = await sql.query('SELECT * FROM kullanici_stats WHERE id = ?', [userId]);
-    if (!results.length) return res.status(404).json({ error: 'Kayıt bulunamadı' });
-    res.status(200).json({ data: results });
+    // 1. Kullanıcı gerçekten var mı ve login olmuş mu kontrolü (örnek)
+    const [userRows] = await sql.query(
+      'SELECT id, login FROM kullanicilar WHERE id = ?',
+      [userId]
+    );
+
+    if (!userRows || userRows.length === 0) {
+      return res.status(401).json({ error: 'Geçersiz kullanıcı. Lütfen giriş yapın.' });
+    }
+
+    const user = userRows[0];
+
+    if (!user.is_logged_in) {
+      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok. Lütfen giriş yapın.' });
+    }
+
+    // 2. Kullanıcının geçmiş verisini al
+    const [rows] = await sql.query(
+      `SELECT 
+         islem, zorluk, sorusayisi, nickname, puan, toplamsure 
+       FROM kullanici_stats 
+       WHERE id = ? 
+       ORDER BY created_at DESC`,
+      [userId]
+    );
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ error: 'Kullanıcıya ait geçmiş bulunamadı.' });
+    }
+
+    res.status(200).json({ data: rows });
   } catch (err) {
-    console.error('history hatası:', err);
-    res.status(500).json({ error: 'Sunucu hatası' });
+    console.error('GET /history/:userId hatası:', err);
+    res.status(500).json({ error: 'Sunucu hatası. Lütfen tekrar deneyin.' });
   }
 });
 
