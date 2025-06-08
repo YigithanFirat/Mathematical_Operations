@@ -89,6 +89,7 @@
               <th>Nickname</th>
               <th>Puan</th>
               <th>Toplam Süre</th>
+              <th>Tarih</th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +99,7 @@
               <td>{{ entry.nickname }}</td>
               <td>{{ entry.puan }}</td>
               <td>{{ entry.toplamsure }}</td>
+              <td>{{ entry.tarih }}</td>
             </tr>
           </tbody>
         </table>
@@ -179,31 +181,43 @@ export default {
 
     async fetchHistory() {
       try {
-        const userId = this.$store.getters.userId;
-        console.log("fetchHistory -> userId:", userId);
+        const user = this.$store.state.user;
+        const userId = user?.id;
 
-        if (!userId) {
-          console.warn("Kullanıcı ID bulunamadı. Giriş yapılmamış olabilir.");
+        if (!this.isLogged || !userId) {
+          console.warn("Geçerli kullanıcı oturumu bulunamadı.");
           return;
         }
 
-        const { data } = await axios.get(`http://localhost:3000/history/${userId}`);
+        console.log("fetchHistory -> userId:", userId);
 
-        if (data && Array.isArray(data.data)) {
-          this.historyData = data.data;
+        // Ana geçmiş verisi
+        const historyRes = await axios.get(`http://localhost:3000/history/${userId}`);
+        if (historyRes.data && Array.isArray(historyRes.data.data)) {
+          this.historyData = historyRes.data.data;
         } else {
-          console.warn("Beklenen formatta veri alınamadı:", data);
           this.historyData = [];
         }
 
+        // Yedek verisi (backup)
+        const backupRes = await axios.get(`http://localhost:3000/backup/${userId}`);
+        if (backupRes.data && Array.isArray(backupRes.data.data)) {
+          this.backupData = backupRes.data.data;
+        } else {
+          this.backupData = [];
+        }
+
       } catch (error) {
-        console.error("Geçmiş verisi alınırken hata oluştu:", error.response?.data || error.message);
+        console.error("Geçmiş verileri alınırken hata oluştu:", error.response?.data || error.message);
         this.historyData = [];
+        this.backupData = [];
+        alert("Geçmiş verileri alınamadı. Lütfen tekrar deneyin.");
       }
     }
   },
   mounted() {
-    if (this.isLogged) {
+    const userId = this.$store.state.user?.id;
+    if (this.isLogged && userId) {
       this.fetchHistory();
     }
   }
