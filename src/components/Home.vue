@@ -203,8 +203,9 @@ export default {
         puan: this.questionCount,
         toplamSure: totalTime,
         islem: "Dört işlem oyunu"
-        // tarih alanı otomatik atanacak (veritabanında default CURRENT_TIMESTAMP)
       };
+
+      console.log("Gönderilen payload:", payload);  // EKLE
 
       try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
