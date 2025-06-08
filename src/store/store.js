@@ -6,7 +6,9 @@ function safeParse(data) {
     if (!data || data === 'undefined' || typeof data !== 'string') return null;
     return JSON.parse(data);
   } catch (e) {
-    console.error("safeParse hatası:", e);
+    if (process.env.NODE_ENV === 'development') {
+      console.error("safeParse hatası:", e);
+    }
     return null;
   }
 }
@@ -16,12 +18,12 @@ const defaultUser = {
   id: null,
   nickname: '',
   role: '',
+  login: 0,  // login alanı eklendi
 };
 
 // 30 gün = milisaniye cinsinden
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-// Vuex store
 export default createStore({
   state: {
     Logged: !!safeParse(localStorage.getItem('Logged')),
@@ -36,13 +38,27 @@ export default createStore({
     },
 
     setUser(state, userData) {
+      if (!userData || typeof userData !== 'object') {
+        state.user = { ...defaultUser };
+        localStorage.setItem('user', JSON.stringify(state.user));
+        return;
+      }
+
       const cleanedUser = {
         id: userData?.id ?? null,
         nickname: userData?.nickname ?? '',
         role: userData?.role ?? '',
+        login: userData?.login ?? 0,
       };
+
       state.user = { ...defaultUser, ...cleanedUser };
       localStorage.setItem('user', JSON.stringify(state.user));
+
+      // login değeri 1 değilse Logged'ı false yap (opsiyonel güvenlik)
+      if (cleanedUser.login !== 1) {
+        state.Logged = false;
+        localStorage.setItem('Logged', JSON.stringify(false));
+      }
     },
 
     clearUser(state) {
@@ -52,6 +68,9 @@ export default createStore({
 
     addOperation(state, operation) {
       if (operation && typeof operation === 'object') {
+        if (!operation.timestamp) {
+          operation.timestamp = Date.now();
+        }
         state.operations.push(operation);
         localStorage.setItem('operations', JSON.stringify(state.operations));
       }
@@ -79,7 +98,6 @@ export default createStore({
       commit('setLogged', false);
       commit('clearUser');
       commit('clearOperations');
-      localStorage.removeItem('Logged');
     },
 
     recordOperation({ commit }, operation) {
@@ -93,6 +111,7 @@ export default createStore({
     userId: state => state.user?.id ?? null,
     userNickname: state => state.user?.nickname ?? '',
     userRole: state => state.user?.role ?? '',
+    userLogin: state => state.user?.login ?? 0,
     isAdmin: state => (state.user?.role || '').toLowerCase() === 'admin',
 
     recentOperations: state => {
@@ -101,13 +120,13 @@ export default createStore({
     },
 
     maxDurationLastMonth: (state, getters) => {
-      const ops = getters.recentOperations;
-      return ops.length ? Math.max(...ops.map(op => op.duration || 0)) : null;
+      const ops = getters.recentOperations.filter(op => typeof op.duration === 'number');
+      return ops.length ? Math.max(...ops.map(op => op.duration)) : null;
     },
 
     minDurationLastMonth: (state, getters) => {
-      const ops = getters.recentOperations;
-      return ops.length ? Math.min(...ops.map(op => op.duration || 0)) : null;
+      const ops = getters.recentOperations.filter(op => typeof op.duration === 'number');
+      return ops.length ? Math.min(...ops.map(op => op.duration)) : null;
     },
   },
 });
