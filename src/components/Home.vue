@@ -195,18 +195,24 @@ export default {
         alert("Sonuçları kaydetmek için giriş yapmalısınız.");
         return;
       }
+
       const payload = {
         zorluk: this.selectedDifficulty,
         sorusayisi: this.sorusayisi,
         nickname: this.$store.getters.nickname || "Anonim",
         puan: this.questionCount,
         toplamSure: totalTime,
+        islem: "Dört işlem oyunu"
+        // tarih alanı otomatik atanacak (veritabanında default CURRENT_TIMESTAMP)
       };
+
       try {
         const response = await axios.post("http://localhost:3000/saveResults", payload);
-        response.status === 200
-          ? alert("Sonuç başarıyla kaydedildi.")
-          : alert("Sonuç kaydedilemedi.");
+        if (response.status === 200) {
+          alert("Sonuç başarıyla kaydedildi.");
+        } else {
+          alert("Sonuç kaydedilemedi.");
+        }
       } catch (error) {
         alert("Sonuç kaydedilirken bir hata oluştu.");
       }
