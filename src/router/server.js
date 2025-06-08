@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const http = require('http');
 const util = require('util');
-const jwt = require("jsonwebtoken"); // Şu an kullanılmıyor ama saklıyorum.
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(express.json());
@@ -216,18 +216,22 @@ app.post('/logout', async (req, res) => {
 
 // SAVE RESULTS
 app.post("/saveResults", async (req, res) => {
-  const { zorluk, sorusayisi, nickname, puan, toplamSure } = req.body;
+  const { zorluk, sorusayisi, nickname, puan, toplamSure, islem } = req.body;
 
-  if (!zorluk || !sorusayisi || !nickname || !puan || !toplamSure) {
+  // Boş alan kontrolü
+  if (!zorluk || !sorusayisi || !nickname || !puan || !toplamSure || !islem) {
     return res.status(400).json({ message: "Eksik veri gönderildi." });
   }
 
   try {
     const result = await sql.query(
-      `INSERT INTO kullanici_stats (zorluk, sorusayisi, nickname, puan, toplamSure) VALUES (?, ?, ?, ?, ?)`,
-      [zorluk, sorusayisi, nickname, puan, toplamSure]
+      `INSERT INTO kullanici_stats (zorluk, sorusayisi, nickname, puan, toplamSure, islem) VALUES (?, ?, ?, ?, ?, ?)`,
+      [zorluk, sorusayisi, nickname, puan, toplamSure, islem]
     );
-    res.status(200).json({ message: "Sonuç başarıyla kaydedildi.", id: result.insertId });
+    res.status(200).json({
+      message: "Sonuç başarıyla kaydedildi.",
+      id: result.insertId
+    });
   } catch (err) {
     console.error("Veritabanına ekleme hatası:", err);
     res.status(500).json({ message: "Veritabanına eklenirken hata oluştu." });
@@ -264,39 +268,25 @@ app.post('/checkResult', async (req, res) => {
 
 app.get('/history/:userId', async (req, res) => {
   const { userId } = req.params;
-
   try {
-    const rows = await sql.query(
-      'SELECT login FROM kullanicilar WHERE id = ?',
-      [userId]
-    );
-
-    if (!rows || rows.length === 0) {
-      return res.status(401).json({ error: 'Geçersiz kullanıcı. Lütfen giriş yapın.' });
-    }
-
+    const rows = await sql.query('SELECT login, nickname FROM kullanicilar WHERE id = ?', [userId]);
+    if (!rows.length) return res.status(401).json({ error: 'Geçersiz kullanıcı.' });
     const user = rows[0];
+    if (!user.login) return res.status(403).json({ error: 'Giriş yapmamış.' });
 
-    if (!user.login) {
-      return res.status(403).json({ error: 'Bu işlem için yetkiniz yok. Lütfen giriş yapın.' });
-    }
+    const history = await sql.query(`
+      SELECT islem, DATE_FORMAT(tarih, '%Y-%m-%d %H:%i:%s') AS tarih,
+             sorusayisi, nickname, puan, toplamSure
+      FROM kullanici_stats
+      WHERE nickname = ?
+      ORDER BY tarih DESC
+    `, [user.nickname]);
 
-    const history = await sql.query(
-      `SELECT 
-         zorluk, tarih, sorusayisi, nickname, puan, toplamSure 
-       FROM kullanici_stats 
-       WHERE nickname = (SELECT nickname FROM kullanicilar WHERE id = ?)`,
-      [userId]
-    );
-
-    if (!history || history.length === 0) {
-      return res.status(404).json({ error: 'Kullanıcıya ait geçmiş bulunamadı.' });
-    }
-
-    res.status(200).json({ data: history });
+    if (!history.length) return res.status(404).json({ error: 'Geçmiş bulunamadı.' });
+    res.json({ data: history });
   } catch (err) {
-    console.error('GET /history/:userId hatası:', err);
-    res.status(500).json({ error: 'Sunucu hatası. Lütfen tekrar deneyin.' });
+    console.error('GET /history hata:', err);
+    res.status(500).json({ error: 'Sunucu hatası.' });
   }
 });
 
